@@ -6,7 +6,7 @@ import {
   buildColdEmailPrompt,
 } from '@/lib/ai/prompts/generate-cold-email'
 import { mockColdEmailData } from '@/lib/ai/mock-responses'
-import { FREE_DOCS_PER_MONTH } from '@/lib/constants'
+import { FREE_DOCS_PER_MONTH, MAX_APPLICATIONS_PRO } from '@/lib/constants'
 import { safeErrorResponse, isEmailVerified } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, generateDocSchema } from '@/lib/security/validation'
 import { checkRateLimit, getClientIP, rateLimitResponse, GENERATION_RATE_LIMIT } from '@/lib/security/rate-limit'
@@ -77,21 +77,43 @@ export async function POST(request: Request) {
       ? await generateJSONWithClaude(GENERATE_COLD_EMAIL_SYSTEM, buildColdEmailPrompt(parsedJD, experience))
       : mockColdEmailData
 
-    const { data, error } = await supabase
-      .from('documents')
-      .insert({
-        user_id: user.id,
-        job_description_id: jobDescriptionId,
-        type: 'cold_email',
-        title: `Cold Email - ${parsedJD.role_title || 'Untitled'} at ${parsedJD.company_name || 'Company'}`,
-        content: coldEmail as Record<string, unknown>,
-      })
-      .select()
+    // Check user plan for conditional save
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
       .single()
+
+    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
+
+    if (!isPro) {
+      return NextResponse.json({ success: true, content: coldEmail, saved: false })
+    }
+
+    const { data: limitResult } = await supabase.rpc('check_application_limit', {
+      user_uuid: user.id,
+      job_description_uuid: jobDescriptionId,
+      max_applications: MAX_APPLICATIONS_PRO,
+    })
+
+    if (limitResult && !limitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Application limit reached (10/10). Delete an existing application to save new ones.' },
+        { status: 403 }
+      )
+    }
+
+    const { data: saveResult, error } = await supabase.rpc('save_document_with_bundle_tracking', {
+      p_user_id: user.id,
+      p_job_description_id: jobDescriptionId,
+      p_type: 'cold_email',
+      p_title: `Cold Email - ${parsedJD.role_title || 'Untitled'} at ${parsedJD.company_name || 'Company'}`,
+      p_content: coldEmail as Record<string, unknown>,
+    })
 
     if (error) throw error
 
-    return NextResponse.json({ success: true, data, content: coldEmail })
+    return NextResponse.json({ success: true, data: saveResult, content: coldEmail, saved: true })
   } catch (error: unknown) {
     return safeErrorResponse(error, 'generate-cold-email')
   }

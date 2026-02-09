@@ -6,7 +6,7 @@ import {
   buildInterviewPrepPrompt,
 } from '@/lib/ai/prompts/generate-interview-prep'
 import { mockInterviewPrepData } from '@/lib/ai/mock-responses'
-import { FREE_DOCS_PER_MONTH } from '@/lib/constants'
+import { FREE_DOCS_PER_MONTH, MAX_APPLICATIONS_PRO } from '@/lib/constants'
 import { safeErrorResponse, isEmailVerified } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, generateDocSchema } from '@/lib/security/validation'
 import { checkRateLimit, getClientIP, rateLimitResponse, GENERATION_RATE_LIMIT } from '@/lib/security/rate-limit'
@@ -74,24 +74,46 @@ export async function POST(request: Request) {
     logSecurityEvent('generation_attempt', request, user.id, { route: 'generate-interview-prep' })
 
     const interviewPrep = isAIConfigured()
-      ? await generateJSONWithClaude(GENERATE_INTERVIEW_PREP_SYSTEM, buildInterviewPrepPrompt(parsedJD, experience), 8192)
+      ? await generateJSONWithClaude(GENERATE_INTERVIEW_PREP_SYSTEM, buildInterviewPrepPrompt(parsedJD, experience), 4096)
       : mockInterviewPrepData
 
-    const { data, error } = await supabase
-      .from('documents')
-      .insert({
-        user_id: user.id,
-        job_description_id: jobDescriptionId,
-        type: 'interview_prep',
-        title: `Interview Prep - ${parsedJD.role_title || 'Untitled'} at ${parsedJD.company_name || 'Company'}`,
-        content: interviewPrep as Record<string, unknown>,
-      })
-      .select()
+    // Check user plan for conditional save
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
       .single()
+
+    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
+
+    if (!isPro) {
+      return NextResponse.json({ success: true, content: interviewPrep, saved: false })
+    }
+
+    const { data: limitResult } = await supabase.rpc('check_application_limit', {
+      user_uuid: user.id,
+      job_description_uuid: jobDescriptionId,
+      max_applications: MAX_APPLICATIONS_PRO,
+    })
+
+    if (limitResult && !limitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Application limit reached (10/10). Delete an existing application to save new ones.' },
+        { status: 403 }
+      )
+    }
+
+    const { data: saveResult, error } = await supabase.rpc('save_document_with_bundle_tracking', {
+      p_user_id: user.id,
+      p_job_description_id: jobDescriptionId,
+      p_type: 'interview_prep',
+      p_title: `Interview Prep - ${parsedJD.role_title || 'Untitled'} at ${parsedJD.company_name || 'Company'}`,
+      p_content: interviewPrep as Record<string, unknown>,
+    })
 
     if (error) throw error
 
-    return NextResponse.json({ success: true, data, content: interviewPrep })
+    return NextResponse.json({ success: true, data: saveResult, content: interviewPrep, saved: true })
   } catch (error: unknown) {
     return safeErrorResponse(error, 'generate-interview-prep')
   }

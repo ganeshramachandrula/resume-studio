@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useGenerationStore } from '@/store/generation-store'
 import { useAppStore } from '@/store/app-store'
+import { createClient } from '@/lib/supabase/client'
 import { useUsage } from '@/lib/hooks/use-usage'
+import type { Profile } from '@/types/database'
 import { GenerationStepper } from '@/components/generate/generation-stepper'
 import { JDInput } from '@/components/generate/jd-input'
 import { ExperienceInput } from '@/components/generate/experience-input'
@@ -46,9 +48,18 @@ export default function GeneratePage() {
     isGenerating,
     setError,
   } = useGenerationStore()
-  const { profile } = useAppStore()
+  const { profile, setProfile } = useAppStore()
   const { canGenerate } = useUsage(profile)
   const [generationError, setGenerationError] = useState<string | null>(null)
+
+  const refreshProfile = useCallback(async () => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+      if (data) setProfile(data as Profile)
+    }
+  }, [setProfile])
 
   const handleGenerate = async () => {
     if (!canGenerate) {
@@ -58,35 +69,52 @@ export default function GeneratePage() {
 
     setIsGenerating(true)
     setGenerationError(null)
+    setError(null)
     setStep('review')
 
     try {
-      const results = await Promise.all(
+      const results = await Promise.allSettled(
         selectedDocuments.map(async (type) => {
-          const res = await fetch(API_ROUTES[type], {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              parsedJD,
-              experience,
-              jobDescriptionId,
-            }),
-          })
-          const data = await res.json()
-          if (!res.ok) throw new Error(data.error || `Failed to generate ${type}`)
-          return { type, content: data.content }
+          const controller = new AbortController()
+          const timeout = setTimeout(() => controller.abort(), 120_000) // 2 min timeout
+          try {
+            const res = await fetch(API_ROUTES[type], {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ parsedJD, experience, jobDescriptionId }),
+              signal: controller.signal,
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || `Failed to generate ${type}`)
+            setGeneratedDocument(type, data.content)
+            return { type, content: data.content }
+          } finally {
+            clearTimeout(timeout)
+          }
         })
       )
 
-      results.forEach(({ type, content }) => {
-        setGeneratedDocument(type, content)
-      })
+      const failures = results
+        .map((r, i) => (r.status === 'rejected' ? selectedDocuments[i] : null))
+        .filter(Boolean) as DocumentType[]
+
+      if (failures.length === selectedDocuments.length) {
+        const firstError = results.find((r) => r.status === 'rejected') as PromiseRejectedResult
+        const message = firstError?.reason?.message || 'All generations failed'
+        setGenerationError(message)
+        setError(message)
+      } else if (failures.length > 0) {
+        const failedNames = failures.map((f) => DOCUMENT_TYPE_LABELS[f]).join(', ')
+        setGenerationError(`Some documents failed to generate: ${failedNames}. The rest are ready below.`)
+        setError(`Partial failure: ${failedNames}`)
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Generation failed'
       setGenerationError(message)
       setError(message)
     } finally {
       setIsGenerating(false)
+      refreshProfile()
     }
   }
 

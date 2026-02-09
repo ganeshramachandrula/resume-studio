@@ -15,7 +15,7 @@ import { ModernTemplate } from './resume-templates/modern'
 import { ClassicTemplate } from './resume-templates/classic'
 import { MinimalTemplate } from './resume-templates/minimal'
 
-const templates: Record<string, React.ComponentType<{ data: ResumeData }>> = {
+const templates: Record<string, React.ComponentType<{ data: ResumeData; watermark?: boolean }>> = {
   modern: ModernTemplate,
   classic: ClassicTemplate,
   minimal: MinimalTemplate,
@@ -25,16 +25,18 @@ export function PDFGenerator({
   data,
   template = 'modern',
   fileName = 'resume.pdf',
+  showWatermark = false,
 }: {
   data: ResumeData
   template?: string
   fileName?: string
+  showWatermark?: boolean
 }) {
   const TemplateComponent = templates[template] || templates.modern
 
   return (
     <PDFDownloadLink
-      document={<TemplateComponent data={data} />}
+      document={<TemplateComponent data={data} watermark={showWatermark} />}
       fileName={fileName}
     >
       {({ loading }) => (

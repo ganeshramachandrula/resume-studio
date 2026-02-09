@@ -9,6 +9,7 @@ import {
   Font,
 } from '@react-pdf/renderer'
 import type { ResumeData } from '@/types/documents'
+import { WatermarkOverlay } from '../watermark-overlay'
 
 const styles = StyleSheet.create({
   page: {
@@ -121,10 +122,11 @@ const styles = StyleSheet.create({
   },
 })
 
-export function ModernTemplate({ data }: { data: ResumeData }) {
+export function ModernTemplate({ data, watermark }: { data: ResumeData; watermark?: boolean }) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {watermark && <WatermarkOverlay />}
         {/* Sidebar */}
         <View style={styles.sidebar}>
           <Text style={styles.name}>{data.header.name}</Text>

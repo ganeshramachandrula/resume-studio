@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from '@react-pdf/renderer'
 import type { ResumeData } from '@/types/documents'
+import { WatermarkOverlay } from '../watermark-overlay'
 
 const styles = StyleSheet.create({
   page: {
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   },
 })
 
-export function ClassicTemplate({ data }: { data: ResumeData }) {
+export function ClassicTemplate({ data, watermark }: { data: ResumeData; watermark?: boolean }) {
   const contactParts = [
     data.header.email,
     data.header.phone,
@@ -125,6 +126,7 @@ export function ClassicTemplate({ data }: { data: ResumeData }) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {watermark && <WatermarkOverlay />}
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.name}>{data.header.name}</Text>

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { CheckCircle2, XCircle } from 'lucide-react'
+import { CheckCircle2, XCircle, HelpCircle } from 'lucide-react'
 import type { ATSScoreData } from '@/types/documents'
 
 export function ATSScoreDisplay({ data }: { data: Record<string, unknown> }) {
@@ -13,7 +13,16 @@ export function ATSScoreDisplay({ data }: { data: Record<string, unknown> }) {
     <Card className="border-accent/30">
       <CardHeader>
         <CardTitle className="flex items-center justify-between font-[family-name:var(--font-body)]">
-          <span>ATS Score</span>
+          <span className="flex items-center gap-1.5">
+            ATS Score
+            <span className="relative group">
+              <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
+              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2.5 text-xs font-normal text-white bg-gray-900 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none">
+                ATS (Applicant Tracking System) is software used by employers to filter resumes. A higher score means your resume is more likely to pass automated screening.
+                <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+              </span>
+            </span>
+          </span>
           <span className="text-3xl font-bold text-accent">{ats.overall_score}/100</span>
         </CardTitle>
       </CardHeader>

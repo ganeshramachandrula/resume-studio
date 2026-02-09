@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     logSecurityEvent('generation_attempt', request, user.id, { route: 'ats-score' })
 
     const atsScore = isAIConfigured()
-      ? await generateJSONWithClaude(ATS_SCORE_SYSTEM, buildATSScorePrompt(resumeJSON, parsedJD))
+      ? await generateJSONWithClaude(ATS_SCORE_SYSTEM, buildATSScorePrompt(resumeJSON, parsedJD), 8192)
       : mockATSScoreData
 
     // Update document with ATS score if documentId provided

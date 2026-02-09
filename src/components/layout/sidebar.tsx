@@ -18,7 +18,7 @@ import { useAppStore } from '@/store/app-store'
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Generate', href: '/generate', icon: Sparkles },
-  { name: 'Documents', href: '/documents', icon: FileText },
+  { name: 'Applications', href: '/documents', icon: FileText },
   { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]

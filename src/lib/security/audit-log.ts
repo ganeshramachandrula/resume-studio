@@ -15,6 +15,7 @@ export type SecurityEventType =
   | 'invalid_redirect_blocked'
   | 'email_not_verified'
   | 'validation_error'
+  | 'delete_application'
 
 /**
  * Returns a Supabase admin client (service role) for writing security events.

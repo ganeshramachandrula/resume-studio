@@ -6,7 +6,7 @@ import {
   buildLinkedInPrompt,
 } from '@/lib/ai/prompts/generate-linkedin'
 import { mockLinkedInData } from '@/lib/ai/mock-responses'
-import { FREE_DOCS_PER_MONTH } from '@/lib/constants'
+import { FREE_DOCS_PER_MONTH, MAX_APPLICATIONS_PRO } from '@/lib/constants'
 import { safeErrorResponse, isEmailVerified } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, generateDocSchema } from '@/lib/security/validation'
 import { checkRateLimit, getClientIP, rateLimitResponse, GENERATION_RATE_LIMIT } from '@/lib/security/rate-limit'
@@ -77,21 +77,43 @@ export async function POST(request: Request) {
       ? await generateJSONWithClaude(GENERATE_LINKEDIN_SYSTEM, buildLinkedInPrompt(parsedJD, experience))
       : mockLinkedInData
 
-    const { data, error } = await supabase
-      .from('documents')
-      .insert({
-        user_id: user.id,
-        job_description_id: jobDescriptionId,
-        type: 'linkedin_summary',
-        title: `LinkedIn Summary - ${parsedJD.role_title || 'Untitled'}`,
-        content: linkedin as Record<string, unknown>,
-      })
-      .select()
+    // Check user plan for conditional save
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
       .single()
+
+    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
+
+    if (!isPro) {
+      return NextResponse.json({ success: true, content: linkedin, saved: false })
+    }
+
+    const { data: limitResult } = await supabase.rpc('check_application_limit', {
+      user_uuid: user.id,
+      job_description_uuid: jobDescriptionId,
+      max_applications: MAX_APPLICATIONS_PRO,
+    })
+
+    if (limitResult && !limitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Application limit reached (10/10). Delete an existing application to save new ones.' },
+        { status: 403 }
+      )
+    }
+
+    const { data: saveResult, error } = await supabase.rpc('save_document_with_bundle_tracking', {
+      p_user_id: user.id,
+      p_job_description_id: jobDescriptionId,
+      p_type: 'linkedin_summary',
+      p_title: `LinkedIn Summary - ${parsedJD.role_title || 'Untitled'}`,
+      p_content: linkedin as Record<string, unknown>,
+    })
 
     if (error) throw error
 
-    return NextResponse.json({ success: true, data, content: linkedin })
+    return NextResponse.json({ success: true, data: saveResult, content: linkedin, saved: true })
   } catch (error: unknown) {
     return safeErrorResponse(error, 'generate-linkedin')
   }

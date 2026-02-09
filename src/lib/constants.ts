@@ -2,6 +2,8 @@ export const APP_NAME = 'Resume Studio'
 export const APP_DESCRIPTION = 'Smart career document generation platform'
 
 export const FREE_DOCS_PER_MONTH = 2
+export const MAX_APPLICATIONS_PRO = 10
+export const MAX_DOCS_PER_APPLICATION = 5
 
 export const DOCUMENT_TYPES = [
   'resume',

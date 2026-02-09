@@ -24,6 +24,7 @@ export interface Profile {
   stripe_customer_id: string | null
   stripe_subscription_id: string | null
   usage_count: number
+  saved_applications_count: number
   usage_reset_at: string
   created_at: string
   updated_at: string
