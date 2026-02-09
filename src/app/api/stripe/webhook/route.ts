@@ -1,0 +1,149 @@
+import { NextResponse } from 'next/server'
+import { stripe } from '@/lib/stripe/server'
+import { createServerClient } from '@supabase/ssr'
+import { safeErrorResponse } from '@/lib/security/sanitize'
+import { checkRateLimit, getClientIP, rateLimitResponse, STRIPE_RATE_LIMIT } from '@/lib/security/rate-limit'
+import { logSecurityEvent } from '@/lib/security/audit-log'
+
+// Use service role key to bypass RLS
+function getAdminClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll() { return [] },
+        setAll() {},
+      },
+    }
+  )
+}
+
+// Idempotency: track processed event IDs to prevent duplicate processing.
+// In production, use DB-backed deduplication instead of in-memory.
+const processedEvents = new Set<string>()
+const MAX_PROCESSED_EVENTS = 10_000
+
+function markEventProcessed(eventId: string) {
+  if (processedEvents.size >= MAX_PROCESSED_EVENTS) {
+    // Clear oldest half to prevent unbounded growth
+    const entries = Array.from(processedEvents)
+    for (let i = 0; i < entries.length / 2; i++) {
+      processedEvents.delete(entries[i])
+    }
+  }
+  processedEvents.add(eventId)
+}
+
+export async function POST(request: Request) {
+  try {
+    // Rate limit by IP
+    const ip = getClientIP(request)
+    const rl = checkRateLimit(ip, STRIPE_RATE_LIMIT)
+    if (!rl.allowed) {
+      logSecurityEvent('rate_limit_hit', request, undefined, { route: 'webhook' })
+      return rateLimitResponse(rl.retryAfterSeconds!)
+    }
+
+    const body = await request.text()
+    const signature = request.headers.get('stripe-signature')
+
+    if (!signature) {
+      return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
+    }
+
+    let event
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      )
+    } catch (err: unknown) {
+      console.error('[webhook] Signature verification failed:', err)
+      return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 })
+    }
+
+    // Idempotency check
+    if (processedEvents.has(event.id)) {
+      return NextResponse.json({ received: true, duplicate: true })
+    }
+
+    logSecurityEvent('webhook_received', request, undefined, {
+      event_type: event.type,
+      event_id: event.id,
+    })
+
+    const supabase = getAdminClient()
+
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object
+        const subscription = await stripe.subscriptions.retrieve(
+          session.subscription as string
+        )
+        const priceId = subscription.items.data[0].price.id
+
+        const plan =
+          priceId === process.env.STRIPE_PRO_MONTHLY_PRICE_ID
+            ? 'pro_monthly'
+            : priceId === process.env.STRIPE_PRO_ANNUAL_PRICE_ID
+              ? 'pro_annual'
+              : 'free'
+
+        await supabase
+          .from('profiles')
+          .update({
+            plan,
+            stripe_subscription_id: subscription.id,
+            stripe_customer_id: session.customer as string,
+          })
+          .eq('id', session.metadata?.supabase_user_id)
+
+        break
+      }
+
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object
+        const priceId = subscription.items.data[0].price.id
+
+        const plan =
+          priceId === process.env.STRIPE_PRO_MONTHLY_PRICE_ID
+            ? 'pro_monthly'
+            : priceId === process.env.STRIPE_PRO_ANNUAL_PRICE_ID
+              ? 'pro_annual'
+              : 'free'
+
+        await supabase
+          .from('profiles')
+          .update({ plan })
+          .eq('stripe_subscription_id', subscription.id)
+
+        break
+      }
+
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object
+        await supabase
+          .from('profiles')
+          .update({ plan: 'free', stripe_subscription_id: null })
+          .eq('stripe_subscription_id', subscription.id)
+
+        break
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object
+        console.error('Payment failed for customer:', invoice.customer)
+        break
+      }
+    }
+
+    markEventProcessed(event.id)
+
+    return NextResponse.json({ received: true })
+  } catch (error: unknown) {
+    return safeErrorResponse(error, 'webhook')
+  }
+}
