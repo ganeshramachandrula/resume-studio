@@ -126,7 +126,6 @@ export function ClassicTemplate({ data, watermark }: { data: ResumeData; waterma
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {watermark && <WatermarkOverlay />}
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.name}>{data.header.name}</Text>
@@ -217,6 +216,7 @@ export function ClassicTemplate({ data, watermark }: { data: ResumeData; waterma
             ))}
           </View>
         )}
+        {watermark && <WatermarkOverlay />}
       </Page>
     </Document>
   )

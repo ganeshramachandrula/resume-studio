@@ -106,7 +106,6 @@ export function MinimalTemplate({ data, watermark }: { data: ResumeData; waterma
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {watermark && <WatermarkOverlay />}
         <Text style={styles.name}>{data.header.name}</Text>
         <Text style={styles.title}>{data.header.title}</Text>
         <Text style={styles.contactLine}>{contactParts.join('  /  ')}</Text>
@@ -175,6 +174,7 @@ export function MinimalTemplate({ data, watermark }: { data: ResumeData; waterma
             </Text>
           </View>
         )}
+        {watermark && <WatermarkOverlay />}
       </Page>
     </Document>
   )

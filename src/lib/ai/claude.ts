@@ -10,7 +10,7 @@ export async function generateWithClaude(
   systemPrompt: string,
   userPrompt: string,
   maxTokens: number = 4096
-): Promise<string> {
+): Promise<{ text: string; truncated: boolean }> {
   if (!isAIConfigured()) {
     throw new Error('MOCK_MODE')
   }
@@ -23,13 +23,13 @@ export async function generateWithClaude(
     messages: [{ role: 'user', content: userPrompt }],
   })
 
-  // If the response was truncated (hit max_tokens), the JSON may be incomplete
-  if (message.stop_reason === 'max_tokens') {
+  const truncated = message.stop_reason === 'max_tokens'
+  if (truncated) {
     console.warn('[claude] Response truncated — hit max_tokens limit')
   }
 
   const textBlock = message.content.find((block) => block.type === 'text')
-  return textBlock?.text ?? ''
+  return { text: textBlock?.text ?? '', truncated }
 }
 
 export async function generateJSONWithClaude<T>(
@@ -41,64 +41,99 @@ export async function generateJSONWithClaude<T>(
     throw new Error('MOCK_MODE')
   }
 
-  const response = await generateWithClaude(systemPrompt, userPrompt, maxTokens)
+  // Try once; if truncated, retry with double tokens
+  let response = await generateWithClaude(systemPrompt, userPrompt, maxTokens)
+  if (response.truncated && maxTokens < 16384) {
+    console.warn(`[claude] Retrying with ${maxTokens * 2} max_tokens`)
+    response = await generateWithClaude(systemPrompt, userPrompt, maxTokens * 2)
+  }
 
   const jsonMatch =
-    response.match(/```json\n?([\s\S]*?)\n?```/) || response.match(/\{[\s\S]*\}/)
+    response.text.match(/```json\n?([\s\S]*?)\n?```/) || response.text.match(/\{[\s\S]*\}/)
   if (!jsonMatch) throw new Error('No JSON found in AI response')
 
   let jsonStr = jsonMatch[1] || jsonMatch[0]
 
-  // Attempt to fix truncated JSON by closing open braces/brackets
   try {
     return JSON.parse(jsonStr) as T
   } catch {
     // Try to salvage truncated JSON
     jsonStr = repairTruncatedJSON(jsonStr)
-    return JSON.parse(jsonStr) as T
+    try {
+      return JSON.parse(jsonStr) as T
+    } catch (e) {
+      console.error('[claude] JSON repair failed:', (e as Error).message)
+      console.error('[claude] Repaired string (last 200 chars):', jsonStr.slice(-200))
+      throw new Error('Failed to parse AI response as JSON')
+    }
   }
 }
 
 /**
- * Attempts to repair truncated JSON by:
- * 1. Closing any unterminated string
- * 2. Removing trailing incomplete key-value pairs or array items
- * 3. Closing open brackets and braces in correct order
+ * Repairs truncated JSON by:
+ * 1. Closing unterminated strings
+ * 2. Trimming back to the last valid structural point
+ * 3. Closing open brackets/braces in correct nesting order
  */
 function repairTruncatedJSON(json: string): string {
   // Track structural state
   let inString = false
   let escaped = false
-  const stack: string[] = [] // tracks '{' and '['
+  const stack: string[] = []
+  let lastValidEnd = 0 // index after last complete value/structure
 
-  for (const ch of json) {
+  for (let i = 0; i < json.length; i++) {
+    const ch = json[i]
     if (escaped) { escaped = false; continue }
     if (ch === '\\') { escaped = true; continue }
-    if (ch === '"') { inString = !inString; continue }
+    if (ch === '"') {
+      inString = !inString
+      if (!inString) {
+        // Just closed a string — this is a valid endpoint
+        lastValidEnd = i + 1
+      }
+      continue
+    }
     if (inString) continue
-    if (ch === '{') stack.push('{')
-    if (ch === '}') stack.pop()
-    if (ch === '[') stack.push('[')
-    if (ch === ']') stack.pop()
+    if (ch === '{') { stack.push('{'); continue }
+    if (ch === '[') { stack.push('['); continue }
+    if (ch === '}') { stack.pop(); lastValidEnd = i + 1; continue }
+    if (ch === ']') { stack.pop(); lastValidEnd = i + 1; continue }
+    if (ch === ',') { lastValidEnd = i; continue } // comma itself is a trim point
+    // colons, whitespace, numbers, booleans, null — skip
   }
 
-  // If we ended inside a string, close it
+  // If we ended inside a string, truncate back to last valid point
   if (inString) {
-    json += '"'
+    // Recompute stack from the truncated portion
+    json = json.slice(0, lastValidEnd)
+    inString = false
+    escaped = false
+    stack.length = 0
+    for (const ch of json) {
+      if (escaped) { escaped = false; continue }
+      if (ch === '\\') { escaped = true; continue }
+      if (ch === '"') { inString = !inString; continue }
+      if (inString) continue
+      if (ch === '{') stack.push('{')
+      if (ch === '}') stack.pop()
+      if (ch === '[') stack.push('[')
+      if (ch === ']') stack.pop()
+    }
   }
 
-  // Remove trailing incomplete values:
-  // - partial string after colon: `"key": "incom`  → already closed above
-  // - trailing comma + partial key: `, "partialKey`
-  // - trailing colon without value: `"key":`
-  // Work from the end, stripping problematic tails
+  // Remove trailing commas and incomplete key-value tokens
   json = json
-    .replace(/,\s*"[^"]*"\s*:\s*"[^"]*$/, '')   // trailing "key": "incomplete-val"
-    .replace(/,\s*"[^"]*"\s*:\s*$/, '')           // trailing "key":
-    .replace(/,\s*"[^"]*$/, '')                   // trailing "incomplete-key
-    .replace(/,\s*$/, '')                          // trailing comma
+    .replace(/,\s*$/, '')             // trailing comma
+    .replace(/:\s*$/, '')             // trailing colon (remove value-less key too)
 
-  // Close open brackets/braces in reverse order (innermost first)
+  // If the last non-whitespace is a colon-less key, remove it
+  json = json.replace(/,\s*"[^"]*"\s*$/, '')
+
+  // Remove trailing comma again (in case the above exposed one)
+  json = json.replace(/,\s*$/, '')
+
+  // Close open brackets/braces in reverse order
   for (let i = stack.length - 1; i >= 0; i--) {
     json += stack[i] === '{' ? '}' : ']'
   }

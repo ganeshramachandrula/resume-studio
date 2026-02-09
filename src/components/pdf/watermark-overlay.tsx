@@ -11,23 +11,33 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 999,
   },
   watermarkText: {
-    fontSize: 40,
-    color: '#9CA3AF',
-    opacity: 0.15,
+    fontSize: 52,
+    color: '#000000',
+    opacity: 0.07,
     transform: 'rotate(-45deg)',
     fontFamily: 'Helvetica-Bold',
     textAlign: 'center',
+    letterSpacing: 4,
+  },
+  watermarkSubText: {
+    fontSize: 28,
+    color: '#000000',
+    opacity: 0.07,
+    transform: 'rotate(-45deg)',
+    fontFamily: 'Helvetica-Bold',
+    textAlign: 'center',
+    letterSpacing: 3,
+    marginTop: 4,
   },
 })
 
 export function WatermarkOverlay() {
   return (
-    <View style={styles.watermarkContainer}>
+    <View style={styles.watermarkContainer} fixed>
       <Text style={styles.watermarkText}>RESUME STUDIO</Text>
-      <Text style={[styles.watermarkText, { fontSize: 24, marginTop: -10 }]}>FREE PREVIEW</Text>
+      <Text style={styles.watermarkSubText}>FREE PREVIEW</Text>
     </View>
   )
 }

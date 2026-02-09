@@ -126,7 +126,6 @@ export function ModernTemplate({ data, watermark }: { data: ResumeData; watermar
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {watermark && <WatermarkOverlay />}
         {/* Sidebar */}
         <View style={styles.sidebar}>
           <Text style={styles.name}>{data.header.name}</Text>
@@ -222,6 +221,7 @@ export function ModernTemplate({ data, watermark }: { data: ResumeData; watermar
             ))}
           </View>
         </View>
+        {watermark && <WatermarkOverlay />}
       </Page>
     </Document>
   )
