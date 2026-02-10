@@ -28,6 +28,16 @@ export const generateDocSchema = z.object({
     .max(20_000, 'Experience must be under 20,000 characters'),
   jobDescriptionId: z.string().uuid('Invalid job description ID'),
   contactInfo: contactInfoSchema.optional(),
+  language: z.string().max(100, 'Language too long').optional(),
+})
+
+export const careerCoachSchema = z.object({
+  message: z
+    .string()
+    .min(1, 'Message is required')
+    .max(5000, 'Message must be under 5,000 characters'),
+  conversationId: z.string().uuid('Invalid conversation ID').optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
 })
 
 export const atsScoreSchema = z.object({

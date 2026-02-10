@@ -22,9 +22,12 @@ interface ContactInfoParam {
   linkedin?: string
 }
 
-export const buildLinkedInPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam) => {
+export const buildLinkedInPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam, language?: string) => {
   const nameInstruction = contactInfo?.name
     ? `\n\nIMPORTANT: The candidate's name is "${contactInfo.name}". Write the summary in first person as this person.`
     : ''
-  return `Optimize a LinkedIn profile for someone targeting this type of role:\n\nTARGET ROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nEXPERIENCE:\n${experience}${nameInstruction}`
+  const langInstruction = language && language !== 'en'
+    ? `\n\nCRITICAL LANGUAGE REQUIREMENT: Generate ALL content in ${language}. Every piece of text in your response must be in ${language}. JSON keys remain in English, but all string values must be in ${language}.`
+    : ''
+  return `Optimize a LinkedIn profile for someone targeting this type of role:\n\nTARGET ROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nEXPERIENCE:\n${experience}${nameInstruction}${langInstruction}`
 }

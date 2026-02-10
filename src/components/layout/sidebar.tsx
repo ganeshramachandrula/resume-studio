@@ -10,6 +10,8 @@ import {
   Settings,
   Crown,
   Shield,
+  GraduationCap,
+  Lock,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -28,6 +30,7 @@ export function Sidebar() {
   const pathname = usePathname()
   const { profile, sidebarOpen, setSidebarOpen } = useAppStore()
   const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
+  const userIsAnnual = profile?.plan === 'pro_annual'
   const isAdmin = profile?.role === 'admin'
 
   return (
@@ -81,6 +84,22 @@ export function Sidebar() {
               </Link>
             )
           })}
+
+          {/* Career Coach (Annual exclusive) */}
+          <Link
+            href="/career-coach"
+            onClick={() => setSidebarOpen(false)}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+              pathname === '/career-coach'
+                ? 'bg-brand/10 text-brand'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+            )}
+          >
+            <GraduationCap className="h-5 w-5" />
+            Career Coach
+            {!userIsAnnual && <Lock className="h-3 w-3 text-gray-400 ml-auto" />}
+          </Link>
 
           {isAdmin && (
             <>

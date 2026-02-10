@@ -16,6 +16,7 @@ import type {
   LinkedInData,
   ColdEmailData,
   InterviewPrepData,
+  CertificationGuideData,
 } from '@/types/documents'
 import { ATSScoreDisplay } from './ats-score-display'
 import { PDFGenerator } from '@/components/pdf/pdf-generator'
@@ -155,6 +156,89 @@ function InterviewPrepPreview({ data }: { data: InterviewPrepData }) {
   )
 }
 
+const PRIORITY_LABELS: Record<string, string> = {
+  must_have: 'Must-Have',
+  strongly_recommended: 'Strongly Recommended',
+  nice_to_have: 'Nice-to-Have',
+}
+
+const PRIORITY_COLORS: Record<string, string> = {
+  must_have: 'bg-red-100 text-red-800',
+  strongly_recommended: 'bg-amber-100 text-amber-800',
+  nice_to_have: 'bg-blue-100 text-blue-800',
+}
+
+const DIFFICULTY_COLORS: Record<string, string> = {
+  beginner: 'bg-green-100 text-green-800',
+  intermediate: 'bg-yellow-100 text-yellow-800',
+  advanced: 'bg-purple-100 text-purple-800',
+}
+
+function CertificationGuidePreview({ data }: { data: CertificationGuideData }) {
+  const tiers: Array<'must_have' | 'strongly_recommended' | 'nice_to_have'> = ['must_have', 'strongly_recommended', 'nice_to_have']
+
+  return (
+    <div className="space-y-6 text-sm">
+      <div>
+        <p className="text-xs text-gray-500 mb-1">Target Role</p>
+        <p className="font-semibold text-gray-900 text-base">{data.role_title}</p>
+        <p className="text-gray-600 mt-1">{data.summary}</p>
+      </div>
+
+      {tiers.map((tier) => {
+        const certs = data.certifications?.filter((c) => c.priority === tier)
+        if (!certs || certs.length === 0) return null
+        return (
+          <div key={tier}>
+            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <Badge className={PRIORITY_COLORS[tier]}>{PRIORITY_LABELS[tier]}</Badge>
+            </h3>
+            <div className="space-y-3">
+              {certs.map((cert, i) => (
+                <div key={i} className="p-3 rounded-xl bg-gray-50 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-gray-900">{cert.name}</p>
+                      <p className="text-xs text-gray-500">{cert.issuing_body}</p>
+                    </div>
+                    <Badge className={DIFFICULTY_COLORS[cert.difficulty]}>
+                      {cert.difficulty}
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-3 text-xs text-gray-600">
+                    <span>Cost: {cert.estimated_cost}</span>
+                    <span>Duration: {cert.duration}</span>
+                    <span>Platform: {cert.platform}</span>
+                  </div>
+                  <p className="text-gray-700">{cert.why_it_helps}</p>
+                  <p className="text-xs text-accent">{cert.salary_impact}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-2">Suggested Learning Path</h3>
+        <ol className="space-y-1.5">
+          {data.learning_path?.map((step, i) => (
+            <li key={i} className="text-gray-700 pl-1">
+              <span className="font-medium text-brand mr-1.5">{i + 1}.</span>
+              {step}
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-1">Industry Insights</h3>
+        <p className="text-gray-700">{data.industry_insights}</p>
+      </div>
+    </div>
+  )
+}
+
 const FREE_WATERMARK_TEXT = '\n\n---\nGenerated with Resume Studio - Free Preview\nUpgrade to Pro to save and organize your documents.'
 
 function documentToText(type: DocumentType, content: Record<string, unknown>, isFree: boolean): string {
@@ -185,6 +269,31 @@ function documentToText(type: DocumentType, content: Record<string, unknown>, is
     if (d.questions_to_ask) {
       text += '## Questions to Ask\n\n'
       for (const q of d.questions_to_ask) text += `- ${q.question} (${q.why_impressive})\n`
+    }
+  } else if (type === 'certification_guide') {
+    const d = content as unknown as CertificationGuideData
+    text += `# Certification Guide — ${d.role_title}\n\n${d.summary}\n\n`
+    const tiers = ['must_have', 'strongly_recommended', 'nice_to_have'] as const
+    const tierLabels: Record<string, string> = { must_have: 'Must-Have', strongly_recommended: 'Strongly Recommended', nice_to_have: 'Nice-to-Have' }
+    for (const tier of tiers) {
+      const certs = d.certifications?.filter((c) => c.priority === tier)
+      if (!certs || certs.length === 0) continue
+      text += `## ${tierLabels[tier]}\n\n`
+      for (const c of certs) {
+        text += `### ${c.name} (${c.issuing_body})\n`
+        text += `Difficulty: ${c.difficulty} | Cost: ${c.estimated_cost} | Duration: ${c.duration}\n`
+        text += `Platform: ${c.platform}\n`
+        text += `${c.why_it_helps}\n`
+        text += `Salary Impact: ${c.salary_impact}\n\n`
+      }
+    }
+    if (d.learning_path) {
+      text += '## Suggested Learning Path\n\n'
+      d.learning_path.forEach((step, i) => { text += `${i + 1}. ${step}\n` })
+      text += '\n'
+    }
+    if (d.industry_insights) {
+      text += `## Industry Insights\n\n${d.industry_insights}\n`
     }
   } else {
     text = JSON.stringify(content, null, 2)
@@ -232,7 +341,7 @@ function DownloadTextButton({ type, content, isFree }: { type: DocumentType; con
 }
 
 export function DocumentPreview() {
-  const { generatedDocuments, parsedJD, setStep, isGenerating, error, setGeneratedDocument } = useGenerationStore()
+  const { generatedDocuments, parsedJD, setStep, isGenerating, error, setGeneratedDocument, selectedTemplate, selectedFont, selectedFontSize } = useGenerationStore()
   const { profile } = useAppStore()
   const [atsLoading, setAtsLoading] = useState(false)
   const [atsScore, setAtsScore] = useState<Record<string, unknown> | null>(null)
@@ -449,6 +558,9 @@ export function DocumentPreview() {
                   {type === 'resume' && !editMode ? (
                     <PDFGenerator
                       data={generatedDocuments[type] as unknown as ResumeData}
+                      template={selectedTemplate}
+                      fontOverride={selectedFont}
+                      fontSizeOverride={selectedFontSize}
                       fileName={`resume_${parsedJD?.company_name || 'document'}.pdf`.replace(/\s+/g, '_').toLowerCase()}
                       showWatermark={isFree}
                     />
@@ -476,6 +588,7 @@ export function DocumentPreview() {
                     {type === 'linkedin_summary' && <LinkedInPreview data={generatedDocuments[type] as unknown as LinkedInData} />}
                     {type === 'cold_email' && <ColdEmailPreview data={generatedDocuments[type] as unknown as ColdEmailData} />}
                     {type === 'interview_prep' && <InterviewPrepPreview data={generatedDocuments[type] as unknown as InterviewPrepData} />}
+                    {type === 'certification_guide' && <CertificationGuidePreview data={generatedDocuments[type] as unknown as CertificationGuideData} />}
                   </>
                 )}
               </CardContent>

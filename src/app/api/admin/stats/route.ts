@@ -30,6 +30,8 @@ export async function GET(request: Request) {
       docsRes,
       messagesNewRes,
       messagesOpenRes,
+      coachTotalRes,
+      coachActiveRes,
     ] = await Promise.all([
       admin.from('profiles').select('id', { count: 'exact', head: true }),
       admin.from('profiles').select('id', { count: 'exact', head: true }).in('plan', ['pro_monthly', 'pro_annual']),
@@ -37,10 +39,20 @@ export async function GET(request: Request) {
       admin.from('documents').select('id', { count: 'exact', head: true }),
       admin.from('support_messages').select('id', { count: 'exact', head: true }).eq('status', 'new'),
       admin.from('support_messages').select('id', { count: 'exact', head: true }).in('status', ['new', 'in_progress']),
+      // Coach stats: sum of all coach messages
+      admin.from('profiles').select('coach_messages_count'),
+      // Coach active users: users with at least 1 coach message
+      admin.from('profiles').select('id', { count: 'exact', head: true }).gt('coach_messages_count', 0),
     ])
 
     const totalUsers = profilesRes.count ?? 0
     const proUsers = proRes.count ?? 0
+
+    // Sum coach messages across all users
+    const totalCoachMessages = (coachTotalRes.data || []).reduce(
+      (sum: number, row: { coach_messages_count: number }) => sum + (row.coach_messages_count || 0),
+      0
+    )
 
     return NextResponse.json({
       totalUsers,
@@ -50,6 +62,8 @@ export async function GET(request: Request) {
       totalDocuments: docsRes.count ?? 0,
       newMessages: messagesNewRes.count ?? 0,
       openMessages: messagesOpenRes.count ?? 0,
+      totalCoachMessages,
+      activeCoachUsers: coachActiveRes.count ?? 0,
     })
   } catch (error) {
     return safeErrorResponse(error, 'admin-stats')

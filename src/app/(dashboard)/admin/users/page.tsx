@@ -150,6 +150,8 @@ function AdminUsersContent() {
                   <th className="text-left p-3 font-medium text-gray-500 hidden md:table-cell">Name</th>
                   <th className="text-left p-3 font-medium text-gray-500">Plan</th>
                   <th className="text-left p-3 font-medium text-gray-500 hidden lg:table-cell">Usage</th>
+                  <th className="text-left p-3 font-medium text-gray-500 hidden lg:table-cell">Coach</th>
+                  <th className="text-left p-3 font-medium text-gray-500 hidden xl:table-cell">Country</th>
                   <th className="text-left p-3 font-medium text-gray-500 hidden lg:table-cell">Status</th>
                   <th className="text-left p-3 font-medium text-gray-500 hidden xl:table-cell">Joined</th>
                 </tr>
@@ -158,12 +160,12 @@ function AdminUsersContent() {
                 {loading && !data ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="border-b border-gray-50">
-                      <td colSpan={6} className="p-3"><div className="h-5 animate-pulse bg-gray-100 rounded" /></td>
+                      <td colSpan={8} className="p-3"><div className="h-5 animate-pulse bg-gray-100 rounded" /></td>
                     </tr>
                   ))
                 ) : data?.users.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-gray-400">No users found</td>
+                    <td colSpan={8} className="p-8 text-center text-gray-400">No users found</td>
                   </tr>
                 ) : (
                   data?.users.map((user) => (
@@ -181,6 +183,14 @@ function AdminUsersContent() {
                       <td className="p-3 hidden md:table-cell text-gray-600">{user.full_name || '—'}</td>
                       <td className="p-3">{planBadge(user.plan)}</td>
                       <td className="p-3 hidden lg:table-cell text-gray-600">{user.usage_count}</td>
+                      <td className="p-3 hidden lg:table-cell text-gray-600">
+                        {user.coach_messages_count > 0 ? (
+                          <span className={user.coach_messages_count >= 80 ? 'text-red-600 font-medium' : ''}>
+                            {user.coach_messages_count}
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td className="p-3 hidden xl:table-cell text-gray-500">{user.country || '—'}</td>
                       <td className="p-3 hidden lg:table-cell">
                         {user.is_disabled ? (
                           <Badge variant="destructive">Disabled</Badge>
@@ -278,6 +288,16 @@ function AdminUsersContent() {
                   <div>
                     <p className="text-gray-500">Saved Apps</p>
                     <p className="font-medium">{selected.saved_applications_count}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Coach Messages</p>
+                    <p className={`font-medium ${selected.coach_messages_count >= 80 ? 'text-red-600' : ''}`}>
+                      {selected.coach_messages_count}{selected.coach_messages_count >= 80 ? ' (high)' : ''}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Country</p>
+                    <p className="font-medium">{selected.country || '—'}</p>
                   </div>
                   <div>
                     <p className="text-gray-500">Joined</p>

@@ -22,9 +22,12 @@ interface ContactInfoParam {
   linkedin?: string
 }
 
-export const buildColdEmailPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam) => {
+export const buildColdEmailPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam, language?: string) => {
   const nameInstruction = contactInfo?.name
     ? `\n\nIMPORTANT: The candidate's name is "${contactInfo.name}". Use this exact name in the email sign-off.`
     : ''
-  return `Write a cold email to the hiring manager for:\n\nROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}${nameInstruction}`
+  const langInstruction = language && language !== 'en'
+    ? `\n\nCRITICAL LANGUAGE REQUIREMENT: Generate ALL content in ${language}. Every piece of text in your response must be in ${language}. JSON keys remain in English, but all string values must be in ${language}.`
+    : ''
+  return `Write a cold email to the hiring manager for:\n\nROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}${nameInstruction}${langInstruction}`
 }

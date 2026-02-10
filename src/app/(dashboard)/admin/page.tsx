@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Users, Crown, FileText, MessageSquare, ArrowRight, ShieldOff } from 'lucide-react'
+import { Users, Crown, FileText, MessageSquare, ArrowRight, ShieldOff, GraduationCap } from 'lucide-react'
 
 interface AdminStats {
   totalUsers: number
@@ -14,6 +14,8 @@ interface AdminStats {
   totalDocuments: number
   newMessages: number
   openMessages: number
+  totalCoachMessages: number
+  activeCoachUsers: number
 }
 
 export default function AdminDashboardPage() {
@@ -44,7 +46,7 @@ export default function AdminDashboardPage() {
   if (!stats) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 7 }).map((_, i) => (
+        {Array.from({ length: 9 }).map((_, i) => (
           <Card key={i}>
             <CardContent className="p-6">
               <div className="h-16 animate-pulse bg-gray-100 rounded" />
@@ -63,6 +65,8 @@ export default function AdminDashboardPage() {
     { label: 'Documents', value: stats.totalDocuments, icon: FileText, color: 'text-accent' },
     { label: 'New Messages', value: stats.newMessages, icon: MessageSquare, color: 'text-orange-500' },
     { label: 'Open Messages', value: stats.openMessages, icon: MessageSquare, color: 'text-blue-500' },
+    { label: 'Coach Messages', value: stats.totalCoachMessages, icon: GraduationCap, color: 'text-purple-500' },
+    { label: 'Coach Users', value: stats.activeCoachUsers, icon: GraduationCap, color: 'text-indigo-500' },
   ]
 
   return (
@@ -85,7 +89,7 @@ export default function AdminDashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Link href="/admin/users">
           <Card className="hover:border-brand/30 hover:shadow-md transition-all cursor-pointer group">
             <CardHeader>
@@ -122,6 +126,27 @@ export default function AdminDashboardPage() {
             </CardContent>
           </Card>
         </Link>
+
+        <Link href="/admin/coach-usage">
+          <Card className="hover:border-brand/30 hover:shadow-md transition-all cursor-pointer group">
+            <CardHeader>
+              <CardTitle className="text-base font-[family-name:var(--font-body)] flex items-center justify-between">
+                Coach Usage
+                {stats.activeCoachUsers > 0 && (
+                  <span className="inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-purple-500 text-white text-xs font-medium">
+                    {stats.activeCoachUsers}
+                  </span>
+                )}
+                <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-brand transition-colors" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500">
+                Monitor Career Coach usage by user, country, and message volume. Spot abuse.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <Card>
@@ -137,6 +162,9 @@ export default function AdminDashboardPage() {
           </Link>
           <Link href="/admin/messages?status=new">
             <Button variant="outline" size="sm">View New Messages</Button>
+          </Link>
+          <Link href="/admin/coach-usage">
+            <Button variant="outline" size="sm">View Coach Usage</Button>
           </Link>
         </CardContent>
       </Card>

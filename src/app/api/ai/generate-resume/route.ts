@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       return body
     }
 
-    const { parsedJD, experience, jobDescriptionId, contactInfo } = body
+    const { parsedJD, experience, jobDescriptionId, contactInfo, language } = body
 
     // Atomic usage check + increment (prevents race condition)
     const { data: usageResult } = await supabase.rpc('check_and_increment_usage', {
@@ -73,8 +73,20 @@ export async function POST(request: Request) {
 
     logSecurityEvent('generation_attempt', request, user.id, { route: 'generate-resume' })
 
+    // Fetch profile early (needed for language gating + conditional save)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
+      .single()
+
+    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
+
+    // Language gating: only annual users can use non-English
+    const effectiveLanguage = profile?.plan === 'pro_annual' && language ? language : undefined
+
     let resume = isAIConfigured()
-      ? await generateJSONWithClaude(GENERATE_RESUME_SYSTEM, buildGenerateResumePrompt(parsedJD, experience, contactInfo))
+      ? await generateJSONWithClaude(GENERATE_RESUME_SYSTEM, buildGenerateResumePrompt(parsedJD, experience, contactInfo, effectiveLanguage))
       : JSON.parse(JSON.stringify(mockResumeData))
 
     // Belt-and-suspenders: force-overwrite header with real contact info
@@ -86,15 +98,6 @@ export async function POST(request: Request) {
       if (contactInfo.location) header.location = contactInfo.location
       if (contactInfo.linkedin) header.linkedin = contactInfo.linkedin
     }
-
-    // Check user plan for conditional save
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('plan')
-      .eq('id', user.id)
-      .single()
-
-    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
 
     if (!isPro) {
       // Free user: return content for preview only, no DB save

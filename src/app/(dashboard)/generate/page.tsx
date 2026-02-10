@@ -5,15 +5,20 @@ import { useGenerationStore } from '@/store/generation-store'
 import { useAppStore } from '@/store/app-store'
 import { createClient } from '@/lib/supabase/client'
 import { useUsage } from '@/lib/hooks/use-usage'
+import { isAnnual } from '@/lib/plan-helpers'
 import type { Profile } from '@/types/database'
 import { GenerationStepper } from '@/components/generate/generation-stepper'
 import { JDInput } from '@/components/generate/jd-input'
 import { ExperienceInput } from '@/components/generate/experience-input'
 import { DocumentPreview } from '@/components/generate/document-preview'
+import { TemplateSelector } from '@/components/generate/template-selector'
+import { FontSelector } from '@/components/generate/font-selector'
+import { FontSizeSelector } from '@/components/generate/font-size-selector'
+import { LanguageSelector } from '@/components/generate/language-selector'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, FileText, Mail, Linkedin, MessageSquare, BookOpen, Loader2, Sparkles } from 'lucide-react'
+import { ArrowLeft, FileText, Mail, Linkedin, MessageSquare, BookOpen, Award, Loader2, Sparkles } from 'lucide-react'
 import { DOCUMENT_TYPE_LABELS } from '@/lib/constants'
 import type { DocumentType } from '@/types/database'
 
@@ -23,6 +28,7 @@ const docOptions: { type: DocumentType; icon: React.ElementType; description: st
   { type: 'linkedin_summary', icon: Linkedin, description: 'Keyword-rich LinkedIn About section' },
   { type: 'cold_email', icon: MessageSquare, description: 'Concise email to hiring managers' },
   { type: 'interview_prep', icon: BookOpen, description: 'Questions, answers, and tips' },
+  { type: 'certification_guide', icon: Award, description: 'Certifications roadmap for your target role' },
 ]
 
 const API_ROUTES: Record<string, string> = {
@@ -31,6 +37,7 @@ const API_ROUTES: Record<string, string> = {
   linkedin_summary: '/api/ai/generate-linkedin',
   cold_email: '/api/ai/generate-cold-email',
   interview_prep: '/api/ai/generate-interview-prep',
+  certification_guide: '/api/ai/generate-certification-guide',
 }
 
 export default function GeneratePage() {
@@ -48,10 +55,21 @@ export default function GeneratePage() {
     setIsGenerating,
     isGenerating,
     setError,
+    selectedTemplate,
+    setSelectedTemplate,
+    selectedFont,
+    setSelectedFont,
+    selectedFontSize,
+    setSelectedFontSize,
+    language,
+    setLanguage,
+    customLanguage,
+    setCustomLanguage,
   } = useGenerationStore()
   const { profile, setProfile } = useAppStore()
   const { canGenerate } = useUsage(profile)
   const [generationError, setGenerationError] = useState<string | null>(null)
+  const userIsAnnual = isAnnual(profile)
 
   const refreshProfile = useCallback(async () => {
     const supabase = createClient()
@@ -73,16 +91,30 @@ export default function GeneratePage() {
     setError(null)
     setStep('review')
 
+    // Resolve language for API
+    const effectiveLanguage = language === 'custom' ? customLanguage : language
+
     try {
       const results = await Promise.allSettled(
         selectedDocuments.map(async (type) => {
           const controller = new AbortController()
           const timeout = setTimeout(() => controller.abort(), 120_000) // 2 min timeout
           try {
+            const bodyPayload: Record<string, unknown> = {
+              parsedJD,
+              experience,
+              jobDescriptionId,
+              contactInfo,
+            }
+            // Only send language if annual user selected non-English
+            if (userIsAnnual && effectiveLanguage && effectiveLanguage !== 'en') {
+              bodyPayload.language = effectiveLanguage
+            }
+
             const res = await fetch(API_ROUTES[type], {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ parsedJD, experience, jobDescriptionId, contactInfo }),
+              body: JSON.stringify(bodyPayload),
               signal: controller.signal,
             })
             const data = await res.json()
@@ -182,6 +214,38 @@ export default function GeneratePage() {
           >
             Select All
           </Button>
+
+          {/* Template, Font, and Size selectors (visible when resume selected) */}
+          {selectedDocuments.includes('resume') && (
+            <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <TemplateSelector
+                selected={selectedTemplate}
+                onSelect={setSelectedTemplate}
+                isAnnual={userIsAnnual}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FontSelector
+                  selected={selectedFont}
+                  onSelect={setSelectedFont}
+                  isAnnual={userIsAnnual}
+                />
+                <FontSizeSelector
+                  selected={selectedFontSize}
+                  onSelect={setSelectedFontSize}
+                  isAnnual={userIsAnnual}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Language selector (Pro Annual only) */}
+          <LanguageSelector
+            selected={language}
+            onSelect={setLanguage}
+            customLanguage={customLanguage}
+            onCustomChange={setCustomLanguage}
+            isAnnual={userIsAnnual}
+          />
 
           {generationError && (
             <div className="bg-red-50 text-red-700 text-sm p-3 rounded-xl border border-red-200">

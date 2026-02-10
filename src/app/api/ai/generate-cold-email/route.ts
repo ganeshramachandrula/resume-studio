@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       return body
     }
 
-    const { parsedJD, experience, jobDescriptionId, contactInfo } = body
+    const { parsedJD, experience, jobDescriptionId, contactInfo, language } = body
 
     // Atomic usage check + increment
     const { data: usageResult } = await supabase.rpc('check_and_increment_usage', {
@@ -73,11 +73,7 @@ export async function POST(request: Request) {
 
     logSecurityEvent('generation_attempt', request, user.id, { route: 'generate-cold-email' })
 
-    const coldEmail = isAIConfigured()
-      ? await generateJSONWithClaude(GENERATE_COLD_EMAIL_SYSTEM, buildColdEmailPrompt(parsedJD, experience, contactInfo))
-      : mockColdEmailData
-
-    // Check user plan for conditional save
+    // Fetch profile early (needed for language gating + conditional save)
     const { data: profile } = await supabase
       .from('profiles')
       .select('plan')
@@ -85,6 +81,11 @@ export async function POST(request: Request) {
       .single()
 
     const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
+    const effectiveLanguage = profile?.plan === 'pro_annual' && language ? language : undefined
+
+    const coldEmail = isAIConfigured()
+      ? await generateJSONWithClaude(GENERATE_COLD_EMAIL_SYSTEM, buildColdEmailPrompt(parsedJD, experience, contactInfo, effectiveLanguage))
+      : mockColdEmailData
 
     if (!isPro) {
       return NextResponse.json({ success: true, content: coldEmail, saved: false })

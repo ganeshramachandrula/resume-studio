@@ -58,7 +58,8 @@ interface ContactInfoParam {
 export const buildGenerateResumePrompt = (
   parsedJD: object,
   experience: string,
-  contactInfo?: ContactInfoParam
+  contactInfo?: ContactInfoParam,
+  language?: string,
 ) => {
   const contactBlock = contactInfo
     ? `\nCANDIDATE CONTACT INFO — USE EXACTLY as provided (do NOT invent or change these values):
@@ -84,5 +85,5 @@ Rules:
 - If experience doesn't perfectly match, highlight transferable skills
 - Order experience sections by relevance to the target role, not just chronologically
 - Include ALL keywords from the JD keywords_for_ats list somewhere in the resume
-- Use the EXACT contact info provided above in the header — do NOT hallucinate or change the name, email, phone, location, or LinkedIn`
+- Use the EXACT contact info provided above in the header — do NOT hallucinate or change the name, email, phone, location, or LinkedIn${language && language !== 'en' ? `\n\nCRITICAL LANGUAGE REQUIREMENT: Generate ALL content in ${language}. Every piece of text in your response must be in ${language}. JSON keys remain in English, but all string values must be in ${language}.` : ''}`
 }

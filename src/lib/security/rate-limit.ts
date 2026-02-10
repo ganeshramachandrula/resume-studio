@@ -32,9 +32,11 @@ function ensureCleanup() {
   cleanupInterval = setInterval(() => {
     const now = Date.now()
     for (const [key, entry] of store) {
-      // Remove entries where all timestamps are expired (oldest window)
+      // Parse the window from the key format: "{windowSeconds}:{maxRequests}:{identifier}"
+      const windowSeconds = parseInt(key.split(':')[0], 10) || 300
+      const windowMs = windowSeconds * 1000
       const validTimestamps = entry.timestamps.filter(
-        (ts) => now - ts < 300_000 // Keep entries from the last 5 minutes max
+        (ts) => now - ts < windowMs
       )
       if (validTimestamps.length === 0) {
         store.delete(key)
@@ -102,6 +104,12 @@ export const SUPPORT_RATE_LIMIT: RateLimitConfig = { maxRequests: 3, windowSecon
 /** Admin routes: 60 requests per minute per user */
 export const ADMIN_RATE_LIMIT: RateLimitConfig = { maxRequests: 60, windowSeconds: 60 }
 
+/** Career Coach: 20 requests per minute per user */
+export const COACH_RATE_LIMIT: RateLimitConfig = { maxRequests: 20, windowSeconds: 60 }
+
+/** Career Coach monthly cap: 100 messages per 30 days per user */
+export const COACH_MONTHLY_LIMIT: RateLimitConfig = { maxRequests: 100, windowSeconds: 2_592_000 }
+
 // ── IP Extraction ──────────────────────────────────────────
 
 /**
@@ -127,6 +135,24 @@ export function getClientIP(request: Request): string {
   if (realIp) return realIp.trim()
 
   return 'unknown'
+}
+
+/**
+ * Extracts the client country from request headers.
+ * Vercel sets x-vercel-ip-country, Cloudflare sets cf-ipcountry.
+ */
+export function getClientCountry(request: Request): string | null {
+  const headers = request.headers
+
+  // Vercel
+  const vercelCountry = headers.get('x-vercel-ip-country')
+  if (vercelCountry) return vercelCountry.trim().toUpperCase()
+
+  // Cloudflare
+  const cfCountry = headers.get('cf-ipcountry')
+  if (cfCountry && cfCountry !== 'XX') return cfCountry.trim().toUpperCase()
+
+  return null
 }
 
 /**

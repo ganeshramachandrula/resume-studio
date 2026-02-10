@@ -1,4 +1,4 @@
-import type { ParsedJD, ResumeData, CoverLetterData, LinkedInData, ColdEmailData, InterviewPrepData, ATSScoreData } from '@/types/documents'
+import type { ParsedJD, ResumeData, CoverLetterData, LinkedInData, ColdEmailData, InterviewPrepData, CertificationGuideData, ATSScoreData } from '@/types/documents'
 
 export const mockParsedJD: ParsedJD = {
   role_title: 'Marketing Manager',
@@ -219,6 +219,120 @@ export const mockInterviewPrepData: InterviewPrepData = {
   ],
   salary_negotiation_tips: "With 6+ years of experience and a strong track record of driving measurable results, you're well-positioned to negotiate toward the upper end of the $90K-$120K range. Highlight specific achievements like the 40% brand awareness increase and $3.2M revenue impact as concrete evidence of your value. Consider negotiating beyond base salary — performance bonuses, professional development budget, conference attendance, and flexible work arrangements are all on the table. Research market rates on Glassdoor and Payscale to support your ask with data.",
 }
+
+export const mockCertificationGuideData: CertificationGuideData = {
+  role_title: 'Marketing Manager',
+  certifications: [
+    {
+      name: 'Google Analytics Certification',
+      issuing_body: 'Google',
+      priority: 'must_have',
+      estimated_cost: 'Free',
+      duration: '2-4 weeks',
+      difficulty: 'beginner',
+      platform: 'Google Skillshop',
+      url: 'https://skillshop.withgoogle.com/googleanalytics',
+      why_it_helps: 'Analytics is a core requirement for this role. This certification proves you can track campaign performance, measure ROI, and make data-driven decisions — exactly what Brightwave needs from their Marketing Manager.',
+      salary_impact: '+8% avg salary increase for analytics-certified marketers',
+    },
+    {
+      name: 'HubSpot Inbound Marketing Certification',
+      issuing_body: 'HubSpot Academy',
+      priority: 'must_have',
+      estimated_cost: 'Free',
+      duration: '1-2 weeks',
+      difficulty: 'beginner',
+      platform: 'HubSpot Academy',
+      url: 'https://academy.hubspot.com/courses/inbound-marketing',
+      why_it_helps: 'CRM and marketing automation are preferred skills in this JD. Since HubSpot is already in your toolset, this certification validates your expertise and shows you can build the nurture workflows Brightwave needs to scale.',
+      salary_impact: '+6% avg salary increase; highly valued in consumer brands',
+    },
+    {
+      name: 'Meta Certified Marketing Science Professional',
+      issuing_body: 'Meta',
+      priority: 'strongly_recommended',
+      estimated_cost: '$150',
+      duration: '4-6 weeks',
+      difficulty: 'intermediate',
+      platform: 'Meta Blueprint',
+      url: 'https://www.facebook.com/business/learn/certification',
+      why_it_helps: 'Digital marketing is a core requirement, and social/paid media is central to consumer brand marketing. This certification demonstrates advanced skills in campaign measurement and attribution across Meta platforms.',
+      salary_impact: '+10% avg salary increase for certified digital marketers',
+    },
+    {
+      name: 'Google Ads Certification',
+      issuing_body: 'Google',
+      priority: 'strongly_recommended',
+      estimated_cost: 'Free',
+      duration: '2-3 weeks',
+      difficulty: 'intermediate',
+      platform: 'Google Skillshop',
+      url: 'https://skillshop.withgoogle.com/googleads',
+      why_it_helps: 'SEM is explicitly required in this role. This certification proves you can manage paid search campaigns effectively — critical for optimizing the $2M+ budget Brightwave expects you to manage.',
+      salary_impact: '+7% avg salary increase for SEM-certified professionals',
+    },
+    {
+      name: 'Content Marketing Certification',
+      issuing_body: 'HubSpot Academy',
+      priority: 'strongly_recommended',
+      estimated_cost: 'Free',
+      duration: '1-2 weeks',
+      difficulty: 'beginner',
+      platform: 'HubSpot Academy',
+      url: 'https://academy.hubspot.com/courses/content-marketing',
+      why_it_helps: 'Content strategy is a preferred skill in the JD. This certification fills a gap in your profile and shows you can develop content strategies that drive organic growth — complementing your existing SEO skills.',
+      salary_impact: '+5% avg salary increase; differentiator in consumer brand roles',
+    },
+    {
+      name: 'Tableau Desktop Specialist',
+      issuing_body: 'Tableau (Salesforce)',
+      priority: 'nice_to_have',
+      estimated_cost: '$250',
+      duration: '4-6 weeks',
+      difficulty: 'intermediate',
+      platform: 'Tableau eLearning',
+      url: 'https://www.tableau.com/learn/certification',
+      why_it_helps: 'You already use Tableau, but certification validates your data visualization skills. Being able to build executive dashboards for campaign reporting strengthens your position as a data-driven marketing leader.',
+      salary_impact: '+12% avg salary increase for Tableau-certified professionals',
+    },
+    {
+      name: 'Project Management Professional (PMP)',
+      issuing_body: 'Project Management Institute (PMI)',
+      priority: 'nice_to_have',
+      estimated_cost: '$555',
+      duration: '3-6 months',
+      difficulty: 'advanced',
+      platform: 'PMI.org',
+      url: 'https://www.pmi.org/certifications/project-management-pmp',
+      why_it_helps: 'Managing $2M+ budgets and coordinating cross-functional teams are core requirements. PMP certification demonstrates your ability to lead complex marketing initiatives with structured project management methodology.',
+      salary_impact: '+20% avg salary increase; highly valued for marketing leadership roles',
+    },
+  ],
+  learning_path: [
+    'Start with Google Analytics Certification (free, 2 weeks) — builds your data foundation',
+    'Complete HubSpot Inbound Marketing Certification (free, 1-2 weeks) — validates CRM/automation skills',
+    'Earn Google Ads Certification (free, 2-3 weeks) — strengthens your SEM credentials',
+    'Pursue HubSpot Content Marketing Certification (free, 1-2 weeks) — fills the content strategy gap',
+    'Take Meta Marketing Science Professional exam ($150, 4-6 weeks) — deepens digital marketing expertise',
+    'Consider Tableau Desktop Specialist ($250, 4-6 weeks) — elevates data visualization capabilities',
+    'When ready for leadership roles, pursue PMP ($555, 3-6 months) — demonstrates project management mastery',
+  ],
+  industry_insights: 'In consumer brand marketing, certifications in analytics and digital platforms are increasingly table stakes for mid-to-senior roles. Hiring managers report that certified candidates receive 15-20% more interview callbacks. For marketing managers, the combination of Google Analytics + a CRM certification (HubSpot or Salesforce) creates the strongest signal of data-driven marketing capability, which is the #1 skill gap employers are trying to fill.',
+  summary: 'Focus first on the free certifications (Google Analytics, HubSpot, Google Ads) to strengthen your analytics and digital marketing credentials. These directly address the core requirements in the Brightwave JD and can be completed within 2 months.',
+}
+
+export const mockCoachResponse = `Great question! Here are some thoughts:
+
+**Strategic Positioning**
+When preparing for a career transition, the key is to reframe your existing experience in terms that resonate with your target role. Focus on transferable skills and quantifiable achievements that demonstrate your ability to deliver value.
+
+**Action Steps**
+- Update your resume to highlight cross-functional projects and leadership moments
+- Identify 3-5 target companies and research their current challenges
+- Reach out to 2-3 people in similar roles for informational interviews
+- Practice your "career story" — a 2-minute narrative that connects your past to your desired future
+
+The most successful career transitions I've seen happen when candidates lead with curiosity and demonstrate genuine passion for the new direction. What specific aspect of your transition would you like to explore further?`
 
 export const mockATSScoreData: ATSScoreData = {
   overall_score: 87,

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { DocumentType } from '@/types/database'
 import type { GenerationStep, ContactInfo } from '@/types/generation'
+import type { FontSizeKey } from '@/lib/templates/types'
 
 const emptyContactInfo: ContactInfo = {
   name: '',
@@ -23,6 +24,15 @@ interface GenerationStore {
   isGenerating: boolean
   error: string | null
 
+  // Premium template options (Pro Annual)
+  selectedTemplate: string
+  selectedFont: string
+  selectedFontSize: FontSizeKey
+
+  // Multi-language (Pro Annual)
+  language: string
+  customLanguage: string
+
   setStep: (step: GenerationStep) => void
   setJobDescription: (jd: string) => void
   setParsedJD: (parsed: Record<string, unknown>, id: string) => void
@@ -34,6 +44,11 @@ interface GenerationStore {
   setGeneratedDocument: (type: string, content: Record<string, unknown>) => void
   setIsGenerating: (loading: boolean) => void
   setError: (error: string | null) => void
+  setSelectedTemplate: (template: string) => void
+  setSelectedFont: (font: string) => void
+  setSelectedFontSize: (size: FontSizeKey) => void
+  setLanguage: (lang: string) => void
+  setCustomLanguage: (lang: string) => void
   reset: () => void
 }
 
@@ -49,6 +64,11 @@ const initialState = {
   generatedDocuments: {} as Record<string, Record<string, unknown>>,
   isGenerating: false,
   error: null,
+  selectedTemplate: 'modern',
+  selectedFont: 'helvetica',
+  selectedFontSize: 'medium' as FontSizeKey,
+  language: 'en',
+  customLanguage: '',
 }
 
 export const useGenerationStore = create<GenerationStore>((set) => ({
@@ -76,5 +96,10 @@ export const useGenerationStore = create<GenerationStore>((set) => ({
     })),
   setIsGenerating: (isGenerating) => set({ isGenerating }),
   setError: (error) => set({ error }),
+  setSelectedTemplate: (selectedTemplate) => set({ selectedTemplate }),
+  setSelectedFont: (selectedFont) => set({ selectedFont }),
+  setSelectedFontSize: (selectedFontSize) => set({ selectedFontSize }),
+  setLanguage: (language) => set({ language }),
+  setCustomLanguage: (customLanguage) => set({ customLanguage }),
   reset: () => set(initialState),
 }))

@@ -23,9 +23,12 @@ interface ContactInfoParam {
   linkedin?: string
 }
 
-export const buildCoverLetterPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam) => {
+export const buildCoverLetterPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam, language?: string) => {
   const nameInstruction = contactInfo?.name
     ? `\n\nIMPORTANT: The candidate's name is "${contactInfo.name}". Use this exact name for the sign-off (e.g., "Sincerely,\\n${contactInfo.name}").`
     : ''
-  return `Write a tailored cover letter for:\n\nJOB:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}${nameInstruction}`
+  const langInstruction = language && language !== 'en'
+    ? `\n\nCRITICAL LANGUAGE REQUIREMENT: Generate ALL content in ${language}. Every piece of text in your response must be in ${language}. JSON keys remain in English, but all string values must be in ${language}.`
+    : ''
+  return `Write a tailored cover letter for:\n\nJOB:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}${nameInstruction}${langInstruction}`
 }

@@ -6,12 +6,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAppStore } from '@/store/app-store'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, Users, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, Users, MessageSquare, GraduationCap } from 'lucide-react'
 
 const adminNav = [
   { name: 'Overview', href: '/admin', icon: LayoutDashboard },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Messages', href: '/admin/messages', icon: MessageSquare },
+  { name: 'Coach Usage', href: '/admin/coach-usage', icon: GraduationCap },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -31,7 +31,10 @@ interface ContactInfoParam {
   linkedin?: string
 }
 
-export const buildInterviewPrepPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam) => {
+export const buildInterviewPrepPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam, language?: string) => {
   const nameNote = contactInfo?.name ? ` The candidate's name is "${contactInfo.name}".` : ''
-  return `Generate interview prep for:\n\nROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}\n\nGenerate 3 behavioral, 2 technical, 2 situational, and 5 role_specific_questions with concise model answers (2-3 sentences each) tailored to THIS specific role and candidate.${nameNote} The role_specific_questions should each target a specific required skill, tool, or technology from the job description's required_skills list — ask how the candidate has used or would apply that particular skill. Also include 3 questions_to_ask, 3 company_research_points, and salary_negotiation_tips.`
+  const langInstruction = language && language !== 'en'
+    ? `\n\nCRITICAL LANGUAGE REQUIREMENT: Generate ALL content in ${language}. Every piece of text in your response must be in ${language}. JSON keys remain in English, but all string values must be in ${language}.`
+    : ''
+  return `Generate interview prep for:\n\nROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}\n\nGenerate 3 behavioral, 2 technical, 2 situational, and 5 role_specific_questions with concise model answers (2-3 sentences each) tailored to THIS specific role and candidate.${nameNote} The role_specific_questions should each target a specific required skill, tool, or technology from the job description's required_skills list — ask how the candidate has used or would apply that particular skill. Also include 3 questions_to_ask, 3 company_research_points, and salary_negotiation_tips.${langInstruction}`
 }

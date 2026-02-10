@@ -3,7 +3,7 @@ export const APP_DESCRIPTION = 'Smart career document generation platform'
 
 export const FREE_DOCS_PER_MONTH = 2
 export const MAX_APPLICATIONS_PRO = 10
-export const MAX_DOCS_PER_APPLICATION = 5
+export const MAX_DOCS_PER_APPLICATION = 6
 
 export const DOCUMENT_TYPES = [
   'resume',
@@ -11,6 +11,7 @@ export const DOCUMENT_TYPES = [
   'linkedin_summary',
   'cold_email',
   'interview_prep',
+  'certification_guide',
 ] as const
 
 export const DOCUMENT_TYPE_LABELS: Record<string, string> = {
@@ -19,6 +20,7 @@ export const DOCUMENT_TYPE_LABELS: Record<string, string> = {
   linkedin_summary: 'LinkedIn Summary',
   cold_email: 'Cold Email',
   interview_prep: 'Interview Prep',
+  certification_guide: 'Certification Guide',
 }
 
 export const JOB_STATUSES = [

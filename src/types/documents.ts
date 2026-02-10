@@ -88,6 +88,27 @@ export interface InterviewPrepData {
   salary_negotiation_tips: string
 }
 
+export interface Certification {
+  name: string
+  issuing_body: string
+  priority: 'must_have' | 'strongly_recommended' | 'nice_to_have'
+  estimated_cost: string
+  duration: string
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  platform: string
+  url: string
+  why_it_helps: string
+  salary_impact: string
+}
+
+export interface CertificationGuideData {
+  role_title: string
+  certifications: Certification[]
+  learning_path: string[]
+  industry_insights: string
+  summary: string
+}
+
 export interface ATSScoreData {
   overall_score: number
   keyword_match: {

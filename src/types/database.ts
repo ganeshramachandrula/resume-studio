@@ -6,6 +6,7 @@ export type DocumentType =
   | 'linkedin_summary'
   | 'cold_email'
   | 'interview_prep'
+  | 'certification_guide'
 
 export type JobStatus =
   | 'saved'
@@ -30,6 +31,8 @@ export interface Profile {
   stripe_subscription_id: string | null
   usage_count: number
   saved_applications_count: number
+  coach_messages_count: number
+  country: string | null
   usage_reset_at: string
   role: UserRole
   is_disabled: boolean
