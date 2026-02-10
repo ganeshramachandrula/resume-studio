@@ -18,8 +18,8 @@ export interface ResumeExperience {
 }
 
 export interface ResumeSkills {
-  technical: string[]
-  soft: string[]
+  core: string[]
+  interpersonal: string[]
   tools: string[]
 }
 
@@ -82,6 +82,7 @@ export interface InterviewPrepData {
   behavioral_questions: InterviewQuestion[]
   technical_questions: InterviewQuestion[]
   situational_questions: InterviewQuestion[]
+  role_specific_questions: InterviewQuestion[]
   questions_to_ask: QuestionToAsk[]
   company_research_points: string[]
   salary_negotiation_tips: string

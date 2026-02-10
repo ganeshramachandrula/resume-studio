@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { ArrowLeft, Download, Copy, Check, Loader2, Info, HelpCircle } from 'lucide-react'
+import { ArrowLeft, Download, Copy, Check, Loader2, Info, HelpCircle, Pencil, Eye, Wrench } from 'lucide-react'
 import { useGenerationStore } from '@/store/generation-store'
 import { useAppStore } from '@/store/app-store'
 import { DOCUMENT_TYPE_LABELS } from '@/lib/constants'
@@ -19,6 +19,7 @@ import type {
 } from '@/types/documents'
 import { ATSScoreDisplay } from './ats-score-display'
 import { PDFGenerator } from '@/components/pdf/pdf-generator'
+import { ResumeEditor } from './resume-editor'
 
 function ResumePreview({ data }: { data: ResumeData }) {
   return (
@@ -27,7 +28,7 @@ function ResumePreview({ data }: { data: ResumeData }) {
         <h2 className="text-xl font-bold text-gray-900">{data.header.name}</h2>
         <p className="text-brand font-medium">{data.header.title}</p>
         <p className="text-gray-500 text-xs mt-1">
-          {[data.header.email, data.header.phone, data.header.location].filter(Boolean).join(' | ')}
+          {[data.header.email, data.header.phone, data.header.location, data.header.linkedin, data.header.website].filter(Boolean).join(' | ')}
         </p>
       </div>
       <div>
@@ -56,7 +57,7 @@ function ResumePreview({ data }: { data: ResumeData }) {
       <div>
         <h3 className="font-semibold text-gray-900 mb-2 uppercase text-xs tracking-wider">Skills</h3>
         <div className="flex flex-wrap gap-1.5">
-          {[...(data.skills?.technical || []), ...(data.skills?.tools || [])].map((s) => (
+          {[...(data.skills?.core || []), ...(data.skills?.tools || [])].map((s) => (
             <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
           ))}
         </div>
@@ -125,6 +126,7 @@ function InterviewPrepPreview({ data }: { data: InterviewPrepData }) {
         { title: 'Behavioral Questions', items: data.behavioral_questions },
         { title: 'Technical Questions', items: data.technical_questions },
         { title: 'Situational Questions', items: data.situational_questions },
+        { title: 'Role-Specific Questions', items: data.role_specific_questions },
       ].map((section) => (
         <div key={section.title}>
           <h3 className="font-semibold text-gray-900 mb-3">{section.title}</h3>
@@ -172,6 +174,7 @@ function documentToText(type: DocumentType, content: Record<string, unknown>, is
       { title: 'Behavioral Questions', items: d.behavioral_questions },
       { title: 'Technical Questions', items: d.technical_questions },
       { title: 'Situational Questions', items: d.situational_questions },
+      { title: 'Role-Specific Questions', items: d.role_specific_questions },
     ]
     for (const s of sections) {
       text += `## ${s.title}\n\n`
@@ -229,11 +232,14 @@ function DownloadTextButton({ type, content, isFree }: { type: DocumentType; con
 }
 
 export function DocumentPreview() {
-  const { generatedDocuments, parsedJD, setStep, isGenerating, error } = useGenerationStore()
+  const { generatedDocuments, parsedJD, setStep, isGenerating, error, setGeneratedDocument } = useGenerationStore()
   const { profile } = useAppStore()
   const [atsLoading, setAtsLoading] = useState(false)
   const [atsScore, setAtsScore] = useState<Record<string, unknown> | null>(null)
   const [atsError, setAtsError] = useState<string | null>(null)
+  const [editMode, setEditMode] = useState(false)
+  const [isFixing, setIsFixing] = useState(false)
+  const [fixApplied, setFixApplied] = useState(false)
 
   const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
   const isFree = !isPro
@@ -260,6 +266,65 @@ export function DocumentPreview() {
       setAtsError('Failed to connect. Please try again.')
     }
     setAtsLoading(false)
+  }
+
+  const handleFixIt = async () => {
+    if (!generatedDocuments.resume || !atsScore) return
+    setIsFixing(true)
+    try {
+      const ats = atsScore as unknown as import('@/types/documents').ATSScoreData
+      const missingKeywords = ats.keyword_match?.missing || []
+      const missingSkills = ats.skills_coverage?.missing || []
+      // Deduplicate (case-insensitive)
+      const seen = new Set<string>()
+      const allMissing: string[] = []
+      for (const item of [...missingKeywords, ...missingSkills]) {
+        const lower = item.toLowerCase()
+        if (!seen.has(lower)) {
+          seen.add(lower)
+          allMissing.push(item)
+        }
+      }
+      if (allMissing.length === 0) {
+        setIsFixing(false)
+        return
+      }
+      const resume = generatedDocuments.resume as unknown as ResumeData
+      const existingCore = new Set(resume.skills.core.map(s => s.toLowerCase()))
+      const existingAts = new Set((resume.ats_keywords_used || []).map(s => s.toLowerCase()))
+      const newCore = allMissing.filter(s => !existingCore.has(s.toLowerCase()))
+      const newAts = allMissing.filter(s => !existingAts.has(s.toLowerCase()))
+      const updatedResume: ResumeData = {
+        ...resume,
+        skills: {
+          ...resume.skills,
+          core: [...resume.skills.core, ...newCore],
+        },
+        ats_keywords_used: [...(resume.ats_keywords_used || []), ...newAts.map(s => s.toLowerCase())],
+      }
+      setGeneratedDocument('resume', updatedResume as unknown as Record<string, unknown>)
+      setAtsScore(null)
+      setFixApplied(true)
+      // Auto re-run ATS
+      setAtsLoading(true)
+      setAtsError(null)
+      const res = await fetch('/api/ai/ats-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resumeJSON: updatedResume, parsedJD }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setAtsScore(data.data)
+      } else {
+        setAtsError(data.error || 'Failed to recalculate ATS score')
+      }
+      setAtsLoading(false)
+    } catch {
+      setAtsError('Failed to fix and re-run ATS score.')
+      setAtsLoading(false)
+    }
+    setIsFixing(false)
   }
 
   if (isGenerating) {
@@ -339,7 +404,20 @@ export function DocumentPreview() {
         </div>
       )}
 
-      {atsScore && <ATSScoreDisplay data={atsScore} />}
+      {atsScore && (
+        <ATSScoreDisplay
+          data={atsScore}
+          onFixIt={handleFixIt}
+          isFixing={isFixing}
+        />
+      )}
+
+      {fixApplied && (
+        <div className="flex items-start gap-3 bg-green-50 text-green-800 text-sm p-4 rounded-xl border border-green-200">
+          <Wrench className="h-5 w-5 shrink-0 mt-0.5" />
+          <p>Missing skills have been added to your resume. The ATS score above reflects the updated version.</p>
+        </div>
+      )}
 
       <Tabs defaultValue={documentTypes[0]}>
         <TabsList>
@@ -355,24 +433,51 @@ export function DocumentPreview() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="font-[family-name:var(--font-body)]">{DOCUMENT_TYPE_LABELS[type]}</CardTitle>
                 <div className="flex gap-2">
-                  {type === 'resume' ? (
+                  {type === 'resume' && (
+                    <Button
+                      size="sm"
+                      variant={editMode ? 'default' : 'outline'}
+                      onClick={() => setEditMode(!editMode)}
+                    >
+                      {editMode ? (
+                        <><Eye className="h-4 w-4" /> Preview</>
+                      ) : (
+                        <><Pencil className="h-4 w-4" /> Edit</>
+                      )}
+                    </Button>
+                  )}
+                  {type === 'resume' && !editMode ? (
                     <PDFGenerator
                       data={generatedDocuments[type] as unknown as ResumeData}
                       fileName={`resume_${parsedJD?.company_name || 'document'}.pdf`.replace(/\s+/g, '_').toLowerCase()}
                       showWatermark={isFree}
                     />
-                  ) : (
+                  ) : type !== 'resume' ? (
                     <DownloadTextButton type={type} content={generatedDocuments[type]} isFree={isFree} />
+                  ) : null}
+                  {!editMode && (
+                    <CopyButton type={type} content={generatedDocuments[type]} isFree={isFree} />
                   )}
-                  <CopyButton type={type} content={generatedDocuments[type]} isFree={isFree} />
                 </div>
               </CardHeader>
               <CardContent>
-                {type === 'resume' && <ResumePreview data={generatedDocuments[type] as unknown as ResumeData} />}
-                {type === 'cover_letter' && <CoverLetterPreview data={generatedDocuments[type] as unknown as CoverLetterData} />}
-                {type === 'linkedin_summary' && <LinkedInPreview data={generatedDocuments[type] as unknown as LinkedInData} />}
-                {type === 'cold_email' && <ColdEmailPreview data={generatedDocuments[type] as unknown as ColdEmailData} />}
-                {type === 'interview_prep' && <InterviewPrepPreview data={generatedDocuments[type] as unknown as InterviewPrepData} />}
+                {type === 'resume' && editMode ? (
+                  <ResumeEditor
+                    data={generatedDocuments[type] as unknown as ResumeData}
+                    onSave={(updated) => {
+                      setGeneratedDocument(type, updated as unknown as Record<string, unknown>)
+                      setEditMode(false)
+                    }}
+                  />
+                ) : (
+                  <>
+                    {type === 'resume' && <ResumePreview data={generatedDocuments[type] as unknown as ResumeData} />}
+                    {type === 'cover_letter' && <CoverLetterPreview data={generatedDocuments[type] as unknown as CoverLetterData} />}
+                    {type === 'linkedin_summary' && <LinkedInPreview data={generatedDocuments[type] as unknown as LinkedInData} />}
+                    {type === 'cold_email' && <ColdEmailPreview data={generatedDocuments[type] as unknown as ColdEmailData} />}
+                    {type === 'interview_prep' && <InterviewPrepPreview data={generatedDocuments[type] as unknown as InterviewPrepData} />}
+                  </>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

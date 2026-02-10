@@ -21,7 +21,7 @@ DECLARE
   v_reset_date TIMESTAMPTZ;
 BEGIN
   -- Lock the row to prevent concurrent requests from racing
-  SELECT plan, usage_count, usage_reset_date
+  SELECT plan, usage_count, usage_reset_at
   INTO v_plan, v_usage, v_reset_date
   FROM profiles
   WHERE id = user_uuid
@@ -36,7 +36,7 @@ BEGIN
     v_usage := 0;
     UPDATE profiles
     SET usage_count = 0,
-        usage_reset_date = date_trunc('month', NOW()) + INTERVAL '1 month'
+        usage_reset_at = date_trunc('month', NOW()) + INTERVAL '1 month'
     WHERE id = user_uuid;
   END IF;
 

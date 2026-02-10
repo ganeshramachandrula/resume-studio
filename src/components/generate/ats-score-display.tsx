@@ -1,13 +1,21 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { CheckCircle2, XCircle, HelpCircle } from 'lucide-react'
+import { CheckCircle2, XCircle, HelpCircle, Wrench, Loader2 } from 'lucide-react'
 import type { ATSScoreData } from '@/types/documents'
 
-export function ATSScoreDisplay({ data }: { data: Record<string, unknown> }) {
+interface ATSScoreDisplayProps {
+  data: Record<string, unknown>
+  onFixIt?: () => void
+  isFixing?: boolean
+}
+
+export function ATSScoreDisplay({ data, onFixIt, isFixing }: ATSScoreDisplayProps) {
   const ats = data as unknown as ATSScoreData
+  const hasMissing = (ats.keyword_match?.missing?.length || 0) + (ats.skills_coverage?.missing?.length || 0) > 0
 
   return (
     <Card className="border-accent/30">
@@ -48,6 +56,21 @@ export function ATSScoreDisplay({ data }: { data: Record<string, unknown> }) {
               </Badge>
             ))}
           </div>
+          {hasMissing && onFixIt && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="mt-3"
+              onClick={onFixIt}
+              disabled={isFixing}
+            >
+              {isFixing ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> Fixing...</>
+              ) : (
+                <><Wrench className="h-4 w-4" /> Fix It — Add Missing Skills</>
+              )}
+            </Button>
+          )}
         </div>
 
         {/* Skills Coverage */}

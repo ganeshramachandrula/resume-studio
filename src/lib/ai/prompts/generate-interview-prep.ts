@@ -13,6 +13,9 @@ Respond with ONLY a JSON object:
   "situational_questions": [
     { "question": "string", "why_asked": "string", "model_answer": "string (2-3 sentences)", "tips": "string" }
   ],
+  "role_specific_questions": [
+    { "question": "string", "why_asked": "string", "model_answer": "string (2-3 sentences)", "tips": "string" }
+  ],
   "questions_to_ask": [
     { "question": "string", "why_impressive": "string" }
   ],
@@ -20,5 +23,15 @@ Respond with ONLY a JSON object:
   "salary_negotiation_tips": "string"
 }`
 
-export const buildInterviewPrepPrompt = (parsedJD: object, experience: string) =>
-  `Generate interview prep for:\n\nROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}\n\nGenerate 3 behavioral, 3 technical, 2 situational questions with concise model answers (2-3 sentences each) tailored to THIS specific role and candidate. Also include 3 questions_to_ask, 3 company_research_points, and salary_negotiation_tips.`
+interface ContactInfoParam {
+  name: string
+  email: string
+  phone?: string
+  location?: string
+  linkedin?: string
+}
+
+export const buildInterviewPrepPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam) => {
+  const nameNote = contactInfo?.name ? ` The candidate's name is "${contactInfo.name}".` : ''
+  return `Generate interview prep for:\n\nROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}\n\nGenerate 3 behavioral, 2 technical, 2 situational, and 5 role_specific_questions with concise model answers (2-3 sentences each) tailored to THIS specific role and candidate.${nameNote} The role_specific_questions should each target a specific required skill, tool, or technology from the job description's required_skills list — ask how the candidate has used or would apply that particular skill. Also include 3 questions_to_ask, 3 company_research_points, and salary_negotiation_tips.`
+}

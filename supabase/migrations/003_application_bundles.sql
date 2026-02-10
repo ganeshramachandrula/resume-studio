@@ -92,7 +92,7 @@ BEGIN
 
   -- Insert the document
   INSERT INTO documents (user_id, job_description_id, type, title, content, template)
-  VALUES (p_user_id, p_job_description_id, p_type, p_title, p_content, p_template)
+  VALUES (p_user_id, p_job_description_id, p_type, p_title, p_content, COALESCE(p_template, 'modern'))
   RETURNING * INTO v_doc_row;
 
   -- If this is the first doc for this JD, increment the application counter
