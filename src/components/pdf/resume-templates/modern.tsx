@@ -144,7 +144,7 @@ export function ModernTemplate({ data, watermark }: { data: ResumeData; watermar
           {/* Skills */}
           <View style={styles.sidebarSection}>
             <Text style={styles.sidebarSectionTitle}>Skills</Text>
-            {data.skills?.technical?.map((s, i) => (
+            {data.skills?.core?.map((s, i) => (
               <Text key={i} style={styles.skillItem}>
                 {s}
               </Text>

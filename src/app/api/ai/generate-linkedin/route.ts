@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       return body
     }
 
-    const { parsedJD, experience, jobDescriptionId } = body
+    const { parsedJD, experience, jobDescriptionId, contactInfo } = body
 
     // Atomic usage check + increment
     const { data: usageResult } = await supabase.rpc('check_and_increment_usage', {
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
     logSecurityEvent('generation_attempt', request, user.id, { route: 'generate-linkedin' })
 
     const linkedin = isAIConfigured()
-      ? await generateJSONWithClaude(GENERATE_LINKEDIN_SYSTEM, buildLinkedInPrompt(parsedJD, experience))
+      ? await generateJSONWithClaude(GENERATE_LINKEDIN_SYSTEM, buildLinkedInPrompt(parsedJD, experience, contactInfo))
       : mockLinkedInData
 
     // Check user plan for conditional save

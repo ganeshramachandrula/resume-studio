@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       return body
     }
 
-    const { parsedJD, experience, jobDescriptionId } = body
+    const { parsedJD, experience, jobDescriptionId, contactInfo } = body
 
     // Atomic usage check + increment
     const { data: usageResult } = await supabase.rpc('check_and_increment_usage', {
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
     logSecurityEvent('generation_attempt', request, user.id, { route: 'generate-interview-prep' })
 
     const interviewPrep = isAIConfigured()
-      ? await generateJSONWithClaude(GENERATE_INTERVIEW_PREP_SYSTEM, buildInterviewPrepPrompt(parsedJD, experience), 4096)
+      ? await generateJSONWithClaude(GENERATE_INTERVIEW_PREP_SYSTEM, buildInterviewPrepPrompt(parsedJD, experience, contactInfo), 4096)
       : mockInterviewPrepData
 
     // Check user plan for conditional save

@@ -144,7 +144,7 @@ export function MinimalTemplate({ data, watermark }: { data: ResumeData; waterma
           <Text style={styles.sectionTitle}>Skills</Text>
           <Text style={styles.skillsText}>
             {[
-              ...(data.skills?.technical || []),
+              ...(data.skills?.core || []),
               ...(data.skills?.tools || []),
             ].join('  ·  ')}
           </Text>

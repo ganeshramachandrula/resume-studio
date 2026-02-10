@@ -179,11 +179,11 @@ export function ClassicTemplate({ data, watermark }: { data: ResumeData; waterma
         {/* Skills */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Skills</Text>
-          {data.skills?.technical?.length > 0 && (
+          {data.skills?.core?.length > 0 && (
             <View style={styles.skillRow}>
-              <Text style={styles.skillLabel}>Technical:</Text>
+              <Text style={styles.skillLabel}>Core Skills:</Text>
               <Text style={styles.skillValue}>
-                {data.skills.technical.join(', ')}
+                {data.skills.core.join(', ')}
               </Text>
             </View>
           )}
@@ -195,11 +195,11 @@ export function ClassicTemplate({ data, watermark }: { data: ResumeData; waterma
               </Text>
             </View>
           )}
-          {data.skills?.soft?.length > 0 && (
+          {data.skills?.interpersonal?.length > 0 && (
             <View style={styles.skillRow}>
-              <Text style={styles.skillLabel}>Soft Skills:</Text>
+              <Text style={styles.skillLabel}>Interpersonal:</Text>
               <Text style={styles.skillValue}>
-                {data.skills.soft.join(', ')}
+                {data.skills.interpersonal.join(', ')}
               </Text>
             </View>
           )}

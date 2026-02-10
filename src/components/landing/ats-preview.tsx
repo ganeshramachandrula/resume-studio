@@ -111,7 +111,7 @@ export function ATSPreview() {
                 <div className="flex items-start gap-3">
                   <XCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-white text-sm font-medium">Missing: CI/CD, Kubernetes</p>
+                    <p className="text-white text-sm font-medium">Missing: CRM, Market Analysis</p>
                     <p className="text-gray-500 text-xs">Add these keywords to improve your score</p>
                   </div>
                 </div>

@@ -29,9 +29,9 @@ You MUST respond with ONLY a JSON object (no markdown, no explanation) with this
     }
   ],
   "skills": {
-    "technical": ["skill1", "skill2"],
-    "soft": ["skill1", "skill2"],
-    "tools": ["tool1", "tool2"]
+    "core": ["industry-specific professional skills"],
+    "interpersonal": ["communication, leadership, etc."],
+    "tools": ["software, platforms, equipment"]
   },
   "education": [
     {
@@ -47,14 +47,33 @@ You MUST respond with ONLY a JSON object (no markdown, no explanation) with this
   "ats_keywords_used": ["keyword1", "keyword2"]
 }`
 
+interface ContactInfoParam {
+  name: string
+  email: string
+  phone?: string
+  location?: string
+  linkedin?: string
+}
+
 export const buildGenerateResumePrompt = (
   parsedJD: object,
-  experience: string
-) => `Generate a tailored, ATS-optimized resume based on:
+  experience: string,
+  contactInfo?: ContactInfoParam
+) => {
+  const contactBlock = contactInfo
+    ? `\nCANDIDATE CONTACT INFO — USE EXACTLY as provided (do NOT invent or change these values):
+- Name: ${contactInfo.name}
+- Email: ${contactInfo.email}
+- Phone: ${contactInfo.phone || ''}
+- Location: ${contactInfo.location || ''}
+- LinkedIn: ${contactInfo.linkedin || ''}\n`
+    : ''
+
+  return `Generate a tailored, ATS-optimized resume based on:
 
 JOB DESCRIPTION (parsed):
 ${JSON.stringify(parsedJD, null, 2)}
-
+${contactBlock}
 CANDIDATE EXPERIENCE:
 ${experience}
 
@@ -64,4 +83,6 @@ Rules:
 - Quantify achievements (%, $, numbers)
 - If experience doesn't perfectly match, highlight transferable skills
 - Order experience sections by relevance to the target role, not just chronologically
-- Include ALL keywords from the JD keywords_for_ats list somewhere in the resume`
+- Include ALL keywords from the JD keywords_for_ats list somewhere in the resume
+- Use the EXACT contact info provided above in the header — do NOT hallucinate or change the name, email, phone, location, or LinkedIn`
+}

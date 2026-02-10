@@ -43,6 +43,7 @@ export default function GeneratePage() {
     parsedJD,
     jobDescriptionId,
     experience,
+    contactInfo,
     setGeneratedDocument,
     setIsGenerating,
     isGenerating,
@@ -81,7 +82,7 @@ export default function GeneratePage() {
             const res = await fetch(API_ROUTES[type], {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ parsedJD, experience, jobDescriptionId }),
+              body: JSON.stringify({ parsedJD, experience, jobDescriptionId, contactInfo }),
               signal: controller.signal,
             })
             const data = await res.json()

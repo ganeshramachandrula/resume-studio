@@ -14,5 +14,17 @@ Respond with ONLY a JSON object:
   "follow_up_body": "string (sent if no reply after 5 days)"
 }`
 
-export const buildColdEmailPrompt = (parsedJD: object, experience: string) =>
-  `Write a cold email to the hiring manager for:\n\nROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}`
+interface ContactInfoParam {
+  name: string
+  email: string
+  phone?: string
+  location?: string
+  linkedin?: string
+}
+
+export const buildColdEmailPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam) => {
+  const nameInstruction = contactInfo?.name
+    ? `\n\nIMPORTANT: The candidate's name is "${contactInfo.name}". Use this exact name in the email sign-off.`
+    : ''
+  return `Write a cold email to the hiring manager for:\n\nROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}${nameInstruction}`
+}

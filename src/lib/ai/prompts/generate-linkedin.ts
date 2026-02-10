@@ -14,5 +14,17 @@ Respond with ONLY a JSON object:
   "suggested_hashtags": ["#hashtag1", "#hashtag2"]
 }`
 
-export const buildLinkedInPrompt = (parsedJD: object, experience: string) =>
-  `Optimize a LinkedIn profile for someone targeting this type of role:\n\nTARGET ROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nEXPERIENCE:\n${experience}`
+interface ContactInfoParam {
+  name: string
+  email: string
+  phone?: string
+  location?: string
+  linkedin?: string
+}
+
+export const buildLinkedInPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam) => {
+  const nameInstruction = contactInfo?.name
+    ? `\n\nIMPORTANT: The candidate's name is "${contactInfo.name}". Write the summary in first person as this person.`
+    : ''
+  return `Optimize a LinkedIn profile for someone targeting this type of role:\n\nTARGET ROLE:\n${JSON.stringify(parsedJD, null, 2)}\n\nEXPERIENCE:\n${experience}${nameInstruction}`
+}

@@ -1,6 +1,14 @@
 import { create } from 'zustand'
 import type { DocumentType } from '@/types/database'
-import type { GenerationStep } from '@/types/generation'
+import type { GenerationStep, ContactInfo } from '@/types/generation'
+
+const emptyContactInfo: ContactInfo = {
+  name: '',
+  email: '',
+  phone: '',
+  location: '',
+  linkedin: '',
+}
 
 interface GenerationStore {
   step: GenerationStep
@@ -9,6 +17,7 @@ interface GenerationStore {
   jobDescriptionId: string | null
   experience: string
   experienceId: string | null
+  contactInfo: ContactInfo
   selectedDocuments: DocumentType[]
   generatedDocuments: Record<string, Record<string, unknown>>
   isGenerating: boolean
@@ -19,6 +28,7 @@ interface GenerationStore {
   setParsedJD: (parsed: Record<string, unknown>, id: string) => void
   setExperience: (exp: string) => void
   setExperienceId: (id: string) => void
+  setContactInfo: (info: Partial<ContactInfo>) => void
   toggleDocument: (type: DocumentType) => void
   setSelectedDocuments: (docs: DocumentType[]) => void
   setGeneratedDocument: (type: string, content: Record<string, unknown>) => void
@@ -34,6 +44,7 @@ const initialState = {
   jobDescriptionId: null,
   experience: '',
   experienceId: null,
+  contactInfo: emptyContactInfo,
   selectedDocuments: [] as DocumentType[],
   generatedDocuments: {} as Record<string, Record<string, unknown>>,
   isGenerating: false,
@@ -48,6 +59,10 @@ export const useGenerationStore = create<GenerationStore>((set) => ({
   setParsedJD: (parsedJD, jobDescriptionId) => set({ parsedJD, jobDescriptionId }),
   setExperience: (experience) => set({ experience }),
   setExperienceId: (experienceId) => set({ experienceId }),
+  setContactInfo: (info) =>
+    set((state) => ({
+      contactInfo: { ...state.contactInfo, ...info },
+    })),
   toggleDocument: (type) =>
     set((state) => ({
       selectedDocuments: state.selectedDocuments.includes(type)

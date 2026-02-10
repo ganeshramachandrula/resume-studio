@@ -15,5 +15,17 @@ Respond with ONLY a JSON object:
   "tone": "professional | enthusiastic | confident"
 }`
 
-export const buildCoverLetterPrompt = (parsedJD: object, experience: string) =>
-  `Write a tailored cover letter for:\n\nJOB:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}`
+interface ContactInfoParam {
+  name: string
+  email: string
+  phone?: string
+  location?: string
+  linkedin?: string
+}
+
+export const buildCoverLetterPrompt = (parsedJD: object, experience: string, contactInfo?: ContactInfoParam) => {
+  const nameInstruction = contactInfo?.name
+    ? `\n\nIMPORTANT: The candidate's name is "${contactInfo.name}". Use this exact name for the sign-off (e.g., "Sincerely,\\n${contactInfo.name}").`
+    : ''
+  return `Write a tailored cover letter for:\n\nJOB:\n${JSON.stringify(parsedJD, null, 2)}\n\nCANDIDATE:\n${experience}${nameInstruction}`
+}

@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       return body
     }
 
-    const { parsedJD, experience, jobDescriptionId } = body
+    const { parsedJD, experience, jobDescriptionId, contactInfo } = body
 
     // Atomic usage check + increment (prevents race condition)
     const { data: usageResult } = await supabase.rpc('check_and_increment_usage', {
@@ -73,9 +73,19 @@ export async function POST(request: Request) {
 
     logSecurityEvent('generation_attempt', request, user.id, { route: 'generate-resume' })
 
-    const resume = isAIConfigured()
-      ? await generateJSONWithClaude(GENERATE_RESUME_SYSTEM, buildGenerateResumePrompt(parsedJD, experience))
-      : mockResumeData
+    let resume = isAIConfigured()
+      ? await generateJSONWithClaude(GENERATE_RESUME_SYSTEM, buildGenerateResumePrompt(parsedJD, experience, contactInfo))
+      : JSON.parse(JSON.stringify(mockResumeData))
+
+    // Belt-and-suspenders: force-overwrite header with real contact info
+    if (contactInfo && resume && typeof resume === 'object' && 'header' in resume) {
+      const header = (resume as Record<string, unknown>).header as Record<string, unknown>
+      if (contactInfo.name) header.name = contactInfo.name
+      if (contactInfo.email) header.email = contactInfo.email
+      if (contactInfo.phone) header.phone = contactInfo.phone
+      if (contactInfo.location) header.location = contactInfo.location
+      if (contactInfo.linkedin) header.linkedin = contactInfo.linkedin
+    }
 
     // Check user plan for conditional save
     const { data: profile } = await supabase
