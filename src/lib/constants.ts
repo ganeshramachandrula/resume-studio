@@ -39,6 +39,25 @@ export const JOB_STATUS_LABELS: Record<string, string> = {
   withdrawn: 'Withdrawn',
 }
 
+// Support
+export const SUPPORT_CATEGORIES = ['bug', 'feature', 'billing', 'general'] as const
+export const SUPPORT_STATUSES = ['new', 'in_progress', 'resolved', 'closed'] as const
+export const MAX_SUPPORT_MESSAGE_LENGTH = 5000
+
+export const SUPPORT_CATEGORY_LABELS: Record<string, string> = {
+  bug: 'Bug Report',
+  feature: 'Feature Request',
+  billing: 'Billing',
+  general: 'General',
+}
+
+export const SUPPORT_STATUS_LABELS: Record<string, string> = {
+  new: 'New',
+  in_progress: 'In Progress',
+  resolved: 'Resolved',
+  closed: 'Closed',
+}
+
 export const COLORS = {
   brand: '#1A56DB',
   brandLight: '#3B82F6',

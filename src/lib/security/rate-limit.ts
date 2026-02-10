@@ -96,6 +96,12 @@ export const STRIPE_RATE_LIMIT: RateLimitConfig = { maxRequests: 10, windowSecon
 /** General: 60 requests per minute per IP */
 export const GENERAL_RATE_LIMIT: RateLimitConfig = { maxRequests: 60, windowSeconds: 60 }
 
+/** Support contact form: 3 requests per 5 minutes per IP */
+export const SUPPORT_RATE_LIMIT: RateLimitConfig = { maxRequests: 3, windowSeconds: 300 }
+
+/** Admin routes: 60 requests per minute per user */
+export const ADMIN_RATE_LIMIT: RateLimitConfig = { maxRequests: 60, windowSeconds: 60 }
+
 // ── IP Extraction ──────────────────────────────────────────
 
 /**

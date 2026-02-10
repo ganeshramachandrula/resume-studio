@@ -15,6 +15,11 @@ export type JobStatus =
   | 'rejected'
   | 'withdrawn'
 
+export type UserRole = 'user' | 'admin'
+
+export type SupportCategory = 'bug' | 'feature' | 'billing' | 'general'
+export type SupportStatus = 'new' | 'in_progress' | 'resolved' | 'closed'
+
 export interface Profile {
   id: string
   email: string
@@ -26,6 +31,22 @@ export interface Profile {
   usage_count: number
   saved_applications_count: number
   usage_reset_at: string
+  role: UserRole
+  is_disabled: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface SupportMessage {
+  id: string
+  name: string | null
+  email: string
+  subject: string
+  message: string
+  category: SupportCategory
+  status: SupportStatus
+  user_id: string | null
+  admin_notes: string | null
   created_at: string
   updated_at: string
 }

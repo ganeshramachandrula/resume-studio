@@ -16,6 +16,11 @@ export type SecurityEventType =
   | 'email_not_verified'
   | 'validation_error'
   | 'delete_application'
+  | 'support_message_sent'
+  | 'admin_user_update'
+  | 'admin_user_delete'
+  | 'admin_message_update'
+  | 'admin_bootstrap'
 
 /**
  * Returns a Supabase admin client (service role) for writing security events.

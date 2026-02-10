@@ -47,6 +47,33 @@ export const createCheckoutSchema = z.object({
     .max(100, 'Invalid price ID'),
 })
 
+export const supportContactSchema = z.object({
+  name: z.string().max(200, 'Name too long').optional().default(''),
+  email: z.string().email('Invalid email').max(300, 'Email too long'),
+  subject: z
+    .string()
+    .min(3, 'Subject must be at least 3 characters')
+    .max(200, 'Subject must be under 200 characters'),
+  message: z
+    .string()
+    .min(10, 'Message must be at least 10 characters')
+    .max(5000, 'Message must be under 5,000 characters'),
+  category: z.enum(['bug', 'feature', 'billing', 'general']).default('general'),
+})
+
+export const adminUserUpdateSchema = z.object({
+  plan: z.enum(['free', 'pro_monthly', 'pro_annual']).optional(),
+  usage_count: z.number().int().min(0).optional(),
+  role: z.enum(['user', 'admin']).optional(),
+  is_disabled: z.boolean().optional(),
+  saved_applications_count: z.number().int().min(0).optional(),
+})
+
+export const adminMessageUpdateSchema = z.object({
+  status: z.enum(['new', 'in_progress', 'resolved', 'closed']).optional(),
+  admin_notes: z.string().max(5000, 'Notes too long').optional(),
+})
+
 // ── Helper ─────────────────────────────────────────────────
 
 /**
