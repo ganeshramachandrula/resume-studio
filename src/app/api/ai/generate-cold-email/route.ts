@@ -80,14 +80,14 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
-    const effectiveLanguage = profile?.plan === 'pro_annual' && language ? language : undefined
+    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
+    const effectiveLanguage = (profile?.plan === 'pro_annual' || profile?.plan === 'team') && language ? language : undefined
 
     const coldEmail = isAIConfigured()
       ? await generateJSONWithClaude(GENERATE_COLD_EMAIL_SYSTEM, buildColdEmailPrompt(parsedJD, experience, contactInfo, effectiveLanguage))
       : mockColdEmailData
 
-    if (!isPro) {
+    if (!isPro && usageResult?.reason !== 'credit_used') {
       return NextResponse.json({ success: true, content: coldEmail, saved: false })
     }
 

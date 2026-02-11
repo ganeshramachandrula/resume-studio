@@ -36,4 +36,24 @@ export const PLANS = {
       'Premium templates',
     ],
   },
+  team: {
+    name: 'Team',
+    pricePerSeat: 59,
+    priceId: process.env.STRIPE_TEAM_PRICE_ID!,
+    documents_per_month: Infinity,
+    templates: Infinity,
+    features: [
+      'Everything in Pro Annual',
+      'Centralized billing',
+      'Seat-based pricing',
+      'Team management',
+    ],
+  },
+} as const
+
+export const CREDIT_PACK = {
+  name: 'Credit Pack',
+  price: 2.99,
+  credits: 3,
+  priceId: process.env.STRIPE_CREDIT_PACK_PRICE_ID!,
 } as const

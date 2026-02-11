@@ -9,15 +9,18 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Crown, CreditCard, Loader2, LogOut } from 'lucide-react'
+import { Crown, CreditCard, Loader2, LogOut, Zap, Users } from 'lucide-react'
+import Link from 'next/link'
 
 export default function SettingsPage() {
   const router = useRouter()
   const { profile, setProfile } = useAppStore()
-  const { usageCount, isPro } = useUsage(profile)
+  const { usageCount, isPro, credits } = useUsage(profile)
+  const isTeam = profile?.plan === 'team'
   const [fullName, setFullName] = useState(profile?.full_name || '')
   const [saving, setSaving] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
+  const [buyingCredits, setBuyingCredits] = useState(false)
 
   const handleSaveProfile = async () => {
     if (!profile) return
@@ -45,6 +48,25 @@ export default function SettingsPage() {
       // ignore
     }
     setPortalLoading(false)
+  }
+
+  const handleBuyCredits = async () => {
+    setBuyingCredits(true)
+    try {
+      const res = await fetch('/api/stripe/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId: process.env.NEXT_PUBLIC_STRIPE_CREDIT_PACK_PRICE_ID || 'mock_credits',
+          mode: 'payment',
+        }),
+      })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+    } catch {
+      // ignore
+    }
+    setBuyingCredits(false)
   }
 
   const handleSignOut = async () => {
@@ -103,14 +125,17 @@ export default function SettingsPage() {
               )}
               <div>
                 <p className="font-medium text-gray-900">
-                  {profile?.plan === 'pro_annual'
-                    ? 'Pro Annual'
-                    : profile?.plan === 'pro_monthly'
-                      ? 'Pro Monthly'
-                      : 'Free Plan'}
+                  {profile?.plan === 'team'
+                    ? 'Team Plan'
+                    : profile?.plan === 'pro_annual'
+                      ? 'Pro Annual'
+                      : profile?.plan === 'pro_monthly'
+                        ? 'Pro Monthly'
+                        : 'Free Plan'}
                 </p>
                 <p className="text-xs text-gray-500">
                   {isPro ? 'Unlimited documents' : `${usageCount}/2 documents used this month`}
+                  {!isPro && credits > 0 && ` + ${credits} credit${credits !== 1 ? 's' : ''}`}
                 </p>
               </div>
             </div>
@@ -119,20 +144,55 @@ export default function SettingsPage() {
             </Badge>
           </div>
 
-          {isPro ? (
-            <Button
-              variant="outline"
-              onClick={handleManageSubscription}
-              disabled={portalLoading}
-            >
-              {portalLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-              Manage Subscription
-            </Button>
-          ) : (
-            <Button onClick={() => router.push('/pricing')}>
-              <Crown className="h-4 w-4" />
-              Upgrade to Pro
-            </Button>
+          <div className="flex flex-wrap gap-3">
+            {isPro ? (
+              <Button
+                variant="outline"
+                onClick={handleManageSubscription}
+                disabled={portalLoading}
+              >
+                {portalLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                Manage Subscription
+              </Button>
+            ) : (
+              <Button onClick={() => router.push('/pricing')}>
+                <Crown className="h-4 w-4" />
+                Upgrade to Pro
+              </Button>
+            )}
+
+            {isTeam && (
+              <Link href="/team">
+                <Button variant="outline">
+                  <Users className="h-4 w-4" />
+                  Manage Team
+                </Button>
+              </Link>
+            )}
+          </div>
+
+          {/* Credits section for free users */}
+          {!isPro && (
+            <div className="flex items-center justify-between p-4 rounded-xl bg-accent/5 border border-accent/20">
+              <div className="flex items-center gap-3">
+                <Zap className="h-5 w-5 text-accent" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">
+                    {credits > 0 ? `${credits} credit${credits !== 1 ? 's' : ''} remaining` : 'No credits'}
+                  </p>
+                  <p className="text-xs text-gray-500">3 credits for $2.99 — no watermark, saved to DB</p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="accent"
+                onClick={handleBuyCredits}
+                disabled={buyingCredits}
+              >
+                {buyingCredits ? <Loader2 className="h-3 w-3 animate-spin" /> : <Zap className="h-3 w-3" />}
+                Buy Credits
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>

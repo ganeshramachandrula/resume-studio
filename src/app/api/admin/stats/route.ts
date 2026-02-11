@@ -26,31 +26,41 @@ export async function GET(request: Request) {
     const [
       profilesRes,
       proRes,
+      teamRes,
       disabledRes,
       docsRes,
       messagesNewRes,
       messagesOpenRes,
       coachTotalRes,
       coachActiveRes,
+      teamsRes,
+      creditUsersRes,
+      creditTotalRes,
     ] = await Promise.all([
       admin.from('profiles').select('id', { count: 'exact', head: true }),
-      admin.from('profiles').select('id', { count: 'exact', head: true }).in('plan', ['pro_monthly', 'pro_annual']),
+      admin.from('profiles').select('id', { count: 'exact', head: true }).in('plan', ['pro_monthly', 'pro_annual', 'team']),
+      admin.from('profiles').select('id', { count: 'exact', head: true }).eq('plan', 'team'),
       admin.from('profiles').select('id', { count: 'exact', head: true }).eq('is_disabled', true),
       admin.from('documents').select('id', { count: 'exact', head: true }),
       admin.from('support_messages').select('id', { count: 'exact', head: true }).eq('status', 'new'),
       admin.from('support_messages').select('id', { count: 'exact', head: true }).in('status', ['new', 'in_progress']),
-      // Coach stats: sum of all coach messages
       admin.from('profiles').select('coach_messages_count'),
-      // Coach active users: users with at least 1 coach message
       admin.from('profiles').select('id', { count: 'exact', head: true }).gt('coach_messages_count', 0),
+      admin.from('teams').select('id', { count: 'exact', head: true }),
+      admin.from('profiles').select('id', { count: 'exact', head: true }).gt('credits', 0),
+      admin.from('profiles').select('credits'),
     ])
 
     const totalUsers = profilesRes.count ?? 0
     const proUsers = proRes.count ?? 0
 
-    // Sum coach messages across all users
     const totalCoachMessages = (coachTotalRes.data || []).reduce(
       (sum: number, row: { coach_messages_count: number }) => sum + (row.coach_messages_count || 0),
+      0
+    )
+
+    const totalCreditsHeld = (creditTotalRes.data || []).reduce(
+      (sum: number, row: { credits: number }) => sum + (row.credits || 0),
       0
     )
 
@@ -58,12 +68,16 @@ export async function GET(request: Request) {
       totalUsers,
       proUsers,
       freeUsers: totalUsers - proUsers,
+      teamUsers: teamRes.count ?? 0,
+      teamCount: teamsRes.count ?? 0,
       disabledUsers: disabledRes.count ?? 0,
       totalDocuments: docsRes.count ?? 0,
       newMessages: messagesNewRes.count ?? 0,
       openMessages: messagesOpenRes.count ?? 0,
       totalCoachMessages,
       activeCoachUsers: coachActiveRes.count ?? 0,
+      creditUsersCount: creditUsersRes.count ?? 0,
+      totalCreditsHeld,
     })
   } catch (error) {
     return safeErrorResponse(error, 'admin-stats')

@@ -1,4 +1,4 @@
-export type Plan = 'free' | 'pro_monthly' | 'pro_annual'
+export type Plan = 'free' | 'pro_monthly' | 'pro_annual' | 'team'
 
 export type DocumentType =
   | 'resume'
@@ -33,6 +33,8 @@ export interface Profile {
   saved_applications_count: number
   coach_messages_count: number
   country: string | null
+  credits: number
+  team_id: string | null
   usage_reset_at: string
   role: UserRole
   is_disabled: boolean

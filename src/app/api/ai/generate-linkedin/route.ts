@@ -80,14 +80,14 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
-    const effectiveLanguage = profile?.plan === 'pro_annual' && language ? language : undefined
+    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
+    const effectiveLanguage = (profile?.plan === 'pro_annual' || profile?.plan === 'team') && language ? language : undefined
 
     const linkedin = isAIConfigured()
       ? await generateJSONWithClaude(GENERATE_LINKEDIN_SYSTEM, buildLinkedInPrompt(parsedJD, experience, contactInfo, effectiveLanguage))
       : mockLinkedInData
 
-    if (!isPro) {
+    if (!isPro && usageResult?.reason !== 'credit_used') {
       return NextResponse.json({ success: true, content: linkedin, saved: false })
     }
 

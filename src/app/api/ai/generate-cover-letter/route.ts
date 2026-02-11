@@ -80,14 +80,14 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
-    const effectiveLanguage = profile?.plan === 'pro_annual' && language ? language : undefined
+    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
+    const effectiveLanguage = (profile?.plan === 'pro_annual' || profile?.plan === 'team') && language ? language : undefined
 
     const coverLetter = isAIConfigured()
       ? await generateJSONWithClaude(GENERATE_COVER_LETTER_SYSTEM, buildCoverLetterPrompt(parsedJD, experience, contactInfo, effectiveLanguage))
       : mockCoverLetterData
 
-    if (!isPro) {
+    if (!isPro && usageResult?.reason !== 'credit_used') {
       return NextResponse.json({ success: true, content: coverLetter, saved: false })
     }
 

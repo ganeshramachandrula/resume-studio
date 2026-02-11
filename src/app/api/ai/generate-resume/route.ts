@@ -80,10 +80,10 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
+    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
 
-    // Language gating: only annual users can use non-English
-    const effectiveLanguage = profile?.plan === 'pro_annual' && language ? language : undefined
+    // Language gating: only annual/team users can use non-English
+    const effectiveLanguage = (profile?.plan === 'pro_annual' || profile?.plan === 'team') && language ? language : undefined
 
     let resume = isAIConfigured()
       ? await generateJSONWithClaude(GENERATE_RESUME_SYSTEM, buildGenerateResumePrompt(parsedJD, experience, contactInfo, effectiveLanguage))
@@ -99,8 +99,8 @@ export async function POST(request: Request) {
       if (contactInfo.linkedin) header.linkedin = contactInfo.linkedin
     }
 
-    if (!isPro) {
-      // Free user: return content for preview only, no DB save
+    if (!isPro && usageResult?.reason !== 'credit_used') {
+      // Free user without credits: return content for preview only, no DB save
       return NextResponse.json({ success: true, content: resume, saved: false })
     }
 

@@ -80,14 +80,14 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
-    const effectiveLanguage = profile?.plan === 'pro_annual' && language ? language : undefined
+    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
+    const effectiveLanguage = (profile?.plan === 'pro_annual' || profile?.plan === 'team') && language ? language : undefined
 
     const certificationGuide = isAIConfigured()
       ? await generateJSONWithClaude(GENERATE_CERTIFICATION_GUIDE_SYSTEM, buildCertificationGuidePrompt(parsedJD, experience, contactInfo, effectiveLanguage), 4096)
       : mockCertificationGuideData
 
-    if (!isPro) {
+    if (!isPro && usageResult?.reason !== 'credit_used') {
       return NextResponse.json({ success: true, content: certificationGuide, saved: false })
     }
 

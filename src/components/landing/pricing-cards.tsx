@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check } from 'lucide-react'
+import { Check, Zap, Users } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -75,6 +75,29 @@ export function PricingCards() {
           </p>
         </motion.div>
 
+        {/* Credit Pack Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-5xl mx-auto mb-8"
+        >
+          <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-accent/10 to-brand/10 border border-accent/20 p-5">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                <Zap className="h-5 w-5 text-accent" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold font-[family-name:var(--font-body)]">Credit Pack</h3>
+                <p className="text-gray-400 text-sm">3 document generations for $2.99 — no watermark, saved to your account. Credits never expire.</p>
+              </div>
+            </div>
+            <Link href="/signup">
+              <Button variant="accent" size="sm">Buy Credits</Button>
+            </Link>
+          </div>
+        </motion.div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
@@ -126,6 +149,45 @@ export function PricingCards() {
             </motion.div>
           ))}
         </div>
+
+        {/* Team Plan Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-5xl mx-auto mt-8"
+        >
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-start gap-4">
+              <div className="h-12 w-12 rounded-xl bg-brand/20 flex items-center justify-center shrink-0">
+                <Users className="h-6 w-6 text-brand-light" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-body)]">Team Plan</h3>
+                <p className="text-gray-400 text-sm mt-1 max-w-lg">
+                  Centralized billing for your team. $59/seat/year (min 5 seats). Each member gets all Pro Annual features including Career Coach, premium templates, and multi-language support.
+                </p>
+                <ul className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
+                  {['All Pro Annual features', 'Centralized billing', 'Team management', 'Seat-based pricing'].map((f) => (
+                    <li key={f} className="flex items-center gap-1.5 text-xs text-gray-400">
+                      <Check className="h-3 w-3 text-accent" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="text-right shrink-0">
+              <div className="mb-3">
+                <span className="text-3xl font-bold text-white">$59</span>
+                <span className="text-gray-400 text-sm">/seat/year</span>
+              </div>
+              <Link href="/signup">
+                <Button variant="outline" size="lg">Get Team Plan</Button>
+              </Link>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

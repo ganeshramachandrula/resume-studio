@@ -79,9 +79,9 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    if (profile?.plan !== 'pro_annual') {
+    if (profile?.plan !== 'pro_annual' && profile?.plan !== 'team') {
       return new Response(
-        JSON.stringify({ error: 'Career Coach is available for Pro Annual subscribers.' }),
+        JSON.stringify({ error: 'Career Coach is available for Pro Annual and Team subscribers.' }),
         { status: 403 }
       )
     }

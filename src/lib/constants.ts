@@ -60,6 +60,14 @@ export const SUPPORT_STATUS_LABELS: Record<string, string> = {
   closed: 'Closed',
 }
 
+// Credit Pack
+export const CREDIT_PACK_SIZE = 3
+export const CREDIT_PACK_PRICE = 2.99
+
+// Team Plan
+export const TEAM_MIN_SEATS = 5
+export const TEAM_PRICE_PER_SEAT = 59
+
 export const COLORS = {
   brand: '#1A56DB',
   brandLight: '#3B82F6',

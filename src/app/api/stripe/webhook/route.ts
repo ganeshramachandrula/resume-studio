@@ -80,6 +80,53 @@ export async function POST(request: Request) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object
+        const metadataType = session.metadata?.type
+
+        // Credit pack: one-time payment, no subscription
+        if (metadataType === 'credit_pack') {
+          const userId = session.metadata?.supabase_user_id
+          if (userId) {
+            await supabase.rpc('add_credits', { user_uuid: userId, credit_amount: 3 })
+          }
+          break
+        }
+
+        // Team plan: create team + set plan
+        if (metadataType === 'team') {
+          const userId = session.metadata?.supabase_user_id
+          const seatCount = parseInt(session.metadata?.seat_count || '5', 10)
+          if (userId) {
+            const subscription = await stripe.subscriptions.retrieve(
+              session.subscription as string
+            )
+            const { data: team } = await supabase
+              .from('teams')
+              .insert({
+                name: 'My Team',
+                admin_user_id: userId,
+                stripe_customer_id: session.customer as string,
+                stripe_subscription_id: subscription.id,
+                seat_count: seatCount,
+              })
+              .select()
+              .single()
+
+            if (team) {
+              await supabase
+                .from('profiles')
+                .update({
+                  plan: 'team',
+                  team_id: team.id,
+                  stripe_subscription_id: subscription.id,
+                  stripe_customer_id: session.customer as string,
+                })
+                .eq('id', userId)
+            }
+          }
+          break
+        }
+
+        // Regular subscription (pro monthly/annual)
         const subscription = await stripe.subscriptions.retrieve(
           session.subscription as string
         )
@@ -108,6 +155,17 @@ export async function POST(request: Request) {
         const subscription = event.data.object
         const priceId = subscription.items.data[0].price.id
 
+        // Check if this is a team subscription
+        if (priceId === process.env.STRIPE_TEAM_PRICE_ID) {
+          const newQuantity = subscription.items.data[0].quantity || 5
+          // Update seat count on teams table
+          await supabase
+            .from('teams')
+            .update({ seat_count: newQuantity })
+            .eq('stripe_subscription_id', subscription.id)
+          break
+        }
+
         const plan =
           priceId === process.env.STRIPE_PRO_MONTHLY_PRICE_ID
             ? 'pro_monthly'
@@ -125,6 +183,29 @@ export async function POST(request: Request) {
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object
+        const priceId = subscription.items.data[0].price.id
+
+        // Team subscription cancelled: downgrade all members + delete team
+        if (priceId === process.env.STRIPE_TEAM_PRICE_ID) {
+          const { data: team } = await supabase
+            .from('teams')
+            .select('id')
+            .eq('stripe_subscription_id', subscription.id)
+            .single()
+
+          if (team) {
+            // Downgrade all team members to free
+            await supabase
+              .from('profiles')
+              .update({ plan: 'free', team_id: null, stripe_subscription_id: null })
+              .eq('team_id', team.id)
+
+            // Delete the team
+            await supabase.from('teams').delete().eq('id', team.id)
+          }
+          break
+        }
+
         await supabase
           .from('profiles')
           .update({ plan: 'free', stripe_subscription_id: null })

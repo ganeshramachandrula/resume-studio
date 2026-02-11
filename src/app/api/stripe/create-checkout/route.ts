@@ -49,10 +49,33 @@ export async function POST(request: Request) {
       return body
     }
 
-    const { priceId } = body
+    const { priceId, mode = 'subscription', quantity } = body
 
     // Mock mode: simulate upgrade without real Stripe
     if (!isStripeConfigured()) {
+      if (mode === 'payment') {
+        // Mock credit pack purchase
+        await supabase.rpc('add_credits', { user_uuid: user.id, credit_amount: 3 })
+        logSecurityEvent('checkout_initiated', request, user.id, { mode: 'mock', type: 'credit_pack' })
+        return NextResponse.json({ url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=credits` })
+      }
+      if (mode === 'team') {
+        // Mock team creation
+        const seats = quantity || 5
+        const { data: team } = await supabase
+          .from('teams')
+          .insert({ name: 'My Team', admin_user_id: user.id, seat_count: seats })
+          .select()
+          .single()
+        if (team) {
+          await supabase
+            .from('profiles')
+            .update({ plan: 'team', team_id: team.id, stripe_customer_id: 'mock_cus_' + user.id.slice(0, 8) })
+            .eq('id', user.id)
+        }
+        logSecurityEvent('checkout_initiated', request, user.id, { mode: 'mock', type: 'team', seats })
+        return NextResponse.json({ url: `${process.env.NEXT_PUBLIC_APP_URL}/team?checkout=success` })
+      }
       const plan = priceId === 'mock_annual' ? 'pro_annual' : 'pro_monthly'
       await supabase
         .from('profiles')
@@ -66,6 +89,8 @@ export async function POST(request: Request) {
     const allowedPrices = [
       process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
       process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
+      process.env.STRIPE_TEAM_PRICE_ID,
+      process.env.STRIPE_CREDIT_PACK_PRICE_ID,
     ].filter(Boolean)
 
     if (allowedPrices.length > 0 && !allowedPrices.includes(priceId)) {
@@ -98,6 +123,40 @@ export async function POST(request: Request) {
         .eq('id', user.id)
     }
 
+    // Credit pack: one-time payment
+    if (mode === 'payment') {
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        line_items: [{ price: priceId, quantity: 1 }],
+        mode: 'payment',
+        automatic_tax: { enabled: true },
+        customer_update: { address: 'auto' },
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=credits`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?checkout=cancelled`,
+        metadata: { supabase_user_id: user.id, type: 'credit_pack' },
+      })
+      logSecurityEvent('checkout_initiated', request, user.id, { mode: 'live', type: 'credit_pack' })
+      return NextResponse.json({ url: session.url })
+    }
+
+    // Team plan: subscription with seat quantity
+    if (mode === 'team') {
+      const seats = quantity || 5
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        line_items: [{ price: priceId, quantity: seats }],
+        mode: 'subscription',
+        automatic_tax: { enabled: true },
+        customer_update: { address: 'auto' },
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/team?checkout=success`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?checkout=cancelled`,
+        metadata: { supabase_user_id: user.id, type: 'team', seat_count: String(seats) },
+      })
+      logSecurityEvent('checkout_initiated', request, user.id, { mode: 'live', type: 'team', seats })
+      return NextResponse.json({ url: session.url })
+    }
+
+    // Regular subscription (pro monthly/annual)
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
