@@ -40,18 +40,38 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Redirect to login if not authenticated and trying to access dashboard
-  if (
-    !user &&
-    (request.nextUrl.pathname.startsWith('/dashboard') ||
-      request.nextUrl.pathname.startsWith('/generate') ||
-      request.nextUrl.pathname.startsWith('/documents') ||
-      request.nextUrl.pathname.startsWith('/job-tracker') ||
-      request.nextUrl.pathname.startsWith('/settings'))
-  ) {
+  const protectedPaths = [
+    '/dashboard', '/generate', '/documents', '/job-tracker',
+    '/settings', '/career-coach', '/admin', '/team',
+  ]
+
+  const isProtectedPath = protectedPaths.some(
+    (p) => request.nextUrl.pathname === p || request.nextUrl.pathname.startsWith(p + '/')
+  )
+
+  // Redirect to login if not authenticated and trying to access protected pages
+  if (!user && isProtectedPath) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
+  }
+
+  // If authenticated, check if account is disabled
+  if (user && isProtectedPath) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_disabled')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.is_disabled) {
+      // Sign out the disabled user and redirect to login with message
+      await supabase.auth.signOut()
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      url.searchParams.set('error', 'account_disabled')
+      return NextResponse.redirect(url)
+    }
   }
 
   // Redirect to dashboard if authenticated and on auth pages

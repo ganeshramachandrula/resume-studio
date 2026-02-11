@@ -21,6 +21,7 @@ import type {
 import { ATSScoreDisplay } from './ats-score-display'
 import { PDFGenerator } from '@/components/pdf/pdf-generator'
 import { ResumeEditor } from './resume-editor'
+import { ContentProtection } from '@/components/ui/content-protection'
 
 function ResumePreview({ data }: { data: ResumeData }) {
   return (
@@ -583,14 +584,14 @@ export function DocumentPreview() {
                     }}
                   />
                 ) : (
-                  <>
+                  <ContentProtection>
                     {type === 'resume' && <ResumePreview data={generatedDocuments[type] as unknown as ResumeData} />}
                     {type === 'cover_letter' && <CoverLetterPreview data={generatedDocuments[type] as unknown as CoverLetterData} />}
                     {type === 'linkedin_summary' && <LinkedInPreview data={generatedDocuments[type] as unknown as LinkedInData} />}
                     {type === 'cold_email' && <ColdEmailPreview data={generatedDocuments[type] as unknown as ColdEmailData} />}
                     {type === 'interview_prep' && <InterviewPrepPreview data={generatedDocuments[type] as unknown as InterviewPrepData} />}
                     {type === 'certification_guide' && <CertificationGuidePreview data={generatedDocuments[type] as unknown as CertificationGuideData} />}
-                  </>
+                  </ContentProtection>
                 )}
               </CardContent>
             </Card>

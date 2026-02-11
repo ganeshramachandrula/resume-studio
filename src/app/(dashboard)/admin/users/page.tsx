@@ -111,6 +111,9 @@ function AdminUsersContent() {
     if (p === 'pro_monthly' || p === 'pro_annual') {
       return <Badge className="bg-amber-100 text-amber-700 border-amber-200">{p === 'pro_monthly' ? 'Pro Monthly' : 'Pro Annual'}</Badge>
     }
+    if (p === 'team') {
+      return <Badge className="bg-cyan-100 text-cyan-700 border-cyan-200">Team</Badge>
+    }
     return <Badge variant="secondary">Free</Badge>
   }
 
@@ -136,6 +139,7 @@ function AdminUsersContent() {
           <option value="free">Free</option>
           <option value="pro_monthly">Pro Monthly</option>
           <option value="pro_annual">Pro Annual</option>
+          <option value="team">Team</option>
         </select>
       </div>
 
@@ -276,6 +280,7 @@ function AdminUsersContent() {
                     <option value="free">Free</option>
                     <option value="pro_monthly">Pro Monthly</option>
                     <option value="pro_annual">Pro Annual</option>
+                    <option value="team">Team</option>
                   </select>
                 </div>
 

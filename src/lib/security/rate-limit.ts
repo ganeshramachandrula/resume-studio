@@ -155,6 +155,71 @@ export function getClientCountry(request: Request): string | null {
   return null
 }
 
+// ── IP Blocking (in-memory cache, synced from DB) ──────────
+
+const blockedIpCache = new Set<string>()
+let lastBlockedIpSync = 0
+const BLOCKED_IP_SYNC_INTERVAL = 60_000 // Re-sync every 60s
+
+/**
+ * Syncs blocked IPs from the database into the in-memory cache.
+ * Called lazily on first check and refreshed periodically.
+ */
+async function syncBlockedIps(): Promise<void> {
+  try {
+    // Dynamic import to avoid circular dependencies
+    const { createServerClient } = await import('@supabase/ssr')
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { cookies: { getAll() { return [] }, setAll() {} } }
+    )
+    const { data } = await supabase.from('blocked_ips').select('ip_address')
+    blockedIpCache.clear()
+    if (data) {
+      for (const row of data) blockedIpCache.add(row.ip_address)
+    }
+    lastBlockedIpSync = Date.now()
+  } catch {
+    // Silently fail — don't break request flow
+  }
+}
+
+/**
+ * Adds an IP to the blocked cache immediately (called after admin blocks an IP).
+ */
+export function addBlockedIp(ip: string): void {
+  blockedIpCache.add(ip)
+}
+
+/**
+ * Removes an IP from the blocked cache immediately.
+ */
+export function removeBlockedIp(ip: string): void {
+  blockedIpCache.delete(ip)
+}
+
+/**
+ * Checks if an IP is blocked. Syncs from DB if cache is stale.
+ */
+export async function isIpBlocked(ip: string): Promise<boolean> {
+  if (ip === 'unknown') return false
+  if (Date.now() - lastBlockedIpSync > BLOCKED_IP_SYNC_INTERVAL) {
+    await syncBlockedIps()
+  }
+  return blockedIpCache.has(ip)
+}
+
+/**
+ * Returns a 403 Forbidden response for blocked IPs.
+ */
+export function blockedIpResponse() {
+  return new Response(
+    JSON.stringify({ error: 'Access denied.' }),
+    { status: 403, headers: { 'Content-Type': 'application/json' } }
+  )
+}
+
 /**
  * Returns a 429 Too Many Requests response.
  */
