@@ -21,6 +21,8 @@ export type SecurityEventType =
   | 'admin_user_delete'
   | 'admin_message_update'
   | 'admin_bootstrap'
+  | 'concurrent_session_exceeded'
+  | 'device_session_kicked'
 
 /**
  * Returns a Supabase admin client (service role) for writing security events.

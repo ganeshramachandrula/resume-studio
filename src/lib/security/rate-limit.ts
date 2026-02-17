@@ -110,6 +110,9 @@ export const COACH_RATE_LIMIT: RateLimitConfig = { maxRequests: 20, windowSecond
 /** Career Coach monthly cap: 100 messages per 30 days per user */
 export const COACH_MONTHLY_LIMIT: RateLimitConfig = { maxRequests: 100, windowSeconds: 2_592_000 }
 
+/** Device session register/heartbeat: 10 requests per minute per user */
+export const DEVICE_SESSION_RATE_LIMIT: RateLimitConfig = { maxRequests: 10, windowSeconds: 60 }
+
 // ── IP Extraction ──────────────────────────────────────────
 
 /**

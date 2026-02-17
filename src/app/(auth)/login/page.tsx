@@ -23,9 +23,13 @@ function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(
-    searchParams.get('error') === 'auth_failed' ? 'Authentication failed. Please try again.' : null
-  )
+  const [error, setError] = useState<string | null>(() => {
+    const errParam = searchParams.get('error')
+    if (errParam === 'session_expired') return 'Your session was ended because another device signed in.'
+    if (errParam === 'account_disabled') return 'Your account has been disabled.'
+    if (errParam === 'auth_failed') return 'Authentication failed. Please try again.'
+    return null
+  })
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
