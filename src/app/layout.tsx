@@ -33,18 +33,24 @@ export const metadata: Metadata = {
     "career documents",
   ],
   authors: [{ name: "Resume Studio" }],
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     type: "website",
     title: "Resume Studio — Tailored Career Documents in Seconds",
     description:
       "Generate tailored, ATS-optimized resumes, cover letters, and more in seconds.",
     siteName: "Resume Studio",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Resume Studio" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Resume Studio",
     description:
       "Smart career document generation. Land your dream job with one click.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
