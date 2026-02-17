@@ -78,6 +78,36 @@ export const CREDIT_PACK_PRICE = 2.99
 export const TEAM_MIN_SEATS = 5
 export const TEAM_PRICE_PER_SEAT = 59
 
+// Daily usage limits per plan (job-search)
+export const JOB_SEARCH_DAILY_FREE = 5
+export const JOB_SEARCH_DAILY_PRO = 20
+export const JOB_SEARCH_DAILY_MAX = 999
+
+// Job Feed result limits per plan
+export const JOB_FEED_RESULTS_FREE = 10
+export const JOB_FEED_RESULTS_PRO = 50
+
+// Job providers
+export const JOB_PROVIDERS = [
+  'jsearch',
+  'adzuna',
+  'themuse',
+  'remotive',
+  'remoteok',
+  'arbeitnow',
+  'findwork',
+] as const
+
+export const JOB_PROVIDER_LABELS: Record<string, string> = {
+  jsearch: 'JSearch',
+  adzuna: 'Adzuna',
+  themuse: 'The Muse',
+  remotive: 'Remotive',
+  remoteok: 'RemoteOK',
+  arbeitnow: 'Arbeitnow',
+  findwork: 'Findwork',
+}
+
 export const COLORS = {
   brand: '#1A56DB',
   brandLight: '#3B82F6',

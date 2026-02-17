@@ -46,6 +46,8 @@ export interface Profile {
   parse_jd_reset_at: string
   ats_score_daily_count: number
   ats_score_reset_at: string
+  job_search_daily_count: number
+  job_search_reset_at: string
   created_at: string
   updated_at: string
 }

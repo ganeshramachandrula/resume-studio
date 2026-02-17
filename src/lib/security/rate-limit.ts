@@ -113,6 +113,12 @@ export const COACH_MONTHLY_LIMIT: RateLimitConfig = { maxRequests: 100, windowSe
 /** Device session register/heartbeat: 10 requests per minute per user */
 export const DEVICE_SESSION_RATE_LIMIT: RateLimitConfig = { maxRequests: 10, windowSeconds: 60 }
 
+/** Job search: 15 requests per minute per user */
+export const JOB_SEARCH_RATE_LIMIT: RateLimitConfig = { maxRequests: 15, windowSeconds: 60 }
+
+/** Extension JD submission: 5 requests per minute per user */
+export const EXTENSION_RATE_LIMIT: RateLimitConfig = { maxRequests: 5, windowSeconds: 60 }
+
 // ── IP Extraction ──────────────────────────────────────────
 
 /**

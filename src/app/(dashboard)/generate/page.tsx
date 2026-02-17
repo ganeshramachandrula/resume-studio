@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useGenerationStore } from '@/store/generation-store'
 import { useAppStore } from '@/store/app-store'
 import { createClient } from '@/lib/supabase/client'
@@ -40,10 +41,13 @@ const API_ROUTES: Record<string, string> = {
   certification_guide: '/api/ai/generate-certification-guide',
 }
 
-export default function GeneratePage() {
+function GeneratePageInner() {
+  const searchParams = useSearchParams()
   const {
     step,
     setStep,
+    setJobDescription,
+    setParsedJD,
     selectedDocuments,
     toggleDocument,
     setSelectedDocuments,
@@ -70,6 +74,32 @@ export default function GeneratePage() {
   const { canGenerate } = useUsage(profile)
   const [generationError, setGenerationError] = useState<string | null>(null)
   const userIsAnnual = isAnnual(profile)
+
+  // Load JD from database when ?jd_id= is present
+  useEffect(() => {
+    const jdId = searchParams.get('jd_id')
+    if (!jdId) return
+
+    async function loadJD() {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('job_descriptions')
+          .select('*')
+          .eq('id', jdId)
+          .single()
+
+        if (error || !data) return
+
+        setJobDescription(data.raw_text)
+        setParsedJD(data.parsed_data as Record<string, unknown>, data.id)
+        setStep('experience_input')
+      } catch {
+        // Silently fail — user can still paste manually
+      }
+    }
+    loadJD()
+  }, [searchParams, setJobDescription, setParsedJD, setStep])
 
   const refreshProfile = useCallback(async () => {
     const supabase = createClient()
@@ -278,5 +308,13 @@ export default function GeneratePage() {
 
       {step === 'review' && <DocumentPreview />}
     </div>
+  )
+}
+
+export default function GeneratePage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center py-24"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}>
+      <GeneratePageInner />
+    </Suspense>
   )
 }

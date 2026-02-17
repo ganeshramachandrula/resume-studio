@@ -15,6 +15,7 @@ import {
   X,
   Users,
   ExternalLink,
+  Search,
 } from 'lucide-react'
 import { AFFILIATE_PARTNERS, buildAffiliateUrl } from '@/lib/affiliate-partners'
 import { cn } from '@/lib/utils'
@@ -25,6 +26,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Generate', href: '/generate', icon: Sparkles },
   { name: 'Applications', href: '/documents', icon: FileText },
+  { name: 'Job Feed', href: '/job-feed', icon: Search },
   { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]

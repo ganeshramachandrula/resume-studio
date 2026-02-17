@@ -68,6 +68,7 @@ const ALLOWED_REDIRECT_PATHS = [
   '/admin/users',
   '/admin/messages',
   '/contact',
+  '/job-feed',
 ]
 
 export function isValidRedirect(path: string): boolean {

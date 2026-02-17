@@ -24,6 +24,8 @@ export type SecurityEventType =
   | 'concurrent_session_exceeded'
   | 'device_session_kicked'
   | 'signup_blocked'
+  | 'job_search'
+  | 'extension_submit'
 
 /**
  * Returns a Supabase admin client (service role) for writing security events.

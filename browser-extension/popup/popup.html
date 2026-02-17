@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Studio</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+      </div>
+      <span class="title">Resume Studio</span>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-section">
+      <p class="subtitle">Log in to capture job descriptions and generate resumes.</p>
+      <form id="login-form">
+        <div class="field">
+          <input type="email" id="email" placeholder="Email" required>
+        </div>
+        <div class="field">
+          <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <div id="login-error" class="error hidden"></div>
+        <button type="submit" id="login-btn" class="btn btn-primary">Log In</button>
+      </form>
+    </div>
+
+    <!-- Logged In State -->
+    <div id="loggedin-section" class="hidden">
+      <div class="status">
+        <div class="status-dot"></div>
+        <span id="user-email" class="status-text">Connected</span>
+      </div>
+      <p class="info">
+        Navigate to a job listing on Indeed, LinkedIn, Monster, Glassdoor, Dice, or ZipRecruiter.
+        Click the floating button to generate a resume.
+      </p>
+      <div class="actions">
+        <button id="open-app-btn" class="btn btn-secondary">Open Resume Studio</button>
+        <button id="logout-btn" class="btn btn-ghost">Log Out</button>
+      </div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
