@@ -12,11 +12,12 @@ const MAX_BODY_BYTES = 500 * 1024 // 500KB overall request body
 function jsonSizeLimit(fieldName: string) {
   return (v: Record<string, unknown>) => {
     const size = new TextEncoder().encode(JSON.stringify(v)).length
-    if (size > MAX_JSON_FIELD_BYTES) {
-      return { message: `${fieldName} exceeds maximum size of 100KB` }
-    }
-    return true
+    return size <= MAX_JSON_FIELD_BYTES
   }
+}
+
+function jsonSizeLimitMessage(fieldName: string) {
+  return { message: `${fieldName} exceeds maximum size of 100KB` }
 }
 
 // ── Schemas ────────────────────────────────────────────────
@@ -39,7 +40,7 @@ export const contactInfoSchema = z.object({
 export const generateDocSchema = z.object({
   parsedJD: z.record(z.string(), z.unknown())
     .refine((v) => Object.keys(v).length > 0, { message: 'Parsed job description is required' })
-    .refine(jsonSizeLimit('parsedJD')),
+    .refine(jsonSizeLimit('parsedJD'), jsonSizeLimitMessage('parsedJD')),
   experience: z
     .string()
     .min(10, 'Experience must be at least 10 characters')
@@ -61,10 +62,10 @@ export const careerCoachSchema = z.object({
 export const atsScoreSchema = z.object({
   resumeJSON: z.record(z.string(), z.unknown())
     .refine((v) => Object.keys(v).length > 0, { message: 'Resume data is required' })
-    .refine(jsonSizeLimit('resumeJSON')),
+    .refine(jsonSizeLimit('resumeJSON'), jsonSizeLimitMessage('resumeJSON')),
   parsedJD: z.record(z.string(), z.unknown())
     .refine((v) => Object.keys(v).length > 0, { message: 'Parsed job description is required' })
-    .refine(jsonSizeLimit('parsedJD')),
+    .refine(jsonSizeLimit('parsedJD'), jsonSizeLimitMessage('parsedJD')),
   documentId: z.string().uuid('Invalid document ID').optional(),
 })
 
