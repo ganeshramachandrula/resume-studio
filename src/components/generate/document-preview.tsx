@@ -544,7 +544,7 @@ export function DocumentPreview() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="font-[family-name:var(--font-body)]">{DOCUMENT_TYPE_LABELS[type]}</CardTitle>
                 <div className="flex gap-2">
-                  {type === 'resume' && (
+                  {type === 'resume' && !isFree && (
                     <Button
                       size="sm"
                       variant={editMode ? 'default' : 'outline'}

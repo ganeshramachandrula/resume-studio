@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FileText, Loader2 } from 'lucide-react'
+import { getDeviceFingerprint } from '@/lib/security/fingerprint'
 
 export default function LoginPage() {
   return (
@@ -44,6 +45,24 @@ function LoginForm() {
       setLoading(false)
       return
     }
+
+    // Record login metadata (fire-and-forget)
+    ;(async () => {
+      try {
+        const deviceId = await getDeviceFingerprint()
+        fetch('/api/auth/record-login-metadata', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            deviceId,
+            screenResolution: `${screen.width}x${screen.height}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            language: navigator.language,
+            referrer: document.referrer || '',
+          }),
+        }).catch(() => {})
+      } catch { /* ignore */ }
+    })()
 
     router.push('/dashboard')
     router.refresh()

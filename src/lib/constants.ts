@@ -60,6 +60,16 @@ export const SUPPORT_STATUS_LABELS: Record<string, string> = {
   closed: 'Closed',
 }
 
+// Daily usage limits per plan (parse-jd)
+export const PARSE_JD_DAILY_FREE = 2
+export const PARSE_JD_DAILY_PRO = 10
+export const PARSE_JD_DAILY_MAX = 20
+
+// Daily usage limits per plan (ats-score)
+export const ATS_SCORE_DAILY_FREE = 1
+export const ATS_SCORE_DAILY_PRO = 10
+export const ATS_SCORE_DAILY_MAX = 20
+
 // Credit Pack
 export const CREDIT_PACK_SIZE = 3
 export const CREDIT_PACK_PRICE = 2.99

@@ -38,6 +38,14 @@ export interface Profile {
   usage_reset_at: string
   role: UserRole
   is_disabled: boolean
+  signup_ip: string | null
+  signup_device_id: string | null
+  signup_referrer: string | null
+  signup_metadata: Record<string, unknown> | null
+  parse_jd_daily_count: number
+  parse_jd_reset_at: string
+  ats_score_daily_count: number
+  ats_score_reset_at: string
   created_at: string
   updated_at: string
 }

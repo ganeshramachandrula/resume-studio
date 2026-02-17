@@ -35,18 +35,13 @@ export async function generateWithClaude(
 export async function generateJSONWithClaude<T>(
   systemPrompt: string,
   userPrompt: string,
-  maxTokens: number = 4096
+  maxTokens: number = 8192
 ): Promise<T> {
   if (!isAIConfigured()) {
     throw new Error('MOCK_MODE')
   }
 
-  // Try once; if truncated, retry with double tokens
-  let response = await generateWithClaude(systemPrompt, userPrompt, maxTokens)
-  if (response.truncated && maxTokens < 16384) {
-    console.warn(`[claude] Retrying with ${maxTokens * 2} max_tokens`)
-    response = await generateWithClaude(systemPrompt, userPrompt, maxTokens * 2)
-  }
+  const response = await generateWithClaude(systemPrompt, userPrompt, maxTokens)
 
   const jsonMatch =
     response.text.match(/```json\n?([\s\S]*?)\n?```/) || response.text.match(/\{[\s\S]*\}/)

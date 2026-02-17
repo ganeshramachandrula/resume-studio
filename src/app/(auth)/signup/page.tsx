@@ -9,6 +9,30 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FileText, Loader2 } from 'lucide-react'
 import { isDisposableEmail, normalizeEmail } from '@/lib/security/disposable-emails'
+import { getDeviceFingerprint } from '@/lib/security/fingerprint'
+
+async function getFingerprint(): Promise<string> {
+  try {
+    return await getDeviceFingerprint()
+  } catch {
+    return ''
+  }
+}
+
+function getBrowserMetadata() {
+  try {
+    return {
+      screenResolution: `${screen.width}x${screen.height}`,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: navigator.language,
+      colorDepth: screen.colorDepth,
+      hardwareConcurrency: navigator.hardwareConcurrency || 0,
+      referrer: document.referrer || '',
+    }
+  } catch {
+    return {}
+  }
+}
 
 export default function SignupPage() {
   const router = useRouter()
@@ -38,6 +62,24 @@ export default function SignupPage() {
       return
     }
 
+    // Pre-signup abuse check (fail open)
+    const deviceId = await getFingerprint()
+    try {
+      const checkRes = await fetch('/api/auth/check-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId }),
+      })
+      if (checkRes.status === 403) {
+        const checkData = await checkRes.json()
+        setError(checkData.reason || 'Signup is not available from this device or network. Contact support for help.')
+        setLoading(false)
+        return
+      }
+    } catch {
+      // Fail open — don't block signup if check fails
+    }
+
     const supabase = createClient()
     const { data: signUpData, error } = await supabase.auth.signUp({
       email: normalizedEmail,
@@ -55,6 +97,14 @@ export default function SignupPage() {
       setLoading(false)
       return
     }
+
+    // Record signup metadata (fire-and-forget)
+    const metadata = getBrowserMetadata()
+    fetch('/api/auth/record-signup-metadata', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId, ...metadata }),
+    }).catch(() => {})
 
     // If session exists, email confirmation is not required — redirect directly
     if (signUpData.session) {

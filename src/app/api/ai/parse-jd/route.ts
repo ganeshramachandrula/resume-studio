@@ -7,6 +7,14 @@ import { safeErrorResponse, isEmailVerified } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, parseJDSchema } from '@/lib/security/validation'
 import { checkRateLimit, getClientIP, rateLimitResponse, GENERATION_RATE_LIMIT } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
+import { PARSE_JD_DAILY_FREE, PARSE_JD_DAILY_PRO, PARSE_JD_DAILY_MAX } from '@/lib/constants'
+import type { Plan } from '@/types/database'
+
+function getParseJDLimit(plan: Plan): number {
+  if (plan === 'pro_annual' || plan === 'team') return PARSE_JD_DAILY_MAX
+  if (plan === 'pro_monthly') return PARSE_JD_DAILY_PRO
+  return PARSE_JD_DAILY_FREE
+}
 
 export async function POST(request: Request) {
   try {
@@ -40,6 +48,37 @@ export async function POST(request: Request) {
       logSecurityEvent('email_not_verified', request, user.id, { route: 'parse-jd' })
       return NextResponse.json(
         { error: 'Please verify your email address before generating documents.' },
+        { status: 403 }
+      )
+    }
+
+    // Fetch user plan for daily limit
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
+      .single()
+
+    const plan = (profile?.plan as Plan) || 'free'
+    const dailyLimit = getParseJDLimit(plan)
+
+    // Atomic daily usage gate
+    const { data: gateResult, error: gateError } = await supabase.rpc(
+      'check_and_increment_parse_jd',
+      { p_user_id: user.id, p_max_daily: dailyLimit }
+    )
+
+    if (gateError) {
+      console.error('[parse-jd] Daily gate RPC error:', gateError.message)
+      // Fail open — don't block legitimate users on DB errors
+    } else if (gateResult && !gateResult.allowed) {
+      logSecurityEvent('usage_limit_hit', request, user.id, {
+        route: 'parse-jd',
+        plan,
+        daily_limit: dailyLimit,
+      })
+      return NextResponse.json(
+        { error: `Daily limit reached (${dailyLimit}/day for your plan). Try again tomorrow or upgrade your plan.` },
         { status: 403 }
       )
     }

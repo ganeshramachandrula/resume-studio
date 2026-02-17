@@ -23,6 +23,7 @@ export type SecurityEventType =
   | 'admin_bootstrap'
   | 'concurrent_session_exceeded'
   | 'device_session_kicked'
+  | 'signup_blocked'
 
 /**
  * Returns a Supabase admin client (service role) for writing security events.

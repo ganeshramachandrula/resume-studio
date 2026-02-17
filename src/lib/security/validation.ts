@@ -1,6 +1,24 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
+// ── Size Limits ───────────────────────────────────────────────
+
+const MAX_JSON_FIELD_BYTES = 100 * 1024 // 100KB per JSON object field
+const MAX_BODY_BYTES = 500 * 1024 // 500KB overall request body
+
+/**
+ * Zod refinement: rejects JSON object fields whose serialized size exceeds 100KB.
+ */
+function jsonSizeLimit(fieldName: string) {
+  return (v: Record<string, unknown>) => {
+    const size = new TextEncoder().encode(JSON.stringify(v)).length
+    if (size > MAX_JSON_FIELD_BYTES) {
+      return { message: `${fieldName} exceeds maximum size of 100KB` }
+    }
+    return true
+  }
+}
+
 // ── Schemas ────────────────────────────────────────────────
 
 export const parseJDSchema = z.object({
@@ -19,9 +37,9 @@ export const contactInfoSchema = z.object({
 })
 
 export const generateDocSchema = z.object({
-  parsedJD: z.record(z.string(), z.unknown()).refine((v) => Object.keys(v).length > 0, {
-    message: 'Parsed job description is required',
-  }),
+  parsedJD: z.record(z.string(), z.unknown())
+    .refine((v) => Object.keys(v).length > 0, { message: 'Parsed job description is required' })
+    .refine(jsonSizeLimit('parsedJD')),
   experience: z
     .string()
     .min(10, 'Experience must be at least 10 characters')
@@ -41,12 +59,12 @@ export const careerCoachSchema = z.object({
 })
 
 export const atsScoreSchema = z.object({
-  resumeJSON: z.record(z.string(), z.unknown()).refine((v) => Object.keys(v).length > 0, {
-    message: 'Resume data is required',
-  }),
-  parsedJD: z.record(z.string(), z.unknown()).refine((v) => Object.keys(v).length > 0, {
-    message: 'Parsed job description is required',
-  }),
+  resumeJSON: z.record(z.string(), z.unknown())
+    .refine((v) => Object.keys(v).length > 0, { message: 'Resume data is required' })
+    .refine(jsonSizeLimit('resumeJSON')),
+  parsedJD: z.record(z.string(), z.unknown())
+    .refine((v) => Object.keys(v).length > 0, { message: 'Parsed job description is required' })
+    .refine(jsonSizeLimit('parsedJD')),
   documentId: z.string().uuid('Invalid document ID').optional(),
 })
 
@@ -91,15 +109,43 @@ export const adminMessageUpdateSchema = z.object({
 
 /**
  * Parses and validates the request body against a Zod schema.
+ * Enforces a 500KB overall body size limit before parsing.
  * Returns typed data on success, or a NextResponse error on failure.
  */
 export async function validateBody<T extends z.ZodType>(
   request: Request,
   schema: T
 ): Promise<z.infer<T> | NextResponse> {
+  // Check Content-Length header first (fast reject)
+  const contentLength = request.headers.get('content-length')
+  if (contentLength && parseInt(contentLength, 10) > MAX_BODY_BYTES) {
+    return NextResponse.json(
+      { error: 'Request body too large (max 500KB)' },
+      { status: 413 }
+    )
+  }
+
+  let rawText: string
+  try {
+    rawText = await request.text()
+  } catch {
+    return NextResponse.json(
+      { error: 'Failed to read request body' },
+      { status: 400 }
+    )
+  }
+
+  // Check actual body size
+  if (new TextEncoder().encode(rawText).length > MAX_BODY_BYTES) {
+    return NextResponse.json(
+      { error: 'Request body too large (max 500KB)' },
+      { status: 413 }
+    )
+  }
+
   let body: unknown
   try {
-    body = await request.json()
+    body = JSON.parse(rawText)
   } catch {
     return NextResponse.json(
       { error: 'Invalid JSON body' },
