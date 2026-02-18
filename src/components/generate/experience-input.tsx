@@ -36,7 +36,7 @@ export function ExperienceInput() {
     if (combined && combined !== contactInfo.name) {
       setContactInfo({ name: combined })
     }
-  }, [firstName, lastName]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [firstName, lastName, contactInfo.name, setContactInfo])
 
   return (
     <div className="space-y-6">
