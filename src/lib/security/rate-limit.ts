@@ -119,6 +119,11 @@ export const JOB_SEARCH_RATE_LIMIT: RateLimitConfig = { maxRequests: 15, windowS
 /** Extension JD submission: 5 requests per minute per user */
 export const EXTENSION_RATE_LIMIT: RateLimitConfig = { maxRequests: 5, windowSeconds: 60 }
 
+/** Clear the rate limit store. For testing only. */
+export function __clearRateLimitStore(): void {
+  store.clear()
+}
+
 // ── IP Extraction ──────────────────────────────────────────
 
 /**

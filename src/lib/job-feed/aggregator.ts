@@ -31,12 +31,12 @@ function getAdminClient() {
   )
 }
 
-function hashQuery(params: JobSearchParams): string {
+export function hashQuery(params: JobSearchParams): string {
   const key = `${params.query}|${params.location || ''}|${params.remote_only || false}|${params.page || 1}`
   return createHash('sha256').update(key).digest('hex').slice(0, 32)
 }
 
-function deduplicateJobs(jobs: NormalizedJob[]): NormalizedJob[] {
+export function deduplicateJobs(jobs: NormalizedJob[]): NormalizedJob[] {
   const seen = new Set<string>()
   return jobs.filter((job) => {
     const key = `${job.title.toLowerCase().trim()}|${job.company.toLowerCase().trim()}`
@@ -46,7 +46,7 @@ function deduplicateJobs(jobs: NormalizedJob[]): NormalizedJob[] {
   })
 }
 
-function sortByDate(jobs: NormalizedJob[]): NormalizedJob[] {
+export function sortByDate(jobs: NormalizedJob[]): NormalizedJob[] {
   return jobs.sort((a, b) => {
     if (!a.posted_at && !b.posted_at) return 0
     if (!a.posted_at) return 1

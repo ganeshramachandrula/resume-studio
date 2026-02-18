@@ -34,6 +34,8 @@ export function stripHtml(input: string): string {
   return input
     .replace(/<[^>]*>/g, '') // Remove HTML tags
     .replace(/javascript\s*:/gi, '') // Remove javascript: protocol
+    .replace(/j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*(?:&#58;|&#x3a;|&#0*58;|:)/gi, '') // Entity-encoded javascript:
+    .replace(/&#(?:x6a|106);/gi, '') // Encoded 'j' char used in js: protocol bypass
     .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // Remove event handlers
     .replace(/data\s*:\s*text\/html/gi, '') // Remove data:text/html
     .trim()
@@ -69,6 +71,9 @@ const ALLOWED_REDIRECT_PATHS = [
   '/admin/messages',
   '/contact',
   '/job-feed',
+  '/career-coach',
+  '/team',
+  '/job-feed/preferences',
 ]
 
 export function isValidRedirect(path: string): boolean {

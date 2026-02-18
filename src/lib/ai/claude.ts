@@ -70,7 +70,7 @@ export async function generateJSONWithClaude<T>(
  * 2. Trimming back to the last valid structural point
  * 3. Closing open brackets/braces in correct nesting order
  */
-function repairTruncatedJSON(json: string): string {
+export function repairTruncatedJSON(json: string): string {
   // Track structural state
   let inString = false
   let escaped = false
