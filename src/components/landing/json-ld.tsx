@@ -1,3 +1,5 @@
+import { faqStructuredData } from './faq'
+
 export function JsonLd() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'
 
@@ -58,6 +60,10 @@ export function JsonLd() {
         '@type': 'WebSite',
         name: 'Resume Studio',
         url: baseUrl,
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: faqStructuredData,
       },
     ],
   }

@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Crown, CreditCard, Loader2, LogOut, Zap, Users } from 'lucide-react'
 import Link from 'next/link'
+import { ReferralSection } from '@/components/referral-section'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -196,6 +197,9 @@ export default function SettingsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Referral Program */}
+      <ReferralSection />
 
       {/* Sign Out */}
       <Card>

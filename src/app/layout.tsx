@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { DM_Sans, Instrument_Serif } from "next/font/google"
+import { GoogleAnalytics } from "@/components/analytics"
 import "./globals.css"
 
 const dmSans = DM_Sans({
@@ -56,6 +57,16 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    languages: {
+      'en': '/',
+      'es': '/es',
+      'fr': '/fr',
+      'de': '/de',
+      'pt': '/pt',
+      'hi': '/hi',
+    },
+  },
 }
 
 export default function RootLayout({
@@ -66,6 +77,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${dmSans.variable} ${instrumentSerif.variable} antialiased`}>
+        <GoogleAnalytics />
         {children}
       </body>
     </html>

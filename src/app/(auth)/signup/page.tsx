@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -34,8 +34,10 @@ function getBrowserMetadata() {
   }
 }
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const referralCode = searchParams.get('ref') || ''
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -105,6 +107,15 @@ export default function SignupPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ deviceId, ...metadata }),
     }).catch(() => {})
+
+    // Record referral if ?ref= was present (fire-and-forget)
+    if (referralCode) {
+      fetch('/api/referral', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referralCode }),
+      }).catch(() => {})
+    }
 
     // If session exists, email confirmation is not required — redirect directly
     if (signUpData.session) {
@@ -273,5 +284,13 @@ export default function SignupPage() {
         </p>
       </CardContent>
     </Card>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   )
 }

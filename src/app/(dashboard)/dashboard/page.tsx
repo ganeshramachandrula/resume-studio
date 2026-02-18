@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Sparkles, FileText, Briefcase, Crown, ArrowRight } from 'lucide-react'
 import { MAX_APPLICATIONS_PRO } from '@/lib/constants'
+import { OnboardingModal } from '@/components/onboarding-modal'
 import type { Document, JobApplication } from '@/types/database'
 
 interface JDInfo {
@@ -91,6 +92,7 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
+      <OnboardingModal />
       {/* Welcome */}
       <div>
         <h1 className="text-3xl font-display text-gray-900">

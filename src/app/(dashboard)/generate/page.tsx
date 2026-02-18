@@ -21,6 +21,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, FileText, Mail, Linkedin, MessageSquare, BookOpen, Award, Loader2, Sparkles } from 'lucide-react'
 import { DOCUMENT_TYPE_LABELS } from '@/lib/constants'
+import { detectBrowserLanguageCode } from '@/lib/i18n/currencies'
+import { PRESET_LANGUAGES } from '@/lib/templates/languages'
 import type { DocumentType } from '@/types/database'
 
 const docOptions: { type: DocumentType; icon: React.ElementType; description: string }[] = [
@@ -100,6 +102,16 @@ function GeneratePageInner() {
     }
     loadJD()
   }, [searchParams, setJobDescription, setParsedJD, setStep])
+
+  // Auto-detect browser language and pre-select for annual users
+  useEffect(() => {
+    if (userIsAnnual && language === 'en') {
+      const browserLang = detectBrowserLanguageCode()
+      if (browserLang !== 'en' && PRESET_LANGUAGES.some((l) => l.code === browserLang)) {
+        setLanguage(browserLang)
+      }
+    }
+  }, [userIsAnnual, language, setLanguage])
 
   const refreshProfile = useCallback(async () => {
     const supabase = createClient()

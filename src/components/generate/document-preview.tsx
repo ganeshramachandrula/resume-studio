@@ -22,6 +22,7 @@ import { ATSScoreDisplay } from './ats-score-display'
 import { PDFGenerator } from '@/components/pdf/pdf-generator'
 import { ResumeEditor } from './resume-editor'
 import { ContentProtection } from '@/components/ui/content-protection'
+import { ShareButton } from './share-button'
 
 function ResumePreview({ data }: { data: ResumeData }) {
   return (
@@ -571,6 +572,9 @@ export function DocumentPreview() {
                   ) : null}
                   {!editMode && (
                     <CopyButton type={type} content={generatedDocuments[type]} isFree={isFree} />
+                  )}
+                  {!editMode && !isFree && (
+                    <ShareButton documentId={(generatedDocuments[type] as Record<string, unknown>)?._savedId as string | undefined} />
                   )}
                 </div>
               </CardHeader>

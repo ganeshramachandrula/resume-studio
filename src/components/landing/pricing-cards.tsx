@@ -1,14 +1,17 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Zap, Users } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { detectLocalCurrency, formatLocalPrice } from '@/lib/i18n/currencies'
 
 const plans = [
   {
     name: 'Free',
     price: '$0',
+    usdAmount: 0,
     period: '/month',
     description: 'Perfect for trying it out',
     features: [
@@ -24,6 +27,7 @@ const plans = [
   {
     name: 'Pro Monthly',
     price: '$9.99',
+    usdAmount: 9.99,
     period: '/month',
     description: 'For active job seekers',
     features: [
@@ -37,13 +41,15 @@ const plans = [
     ],
     cta: 'Go Pro',
     href: '/signup',
-    popular: true,
+    popular: false,
   },
   {
     name: 'Pro Annual',
     price: '$79',
+    usdAmount: 79,
     period: '/year',
-    description: 'Best value — save 34%',
+    priceDetail: '$6.58/mo',
+    description: 'Save 34% vs monthly',
     features: [
       'Everything in Pro',
       'Priority generation',
@@ -53,11 +59,17 @@ const plans = [
     ],
     cta: 'Go Pro Annual',
     href: '/signup',
-    popular: false,
+    popular: true,
   },
 ]
 
 export function PricingCards() {
+  const [localCurrency, setLocalCurrency] = useState<ReturnType<typeof detectLocalCurrency>>(null)
+
+  useEffect(() => {
+    setLocalCurrency(detectLocalCurrency())
+  }, [])
+
   return (
     <section id="pricing" className="py-20 px-4">
       <div className="max-w-7xl mx-auto">
@@ -73,29 +85,11 @@ export function PricingCards() {
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             Start free. Upgrade when you&apos;re ready. Cancel anytime.
           </p>
-        </motion.div>
-
-        {/* Credit Pack Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-5xl mx-auto mb-8"
-        >
-          <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-accent/10 to-brand/10 border border-accent/20 p-5">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                <Zap className="h-5 w-5 text-accent" />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold font-[family-name:var(--font-body)]">Credit Pack</h3>
-                <p className="text-gray-400 text-sm">3 document generations for $2.99 — no watermark, saved to your account. Credits never expire.</p>
-              </div>
-            </div>
-            <Link href="/signup">
-              <Button variant="accent" size="sm">Buy Credits</Button>
-            </Link>
-          </div>
+          {localCurrency && (
+            <p className="text-gray-500 text-sm mt-2">
+              Prices shown in USD. Approximate {localCurrency.code} equivalents shown below.
+            </p>
+          )}
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -114,7 +108,7 @@ export function PricingCards() {
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  Most Popular
+                  Best Value
                 </div>
               )}
 
@@ -126,6 +120,16 @@ export function PricingCards() {
               <div className="mb-6">
                 <span className="text-4xl font-bold text-white">{plan.price}</span>
                 <span className="text-gray-400 text-sm">{plan.period}</span>
+                {plan.priceDetail && (
+                  <p className="text-accent text-sm font-medium mt-1">
+                    That&apos;s just {plan.priceDetail}
+                  </p>
+                )}
+                {localCurrency && plan.usdAmount > 0 && (
+                  <p className="text-gray-500 text-xs mt-1">
+                    {formatLocalPrice(plan.usdAmount, localCurrency)}{plan.period}
+                  </p>
+                )}
               </div>
 
               <ul className="space-y-3 mb-8">
@@ -181,11 +185,37 @@ export function PricingCards() {
               <div className="mb-3">
                 <span className="text-3xl font-bold text-white">$59</span>
                 <span className="text-gray-400 text-sm">/seat/year</span>
+                {localCurrency && (
+                  <p className="text-gray-500 text-xs mt-1">{formatLocalPrice(59, localCurrency)}/seat/year</p>
+                )}
               </div>
               <Link href="/signup">
                 <Button variant="outline" size="lg">Get Team Plan</Button>
               </Link>
             </div>
+          </div>
+        </motion.div>
+
+        {/* Credit Pack — subtle, below main pricing */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-5xl mx-auto mt-6"
+        >
+          <div className="flex items-center justify-between rounded-xl bg-white/5 border border-white/10 p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-lg bg-accent/10 flex items-center justify-center">
+                <Zap className="h-4 w-4 text-accent" />
+              </div>
+              <div>
+                <h3 className="text-white font-medium text-sm font-[family-name:var(--font-body)]">Need just a few more?</h3>
+                <p className="text-gray-400 text-xs">3 document generations for $2.99 — no watermark, saved to your account. Credits never expire.</p>
+              </div>
+            </div>
+            <Link href="/signup">
+              <Button variant="ghost" size="sm" className="text-accent hover:text-accent hover:bg-accent/10 shrink-0">Buy Credits</Button>
+            </Link>
           </div>
         </motion.div>
       </div>

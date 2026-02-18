@@ -18,8 +18,8 @@ export function FinalCTA() {
             Ready to land more interviews?
           </h2>
           <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
-            Join thousands of job seekers who&apos;ve already upgraded their application
-            game with Resume Studio.
+            6 tailored documents from a single job description. ATS-optimized,
+            interview-ready, and built in under 60 seconds.
           </p>
           <Link href="/signup">
             <Button
@@ -31,6 +31,9 @@ export function FinalCTA() {
               <ArrowRight className="h-5 w-5" />
             </Button>
           </Link>
+          <p className="text-sm text-gray-500 mt-4">
+            No credit card required. 2 free documents every month.
+          </p>
         </motion.div>
       </div>
     </section>
