@@ -1,5 +1,8 @@
 -- Migration 013: Referral program + shareable document links
 
+-- Ensure pgcrypto extension is available (needed for digest() in referral code generation)
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
+
 -- Referral codes
 CREATE TABLE referral_codes (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
