@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { isAIConfigured, repairTruncatedJSON } from '@/lib/ai/claude'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { repairTruncatedJSON } from '@/lib/ai/claude'
 
 // ── isAIConfigured ───────────────────────────────────────────
 

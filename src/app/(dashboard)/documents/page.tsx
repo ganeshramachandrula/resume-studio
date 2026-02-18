@@ -60,10 +60,6 @@ export default function DocumentsPage() {
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadDocuments()
-  }, [])
-
   async function loadDocuments() {
     const supabase = createClient()
     const { data } = await supabase
@@ -76,6 +72,9 @@ export default function DocumentsPage() {
     }
     setLoading(false)
   }
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching on mount
+  useEffect(() => { void loadDocuments() }, [])
 
   async function handleDeleteApplication(jobDescriptionId: string) {
     setDeletingId(jobDescriptionId)

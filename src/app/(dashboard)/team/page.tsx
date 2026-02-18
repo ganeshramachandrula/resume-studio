@@ -46,7 +46,7 @@ export default function TeamPage() {
     setLoading(false)
   }, [])
 
-  useEffect(() => { fetchTeam() }, [fetchTeam])
+  useEffect(() => { void fetchTeam() }, [fetchTeam]) // eslint-disable-line react-hooks/set-state-in-effect -- data fetching on mount
 
   const handleAddMember = async () => {
     if (!addEmail.trim()) return

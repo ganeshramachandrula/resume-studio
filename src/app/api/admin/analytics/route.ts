@@ -4,7 +4,7 @@ import { checkAdmin, getServiceClient } from '@/lib/admin/check-admin'
 import { safeErrorResponse } from '@/lib/security/sanitize'
 import { checkRateLimit, rateLimitResponse, ADMIN_RATE_LIMIT } from '@/lib/security/rate-limit'
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()

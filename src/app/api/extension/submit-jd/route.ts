@@ -5,7 +5,7 @@ import { PARSE_JD_SYSTEM, buildParseJDPrompt } from '@/lib/ai/prompts/parse-jd'
 import { mockParsedJD } from '@/lib/ai/mock-responses'
 import { safeErrorResponse } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, extensionSubmitSchema } from '@/lib/security/validation'
-import { checkRateLimit, getClientIP, rateLimitResponse, EXTENSION_RATE_LIMIT } from '@/lib/security/rate-limit'
+import { checkRateLimit, getClientIP, EXTENSION_RATE_LIMIT } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
 
 const CORS_HEADERS = {

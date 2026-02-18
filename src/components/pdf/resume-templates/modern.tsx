@@ -6,7 +6,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Font,
 } from '@react-pdf/renderer'
 import type { ResumeData } from '@/types/documents'
 import { WatermarkOverlay } from '../watermark-overlay'

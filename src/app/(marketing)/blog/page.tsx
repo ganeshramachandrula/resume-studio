@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { FileText, ArrowRight, Clock } from 'lucide-react'
+import { ArrowRight, Clock } from 'lucide-react'
 import { blogPosts } from '@/lib/blog/posts'
 import type { Metadata } from 'next'
 

@@ -40,6 +40,7 @@ export function JobCard({ job }: JobCardProps) {
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
             {job.logo_url ? (
+              /* eslint-disable-next-line @next/next/no-img-element -- external logo URL from job provider */
               <img
                 src={job.logo_url}
                 alt={job.company}

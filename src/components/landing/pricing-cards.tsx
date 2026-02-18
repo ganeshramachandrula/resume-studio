@@ -66,9 +66,8 @@ const plans = [
 export function PricingCards() {
   const [localCurrency, setLocalCurrency] = useState<ReturnType<typeof detectLocalCurrency>>(null)
 
-  useEffect(() => {
-    setLocalCurrency(detectLocalCurrency())
-  }, [])
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only API on mount
+  useEffect(() => { setLocalCurrency(detectLocalCurrency()) }, [])
 
   return (
     <section id="pricing" className="py-20 px-4">

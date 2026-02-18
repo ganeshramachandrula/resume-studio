@@ -1,7 +1,7 @@
 'use client'
 
 import { FONT_OPTIONS } from '@/lib/templates/font-options'
-import { Type, Lock } from 'lucide-react'
+import { Type } from 'lucide-react'
 
 export function FontSelector({
   selected,

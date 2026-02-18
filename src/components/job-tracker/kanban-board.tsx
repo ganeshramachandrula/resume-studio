@@ -1,6 +1,5 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
 import { JobCard } from './job-card'
 import { Badge } from '@/components/ui/badge'
 import { JOB_STATUS_LABELS } from '@/lib/constants'
@@ -16,20 +15,11 @@ const columns: { status: JobStatus; color: string }[] = [
 
 export function KanbanBoard({
   jobs,
-  onRefresh,
+  onRefresh, // eslint-disable-line @typescript-eslint/no-unused-vars -- kept for parent API contract
 }: {
   jobs: JobApplication[]
   onRefresh: () => void
 }) {
-  const handleStatusChange = async (jobId: string, newStatus: JobStatus) => {
-    const supabase = createClient()
-    await supabase
-      .from('job_applications')
-      .update({ status: newStatus })
-      .eq('id', jobId)
-    onRefresh()
-  }
-
   return (
     <div className="flex gap-4 overflow-x-auto pb-4">
       {columns.map(({ status, color }) => {

@@ -59,7 +59,7 @@ export function JDInput() {
           Paste the Job Description
         </h2>
         <p className="text-gray-500">
-          Copy and paste the full job posting. We'll extract key requirements and keywords.
+          Copy and paste the full job posting. We&apos;ll extract key requirements and keywords.
         </p>
       </div>
 

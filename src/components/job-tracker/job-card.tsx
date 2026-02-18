@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { MapPin, ExternalLink } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import type { JobApplication } from '@/types/database'
 
 export function JobCard({

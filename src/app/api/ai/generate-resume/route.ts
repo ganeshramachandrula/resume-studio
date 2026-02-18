@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     // Language gating: only annual/team users can use non-English
     const effectiveLanguage = (profile?.plan === 'pro_annual' || profile?.plan === 'team') && language ? language : undefined
 
-    let resume = isAIConfigured()
+    const resume = isAIConfigured()
       ? await generateJSONWithClaude(GENERATE_RESUME_SYSTEM, buildGenerateResumePrompt(parsedJD, experience, contactInfo, effectiveLanguage))
       : JSON.parse(JSON.stringify(mockResumeData))
 

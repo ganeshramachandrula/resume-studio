@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 // ── Hoisted mock variables (accessible in vi.mock factories) ────────
 
 const { mockClient, mockIsStripeConfigured } = vi.hoisted(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- vitest mock requires dynamic typing
   const mockClient: any = {
     auth: {
       getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: { message: 'no session' } }),
@@ -23,8 +24,8 @@ const { mockClient, mockIsStripeConfigured } = vi.hoisted(() => {
   mockClient.eq.mockReturnValue(mockClient)
   mockClient.from.mockImplementation(() => {
     return new Proxy(mockClient, {
-      get(target: any, prop: string) {
-        if (prop === 'then') return (resolve: Function) => resolve({ data: null, error: null })
+      get(target: Record<string, unknown>, prop: string) {
+        if (prop === 'then') return (resolve: (v: unknown) => void) => resolve({ data: null, error: null })
         return target[prop]
       },
     })
@@ -115,8 +116,8 @@ describe('POST /api/stripe/create-checkout', () => {
     mockClient.rpc.mockResolvedValue({ data: null, error: null })
     mockClient.from.mockImplementation(() => {
       return new Proxy(mockClient, {
-        get(target: any, prop: string) {
-          if (prop === 'then') return (resolve: Function) => resolve({ data: null, error: null })
+        get(target: Record<string, unknown>, prop: string) {
+          if (prop === 'then') return (resolve: (v: unknown) => void) => resolve({ data: null, error: null })
           return target[prop]
         },
       })
@@ -185,8 +186,8 @@ describe('POST /api/stripe/create-checkout', () => {
     // Make the team insert return a team object via thenable proxy
     mockClient.from.mockImplementation(() => {
       return new Proxy(mockClient, {
-        get(target: any, prop: string) {
-          if (prop === 'then') return (resolve: Function) => resolve({ data: { id: 'team-1' }, error: null })
+        get(target: Record<string, unknown>, prop: string) {
+          if (prop === 'then') return (resolve: (v: unknown) => void) => resolve({ data: { id: 'team-1' }, error: null })
           return target[prop]
         },
       })

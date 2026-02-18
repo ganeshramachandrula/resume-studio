@@ -25,9 +25,8 @@ export default function JobTrackerPage() {
     setLoading(false)
   }
 
-  useEffect(() => {
-    loadJobs()
-  }, [])
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching on mount
+  useEffect(() => { void loadJobs() }, [])
 
   return (
     <div className="max-w-full space-y-6">

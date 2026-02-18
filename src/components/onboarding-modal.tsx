@@ -36,7 +36,7 @@ export function OnboardingModal() {
   useEffect(() => {
     const seen = localStorage.getItem(ONBOARDING_KEY)
     if (!seen) {
-      setVisible(true)
+      setVisible(true) // eslint-disable-line react-hooks/set-state-in-effect -- browser-only init
     }
   }, [])
 

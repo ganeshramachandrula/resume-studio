@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { safeErrorResponse } from '@/lib/security/sanitize'
-import { checkRateLimit, getClientIP, rateLimitResponse, AUTH_RATE_LIMIT } from '@/lib/security/rate-limit'
+import { checkRateLimit, getClientIP, AUTH_RATE_LIMIT } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
 import { z } from 'zod'
 

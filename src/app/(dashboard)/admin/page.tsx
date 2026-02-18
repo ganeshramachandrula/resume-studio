@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Users, Crown, FileText, MessageSquare, ArrowRight, ShieldOff, GraduationCap, BarChart3, CreditCard, UsersRound } from 'lucide-react'
+import { Users, Crown, FileText, MessageSquare, ArrowRight, ShieldOff, GraduationCap, CreditCard, UsersRound } from 'lucide-react'
 
 interface AdminStats {
   totalUsers: number

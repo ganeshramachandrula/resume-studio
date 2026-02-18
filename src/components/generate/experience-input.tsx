@@ -15,6 +15,7 @@ export function ExperienceInput() {
   const [lastName, setLastName] = useState('')
 
   // Auto-populate name + email from auth profile on mount
+  /* eslint-disable react-hooks/set-state-in-effect -- one-time init and name sync */
   useEffect(() => {
     if (profile && !contactInfo.name && !contactInfo.email) {
       const fullName = profile.full_name || ''
@@ -37,6 +38,7 @@ export function ExperienceInput() {
       setContactInfo({ name: combined })
     }
   }, [firstName, lastName, contactInfo.name, setContactInfo])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   return (
     <div className="space-y-6">

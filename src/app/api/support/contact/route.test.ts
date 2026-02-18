@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 // ── Hoisted mock variables (accessible in vi.mock factories) ────────
 
 const { mockClient, mockServiceInsert, mockServiceClient } = vi.hoisted(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- vitest mock requires dynamic typing
   const mockClient: any = {
     auth: {
       getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: { message: 'no session' } }),
@@ -23,8 +24,8 @@ const { mockClient, mockServiceInsert, mockServiceClient } = vi.hoisted(() => {
   mockClient.eq.mockReturnValue(mockClient)
   mockClient.from.mockImplementation(() => {
     return new Proxy(mockClient, {
-      get(target: any, prop: string) {
-        if (prop === 'then') return (resolve: Function) => resolve({ data: null, error: null })
+      get(target: Record<string, unknown>, prop: string) {
+        if (prop === 'then') return (resolve: (v: unknown) => void) => resolve({ data: null, error: null })
         return target[prop]
       },
     })
@@ -98,8 +99,8 @@ describe('POST /api/support/contact', () => {
     mockClient.eq.mockReturnValue(mockClient)
     mockClient.from.mockImplementation(() => {
       return new Proxy(mockClient, {
-        get(target: any, prop: string) {
-          if (prop === 'then') return (resolve: Function) => resolve({ data: null, error: null })
+        get(target: Record<string, unknown>, prop: string) {
+          if (prop === 'then') return (resolve: (v: unknown) => void) => resolve({ data: null, error: null })
           return target[prop]
         },
       })

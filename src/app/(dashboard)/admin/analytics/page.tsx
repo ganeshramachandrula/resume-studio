@@ -93,7 +93,7 @@ export default function AdminAnalyticsPage() {
     setLoading(false)
   }, [])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => { void fetchData() }, [fetchData]) // eslint-disable-line react-hooks/set-state-in-effect -- data fetching on mount
 
   const handleBlockIp = async (ip: string, reason: string) => {
     setBlocking(true)

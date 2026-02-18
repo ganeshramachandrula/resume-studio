@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.replace('/dashboard')
       return
     }
-    setChecked(true)
+    setChecked(true) // eslint-disable-line react-hooks/set-state-in-effect -- auth guard
   }, [profile, router])
 
   if (!checked) {
