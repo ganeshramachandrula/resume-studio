@@ -15,13 +15,11 @@ import {
   Lock,
   X,
   Users,
-  ExternalLink,
   Search,
   Globe,
   LogOut,
   LifeBuoy,
 } from 'lucide-react'
-import { AFFILIATE_PARTNERS, buildAffiliateUrl } from '@/lib/affiliate-partners'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useAppStore } from '@/store/app-store'
@@ -160,31 +158,6 @@ export function Sidebar() {
             </>
           )}
         </nav>
-
-        {/* Resources (Affiliate Partners) */}
-        <div className="px-3 py-2">
-          <div className="h-px bg-gray-200 mb-2" />
-          <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Resources</p>
-          {AFFILIATE_PARTNERS.slice(0, 3).map((partner) => (
-            <a
-              key={partner.id}
-              href={buildAffiliateUrl(partner)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                fetch('/api/affiliate/track', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ partnerId: partner.id }),
-                })
-              }}
-              className="flex items-center gap-3 px-3 py-1.5 rounded-xl text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-            >
-              <ExternalLink className="h-3.5 w-3.5 shrink-0" />
-              {partner.name}
-            </a>
-          ))}
-        </div>
 
         {isPro ? (
           <div className="p-4 m-3 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20">
