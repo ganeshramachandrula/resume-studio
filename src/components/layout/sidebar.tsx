@@ -50,7 +50,7 @@ export function Sidebar() {
     setSigningOut(true)
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/login')
+    router.push('/')
     router.refresh()
   }
   const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
