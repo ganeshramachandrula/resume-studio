@@ -4,7 +4,7 @@
 (function () {
   'use strict'
 
-  const API_BASE_URL = 'http://localhost:5000'
+  const API_BASE_URL = 'https://resume-studio.io'
   const BUTTON_ID = 'resume-studio-generate-btn'
 
   // Determine which site we're on and extract JD accordingly

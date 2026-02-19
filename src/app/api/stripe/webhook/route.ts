@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe/server'
 import { createServerClient } from '@supabase/ssr'
 import { safeErrorResponse } from '@/lib/security/sanitize'
-import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/security/rate-limit'
+import { checkRateLimitDistributed, getClientIP, rateLimitResponse } from '@/lib/security/rate-limit'
 
 // Webhooks need a higher rate limit — Stripe sends many events per checkout
 const WEBHOOK_RATE_LIMIT = { maxRequests: 100, windowSeconds: 60 }
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   try {
     // Rate limit by IP
     const ip = getClientIP(request)
-    const rl = checkRateLimit(`webhook_${ip}`, WEBHOOK_RATE_LIMIT)
+    const rl = await checkRateLimitDistributed(`webhook_${ip}`, WEBHOOK_RATE_LIMIT)
     if (!rl.allowed) {
       logSecurityEvent('rate_limit_hit', request, undefined, { route: 'webhook' })
       return rateLimitResponse(rl.retryAfterSeconds!)

@@ -1,16 +1,19 @@
 /**
- * In-memory sliding window rate limiter.
- * No external dependencies. Auto-cleans expired entries.
+ * Rate limiter with two modes:
  *
- * NOTE: This is per-process. In a multi-instance deployment (Vercel serverless),
- * each instance has its own map. For production, consider Redis-backed rate limiting.
+ * 1. **In-memory** (per-process): Fast, no dependencies. Used for non-critical
+ *    routes and as a fast-path fallback when DB is slow/down.
+ *
+ * 2. **Distributed** (Supabase-backed): Atomic check via `check_rate_limit` RPC.
+ *    Works across Vercel serverless instances. Used for critical routes (auth,
+ *    AI generation, Stripe, career coach, extension).
  */
 
 interface RateLimitEntry {
   timestamps: number[]
 }
 
-interface RateLimitConfig {
+export interface RateLimitConfig {
   /** Maximum requests allowed in the window */
   maxRequests: number
   /** Window size in seconds */
@@ -52,7 +55,7 @@ function ensureCleanup() {
 }
 
 /**
- * Check and enforce a rate limit for an identifier (IP or user ID).
+ * In-memory rate limit check. Fast but per-instance only.
  */
 export function checkRateLimit(
   identifier: string,
@@ -82,6 +85,41 @@ export function checkRateLimit(
   // Allow and record
   entry.timestamps.push(now)
   return { allowed: true }
+}
+
+/**
+ * Distributed rate limit check using Supabase `check_rate_limit` RPC.
+ * Falls back to in-memory if DB call fails (defense in depth).
+ */
+export async function checkRateLimitDistributed(
+  identifier: string,
+  config: RateLimitConfig
+): Promise<RateLimitResult> {
+  try {
+    const { createServerClient } = await import('@supabase/ssr')
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { cookies: { getAll() { return [] }, setAll() {} } }
+    )
+
+    const { data, error } = await supabase.rpc('check_rate_limit', {
+      p_key: `${config.windowSeconds}:${config.maxRequests}:${identifier}`,
+      p_max_requests: config.maxRequests,
+      p_window_seconds: config.windowSeconds,
+    })
+
+    if (error) throw error
+
+    const result = data as { allowed: boolean; count: number; retry_after?: number }
+    if (!result.allowed) {
+      return { allowed: false, retryAfterSeconds: result.retry_after ?? config.windowSeconds }
+    }
+    return { allowed: true }
+  } catch {
+    // DB unavailable — fall back to in-memory (defense in depth)
+    return checkRateLimit(identifier, config)
+  }
 }
 
 // ── Presets ─────────────────────────────────────────────────

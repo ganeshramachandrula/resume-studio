@@ -26,6 +26,8 @@ export type SecurityEventType =
   | 'signup_blocked'
   | 'job_search'
   | 'extension_submit'
+  | 'account_locked'
+  | 'account_lockout_triggered'
 
 /**
  * Returns a Supabase admin client (service role) for writing security events.

@@ -37,7 +37,7 @@
     }
   ],
   "host_permissions": [
-    "http://localhost:5000/*",
+    "https://resume-studio.io/*",
     "https://*.resumestudio.com/*"
   ]
 }

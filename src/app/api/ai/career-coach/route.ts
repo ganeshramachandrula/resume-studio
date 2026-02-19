@@ -4,7 +4,7 @@ import { CAREER_COACH_SYSTEM, buildCoachContextBlock } from '@/lib/ai/prompts/ca
 import { mockCoachResponse } from '@/lib/ai/mock-responses'
 import { safeErrorResponse, isEmailVerified } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, careerCoachSchema } from '@/lib/security/validation'
-import { checkRateLimit, getClientIP, getClientCountry, rateLimitResponse, COACH_RATE_LIMIT, COACH_MONTHLY_LIMIT } from '@/lib/security/rate-limit'
+import { checkRateLimitDistributed, getClientIP, getClientCountry, rateLimitResponse, COACH_RATE_LIMIT, COACH_MONTHLY_LIMIT } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
 import Anthropic from '@anthropic-ai/sdk'
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const country = getClientCountry(request)
 
     // Rate limit by IP
-    const ipRl = checkRateLimit(ip, COACH_RATE_LIMIT)
+    const ipRl = await checkRateLimitDistributed(ip, COACH_RATE_LIMIT)
     if (!ipRl.allowed) {
       logSecurityEvent('rate_limit_hit', request, undefined, { route: 'career-coach' })
       return rateLimitResponse(ipRl.retryAfterSeconds!)
@@ -52,14 +52,14 @@ export async function POST(request: Request) {
     }
 
     // Rate limit by user (per-minute)
-    const userRl = checkRateLimit(user.id, COACH_RATE_LIMIT)
+    const userRl = await checkRateLimitDistributed(user.id, COACH_RATE_LIMIT)
     if (!userRl.allowed) {
       logSecurityEvent('rate_limit_hit', request, user.id, { route: 'career-coach' })
       return rateLimitResponse(userRl.retryAfterSeconds!)
     }
 
     // Monthly message cap (100 messages/month)
-    const monthlyRl = checkRateLimit(`monthly:coach:${user.id}`, COACH_MONTHLY_LIMIT)
+    const monthlyRl = await checkRateLimitDistributed(`monthly:coach:${user.id}`, COACH_MONTHLY_LIMIT)
     if (!monthlyRl.allowed) {
       logSecurityEvent('rate_limit_hit', request, user.id, { route: 'career-coach-monthly' })
       return new Response(

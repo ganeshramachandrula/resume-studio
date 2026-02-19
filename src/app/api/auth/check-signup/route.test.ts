@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // ── Hoisted mock variables (accessible in vi.mock factories) ────────
 
-const { mockClient, mockAdminRpc, mockAdminClient } = vi.hoisted(() => {
+const { mockClient, mockAdminRpc, mockAdminClient, rateLimitCounts } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- vitest mock requires dynamic typing
   const mockClient: any = {
     auth: {
@@ -31,7 +31,24 @@ const { mockClient, mockAdminRpc, mockAdminClient } = vi.hoisted(() => {
     })
   })
 
-  const mockAdminRpc = vi.fn().mockResolvedValue({ data: { allowed: true }, error: null })
+  // Track how many times check_rate_limit has been called per key
+  const rateLimitCounts = new Map<string, number>()
+
+  const mockAdminRpc = vi.fn().mockImplementation((fnName: string, args: Record<string, unknown>) => {
+    if (fnName === 'check_rate_limit') {
+      const key = args.p_key as string
+      const max = args.p_max_requests as number
+      const count = (rateLimitCounts.get(key) || 0) + 1
+      rateLimitCounts.set(key, count)
+      if (count > max) {
+        return Promise.resolve({ data: { allowed: false, count, retry_after: args.p_window_seconds }, error: null })
+      }
+      return Promise.resolve({ data: { allowed: true, count }, error: null })
+    }
+    // Default: check_signup_allowed
+    return Promise.resolve({ data: { allowed: true }, error: null })
+  })
+
   const mockAdminClient = {
     rpc: mockAdminRpc,
     from: vi.fn(() => mockAdminClient),
@@ -41,7 +58,7 @@ const { mockClient, mockAdminRpc, mockAdminClient } = vi.hoisted(() => {
     single: vi.fn().mockResolvedValue({ data: null, error: null }),
   }
 
-  return { mockClient, mockAdminRpc, mockAdminClient }
+  return { mockClient, mockAdminRpc, mockAdminClient, rateLimitCounts }
 })
 
 // ── Module mocks ────────────────────────────────────────────────────
@@ -85,7 +102,21 @@ describe('POST /api/auth/check-signup', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     __clearRateLimitStore()
-    mockAdminRpc.mockResolvedValue({ data: { allowed: true }, error: null })
+    rateLimitCounts.clear()
+    // Restore default implementation (cleared by clearAllMocks)
+    mockAdminRpc.mockImplementation((fnName: string, args: Record<string, unknown>) => {
+      if (fnName === 'check_rate_limit') {
+        const key = args.p_key as string
+        const max = args.p_max_requests as number
+        const count = (rateLimitCounts.get(key) || 0) + 1
+        rateLimitCounts.set(key, count)
+        if (count > max) {
+          return Promise.resolve({ data: { allowed: false, count, retry_after: args.p_window_seconds }, error: null })
+        }
+        return Promise.resolve({ data: { allowed: true, count }, error: null })
+      }
+      return Promise.resolve({ data: { allowed: true }, error: null })
+    })
   })
 
   it('returns 200 with allowed:true for first signup', async () => {
@@ -105,9 +136,22 @@ describe('POST /api/auth/check-signup', () => {
   })
 
   it('returns 403 with allowed:false when signup is blocked', async () => {
-    mockAdminRpc.mockResolvedValue({
-      data: { allowed: false, reason: 'Too many accounts from this IP' },
-      error: null,
+    mockAdminRpc.mockImplementation((fnName: string, args: Record<string, unknown>) => {
+      if (fnName === 'check_rate_limit') {
+        const key = args.p_key as string
+        const max = args.p_max_requests as number
+        const count = (rateLimitCounts.get(key) || 0) + 1
+        rateLimitCounts.set(key, count)
+        if (count > max) {
+          return Promise.resolve({ data: { allowed: false, count, retry_after: args.p_window_seconds }, error: null })
+        }
+        return Promise.resolve({ data: { allowed: true, count }, error: null })
+      }
+      // check_signup_allowed → blocked
+      return Promise.resolve({
+        data: { allowed: false, reason: 'Too many accounts from this IP' },
+        error: null,
+      })
     })
 
     const req = makeRequest({ deviceId: 'device-blocked' })
@@ -119,9 +163,22 @@ describe('POST /api/auth/check-signup', () => {
   })
 
   it('returns allowed:true when RPC returns an error (fail open)', async () => {
-    mockAdminRpc.mockResolvedValue({
-      data: null,
-      error: { message: 'DB connection failed' },
+    mockAdminRpc.mockImplementation((fnName: string, args: Record<string, unknown>) => {
+      if (fnName === 'check_rate_limit') {
+        const key = args.p_key as string
+        const max = args.p_max_requests as number
+        const count = (rateLimitCounts.get(key) || 0) + 1
+        rateLimitCounts.set(key, count)
+        if (count > max) {
+          return Promise.resolve({ data: { allowed: false, count, retry_after: args.p_window_seconds }, error: null })
+        }
+        return Promise.resolve({ data: { allowed: true, count }, error: null })
+      }
+      // check_signup_allowed → error (fail open)
+      return Promise.resolve({
+        data: null,
+        error: { message: 'DB connection failed' },
+      })
     })
 
     const req = makeRequest({ deviceId: 'device-err' })

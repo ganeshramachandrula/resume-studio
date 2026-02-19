@@ -1,7 +1,7 @@
 // API helper for communicating with Resume Studio backend.
 // Default to localhost for development; change for production.
 
-const API_BASE_URL = 'http://localhost:5000'
+const API_BASE_URL = 'https://resume-studio.io'
 
 /**
  * Get the stored auth token from chrome.storage.local.

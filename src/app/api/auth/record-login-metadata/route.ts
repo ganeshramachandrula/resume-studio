@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
 import { z } from 'zod'
 import { checkRateLimit, GENERAL_RATE_LIMIT, getClientIP, rateLimitResponse } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
@@ -51,6 +52,21 @@ export async function POST(request: Request) {
     metadata.ip = ip
 
     logSecurityEvent('login_success', request, user.id, metadata)
+
+    // Reset failed login attempts on successful login (fire-and-forget via service role)
+    try {
+      const serviceSupabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { cookies: { getAll() { return [] }, setAll() {} } }
+      )
+      await serviceSupabase
+        .from('profiles')
+        .update({ failed_login_attempts: 0, locked_until: null })
+        .eq('id', user.id)
+    } catch {
+      // Don't fail the login flow
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {

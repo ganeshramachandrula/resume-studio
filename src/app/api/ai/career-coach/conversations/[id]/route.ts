@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { safeErrorResponse } from '@/lib/security/sanitize'
-import { checkRateLimit, getClientIP, rateLimitResponse, COACH_RATE_LIMIT } from '@/lib/security/rate-limit'
+import { checkRateLimitDistributed, getClientIP, rateLimitResponse, COACH_RATE_LIMIT } from '@/lib/security/rate-limit'
 
 // GET: Get a single conversation with messages
 export async function GET(
@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { id } = await params
     const ip = getClientIP(request)
-    const ipRl = checkRateLimit(ip, COACH_RATE_LIMIT)
+    const ipRl = await checkRateLimitDistributed(ip, COACH_RATE_LIMIT)
     if (!ipRl.allowed) return rateLimitResponse(ipRl.retryAfterSeconds!)
 
     const supabase = await createClient()
@@ -45,7 +45,7 @@ export async function DELETE(
   try {
     const { id } = await params
     const ip = getClientIP(request)
-    const ipRl = checkRateLimit(ip, COACH_RATE_LIMIT)
+    const ipRl = await checkRateLimitDistributed(ip, COACH_RATE_LIMIT)
     if (!ipRl.allowed) return rateLimitResponse(ipRl.retryAfterSeconds!)
 
     const supabase = await createClient()

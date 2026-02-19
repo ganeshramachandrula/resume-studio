@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { isValidRedirect } from '@/lib/security/sanitize'
 import { logSecurityEvent } from '@/lib/security/audit-log'
-import { checkRateLimit, getClientIP, rateLimitResponse, AUTH_RATE_LIMIT } from '@/lib/security/rate-limit'
+import { checkRateLimitDistributed, getClientIP, rateLimitResponse, AUTH_RATE_LIMIT } from '@/lib/security/rate-limit'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
 
   // Rate limit auth callbacks by IP
   const ip = getClientIP(request)
-  const rl = checkRateLimit(ip, AUTH_RATE_LIMIT)
+  const rl = await checkRateLimitDistributed(ip, AUTH_RATE_LIMIT)
   if (!rl.allowed) {
     logSecurityEvent('rate_limit_hit', request, undefined, { route: 'auth/callback' })
     return rateLimitResponse(rl.retryAfterSeconds!)

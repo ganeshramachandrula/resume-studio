@@ -5,7 +5,7 @@ import { ATS_SCORE_SYSTEM, buildATSScorePrompt } from '@/lib/ai/prompts/ats-scor
 import { mockATSScoreData } from '@/lib/ai/mock-responses'
 import { safeErrorResponse, isEmailVerified } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, atsScoreSchema } from '@/lib/security/validation'
-import { checkRateLimit, getClientIP, rateLimitResponse, GENERATION_RATE_LIMIT } from '@/lib/security/rate-limit'
+import { checkRateLimitDistributed, getClientIP, rateLimitResponse, GENERATION_RATE_LIMIT } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
 import { ATS_SCORE_DAILY_FREE, ATS_SCORE_DAILY_PRO, ATS_SCORE_DAILY_MAX } from '@/lib/constants'
 import type { Plan } from '@/types/database'
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   try {
     // Rate limit by IP before auth
     const ip = getClientIP(request)
-    const ipRl = checkRateLimit(ip, GENERATION_RATE_LIMIT)
+    const ipRl = await checkRateLimitDistributed(ip, GENERATION_RATE_LIMIT)
     if (!ipRl.allowed) {
       logSecurityEvent('rate_limit_hit', request, undefined, { route: 'ats-score' })
       return rateLimitResponse(ipRl.retryAfterSeconds!)
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     }
 
     // Rate limit by user ID
-    const userRl = checkRateLimit(user.id, GENERATION_RATE_LIMIT)
+    const userRl = await checkRateLimitDistributed(user.id, GENERATION_RATE_LIMIT)
     if (!userRl.allowed) {
       logSecurityEvent('rate_limit_hit', request, user.id, { route: 'ats-score' })
       return rateLimitResponse(userRl.retryAfterSeconds!)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -10,6 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FileText, Loader2 } from 'lucide-react'
 import { isDisposableEmail, normalizeEmail } from '@/lib/security/disposable-emails'
 import { getDeviceFingerprint } from '@/lib/security/fingerprint'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
 
 async function getFingerprint(): Promise<string> {
   try {
@@ -44,6 +47,8 @@ function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,12 +96,15 @@ function SignupForm() {
           full_name: fullName,
         },
         emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+        ...(captchaToken ? { captchaToken } : {}),
       },
     })
 
     if (error) {
       setError(error.message)
       setLoading(false)
+      turnstileRef.current?.reset()
+      setCaptchaToken(null)
       return
     }
 
@@ -270,6 +278,15 @@ function SignupForm() {
               minLength={6}
             />
           </div>
+          {TURNSTILE_SITE_KEY && (
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={TURNSTILE_SITE_KEY}
+              onSuccess={(token) => setCaptchaToken(token)}
+              onExpire={() => setCaptchaToken(null)}
+              options={{ size: 'invisible' }}
+            />
+          )}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             Create Account

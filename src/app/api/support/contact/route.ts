@@ -3,14 +3,14 @@ import { createClient } from '@/lib/supabase/server'
 import { getServiceClient } from '@/lib/admin/check-admin'
 import { safeErrorResponse } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, supportContactSchema } from '@/lib/security/validation'
-import { checkRateLimit, getClientIP, rateLimitResponse, SUPPORT_RATE_LIMIT } from '@/lib/security/rate-limit'
+import { checkRateLimitDistributed, getClientIP, rateLimitResponse, SUPPORT_RATE_LIMIT } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
 
 export async function POST(request: Request) {
   try {
     // Rate limit by IP
     const ip = getClientIP(request)
-    const rl = checkRateLimit(ip, SUPPORT_RATE_LIMIT)
+    const rl = await checkRateLimitDistributed(ip, SUPPORT_RATE_LIMIT)
     if (!rl.allowed) {
       logSecurityEvent('rate_limit_hit', request, undefined, { route: 'support-contact' })
       return rateLimitResponse(rl.retryAfterSeconds!)

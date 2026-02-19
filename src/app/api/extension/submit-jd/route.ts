@@ -5,11 +5,11 @@ import { PARSE_JD_SYSTEM, buildParseJDPrompt } from '@/lib/ai/prompts/parse-jd'
 import { mockParsedJD } from '@/lib/ai/mock-responses'
 import { safeErrorResponse } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, extensionSubmitSchema } from '@/lib/security/validation'
-import { checkRateLimit, getClientIP, EXTENSION_RATE_LIMIT } from '@/lib/security/rate-limit'
+import { checkRateLimitDistributed, getClientIP, EXTENSION_RATE_LIMIT } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
 
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': process.env.EXTENSION_CORS_ORIGIN || '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   try {
     // Rate limit by IP
     const ip = getClientIP(request)
-    const ipRl = checkRateLimit(ip, EXTENSION_RATE_LIMIT)
+    const ipRl = await checkRateLimitDistributed(ip, EXTENSION_RATE_LIMIT)
     if (!ipRl.allowed) {
       logSecurityEvent('rate_limit_hit', request, undefined, { route: 'extension-submit-jd' })
       return new NextResponse(
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     // Rate limit by user
-    const userRl = checkRateLimit(user.id, EXTENSION_RATE_LIMIT)
+    const userRl = await checkRateLimitDistributed(user.id, EXTENSION_RATE_LIMIT)
     if (!userRl.allowed) {
       logSecurityEvent('rate_limit_hit', request, user.id, { route: 'extension-submit-jd' })
       return new NextResponse(

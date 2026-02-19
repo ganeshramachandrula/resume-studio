@@ -1,6 +1,6 @@
 // Resume Studio Extension Popup
 
-const API_BASE_URL = 'http://localhost:5000'
+const API_BASE_URL = 'https://resume-studio.io'
 
 const loginSection = document.getElementById('login-section')
 const loggedinSection = document.getElementById('loggedin-section')

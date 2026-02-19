@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { z } from 'zod'
-import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/security/rate-limit'
+import { checkRateLimitDistributed, getClientIP, rateLimitResponse } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
 
 const checkSignupSchema = z.object({
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     const ip = getClientIP(request)
 
     // Rate limit
-    const rl = checkRateLimit(`signup-check:${ip}`, SIGNUP_CHECK_RATE_LIMIT)
+    const rl = await checkRateLimitDistributed(`signup-check:${ip}`, SIGNUP_CHECK_RATE_LIMIT)
     if (!rl.allowed) {
       return rateLimitResponse(rl.retryAfterSeconds!)
     }
