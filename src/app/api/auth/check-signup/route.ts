@@ -73,7 +73,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ allowed: true })
   } catch (err) {
-    console.error('[check-signup] Unexpected error:', err)
+    console.error('[check-signup]', (err as Error).message)
     // Fail open
     return NextResponse.json({ allowed: true })
   }

@@ -122,13 +122,14 @@ export async function searchAllProviders(
 
       // Cache the results (fire and forget)
       if (jobs.length > 0) {
-        void supabase
-          .from('job_feed_cache')
-          .upsert(
-            { query_hash: queryHash, provider, results: jobs as unknown as Record<string, unknown>[], fetched_at: new Date().toISOString() },
-            { onConflict: 'query_hash,provider' }
-          )
-          .then(() => {})
+        Promise.resolve(
+          supabase
+            .from('job_feed_cache')
+            .upsert(
+              { query_hash: queryHash, provider, results: jobs as unknown as Record<string, unknown>[], fetched_at: new Date().toISOString() },
+              { onConflict: 'query_hash,provider' }
+            )
+        ).catch(() => {})
       }
     }
   }

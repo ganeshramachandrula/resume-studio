@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
-import { getClientIP } from '@/lib/security/rate-limit'
+import { checkRateLimit, GENERAL_RATE_LIMIT, getClientIP, rateLimitResponse } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
 
 const recordLoginSchema = z.object({
@@ -23,6 +23,9 @@ export async function POST(request: Request) {
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(user.id, GENERAL_RATE_LIMIT)
+    if (!rl.allowed) return rateLimitResponse(rl.retryAfterSeconds!)
 
     let body: unknown
     try {
@@ -51,7 +54,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true })
   } catch (err) {
-    console.error('[record-login-metadata] Unexpected error:', err)
+    console.error('[record-login-metadata]', (err as Error).message)
     return NextResponse.json({ success: true }) // Don't fail the login flow
   }
 }

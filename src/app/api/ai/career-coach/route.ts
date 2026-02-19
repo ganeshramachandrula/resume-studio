@@ -231,7 +231,7 @@ export async function POST(request: Request) {
           )
           controller.close()
         } catch (err) {
-          console.error('[career-coach] Streaming error:', err)
+          console.error('[career-coach]', (err as Error).message)
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify({ type: 'error', content: 'Streaming failed' })}\n\n`)
           )

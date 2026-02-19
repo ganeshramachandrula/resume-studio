@@ -158,8 +158,7 @@ export default function CareerCoachPage() {
 
       // Refresh conversation list
       loadConversations()
-    } catch (err) {
-      console.error('Career Coach error:', err)
+    } catch {
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: 'Sorry, something went wrong. Please try again.' },

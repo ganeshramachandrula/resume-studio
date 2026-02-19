@@ -56,9 +56,8 @@ export async function generateJSONWithClaude<T>(
     jsonStr = repairTruncatedJSON(jsonStr)
     try {
       return JSON.parse(jsonStr) as T
-    } catch (e) {
-      console.error('[claude] JSON repair failed:', (e as Error).message)
-      console.error('[claude] Repaired string (last 200 chars):', jsonStr.slice(-200))
+    } catch {
+      // JSON repair failed — don't log raw AI response data
       throw new Error('Failed to parse AI response as JSON')
     }
   }

@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server'
 import { getServiceClient } from '@/lib/admin/check-admin'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit, SUPPORT_RATE_LIMIT, getClientIP, rateLimitResponse } from '@/lib/security/rate-limit'
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIP(request)
+    const rl = checkRateLimit(ip, SUPPORT_RATE_LIMIT)
+    if (!rl.allowed) return rateLimitResponse(rl.retryAfterSeconds!)
+
     const body = await request.json()
     const partnerId = typeof body.partnerId === 'string' ? body.partnerId : ''
 
@@ -23,10 +28,9 @@ export async function POST(request: Request) {
 
     // Fire-and-forget: insert into affiliate_clicks using service role
     const admin = getServiceClient()
-    admin
-      .from('affiliate_clicks')
-      .insert({ partner_id: partnerId, user_id: userId })
-      .then(() => {})
+    Promise.resolve(
+      admin.from('affiliate_clicks').insert({ partner_id: partnerId, user_id: userId })
+    ).catch(() => {})
 
     return NextResponse.json({ tracked: true })
   } catch {
