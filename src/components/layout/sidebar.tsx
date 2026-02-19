@@ -19,6 +19,8 @@ import {
   Globe,
   LogOut,
   LifeBuoy,
+  Award,
+  DollarSign,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -120,6 +122,36 @@ export function Sidebar() {
             <GraduationCap className="h-5 w-5" />
             Career Coach
             {!userIsAnnual && <Lock className="h-3 w-3 text-gray-400 ml-auto" />}
+          </Link>
+
+          {/* Credential Vault */}
+          <Link
+            href="/vault"
+            onClick={() => setSidebarOpen(false)}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+              pathname === '/vault'
+                ? 'bg-brand/10 text-brand'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+            )}
+          >
+            <Award className="h-5 w-5" />
+            Credential Vault
+          </Link>
+
+          {/* Cost of Living */}
+          <Link
+            href="/cost-of-living"
+            onClick={() => setSidebarOpen(false)}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+              pathname === '/cost-of-living'
+                ? 'bg-brand/10 text-brand'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+            )}
+          >
+            <DollarSign className="h-5 w-5" />
+            Cost of Living
           </Link>
 
           {/* Team management (Team plan only) */}

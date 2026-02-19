@@ -111,6 +111,46 @@ export const JOB_PROVIDER_LABELS: Record<string, string> = {
   findwork: 'Findwork',
 }
 
+// Credential Vault
+export const VAULT_PROFICIENCY_LEVELS = ['beginner', 'intermediate', 'advanced', 'expert'] as const
+export const VAULT_PROFICIENCY_LABELS: Record<string, string> = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+  expert: 'Expert',
+}
+
+export const VAULT_WORK_SAMPLE_TYPES = ['project', 'portfolio', 'publication', 'presentation', 'other'] as const
+export const VAULT_WORK_SAMPLE_TYPE_LABELS: Record<string, string> = {
+  project: 'Project',
+  portfolio: 'Portfolio',
+  publication: 'Publication',
+  presentation: 'Presentation',
+  other: 'Other',
+}
+
+export const VAULT_RELATIONSHIPS = ['manager', 'colleague', 'client', 'mentor', 'other'] as const
+export const VAULT_RELATIONSHIP_LABELS: Record<string, string> = {
+  manager: 'Manager',
+  colleague: 'Colleague',
+  client: 'Client',
+  mentor: 'Mentor',
+  other: 'Other',
+}
+
+export const VAULT_SKILL_CATEGORIES = [
+  'Programming',
+  'Design',
+  'Marketing',
+  'Management',
+  'Data & Analytics',
+  'Cloud & DevOps',
+  'Communication',
+  'Finance',
+  'Sales',
+  'Other',
+] as const
+
 export const COLORS = {
   brand: '#1A56DB',
   brandLight: '#3B82F6',

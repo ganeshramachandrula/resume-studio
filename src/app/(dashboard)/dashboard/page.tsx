@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { Sparkles, FileText, Briefcase, ArrowRight } from 'lucide-react'
+import { Sparkles, FileText, Briefcase, ArrowRight, Award, Code, FolderOpen, UserCheck } from 'lucide-react'
 import { MAX_APPLICATIONS_PRO } from '@/lib/constants'
 import { OnboardingModal } from '@/components/onboarding-modal'
 import type { Document, JobApplication } from '@/types/database'
@@ -64,13 +64,14 @@ export default function DashboardPage() {
   const { usageCount, remaining, isPro } = useUsage(profile)
   const [recentApps, setRecentApps] = useState<RecentApplication[]>([])
   const [recentJobApps, setRecentJobApps] = useState<JobApplication[]>([])
+  const [vaultCounts, setVaultCounts] = useState({ certs: 0, skills: 0, samples: 0, refs: 0 })
 
   const savedCount = profile?.saved_applications_count ?? 0
 
   useEffect(() => {
     const supabase = createClient()
     async function loadData() {
-      const [docsRes, appsRes] = await Promise.all([
+      const [docsRes, appsRes, certsRes, skillsRes, samplesRes, refsRes] = await Promise.all([
         supabase
           .from('documents')
           .select('*, job_descriptions!inner(id, company_name, role_title, created_at)')
@@ -81,11 +82,21 @@ export default function DashboardPage() {
           .select('*')
           .order('created_at', { ascending: false })
           .limit(5),
+        supabase.from('vault_certificates').select('id', { count: 'exact', head: true }),
+        supabase.from('vault_skills').select('id', { count: 'exact', head: true }),
+        supabase.from('vault_work_samples').select('id', { count: 'exact', head: true }),
+        supabase.from('vault_references').select('id', { count: 'exact', head: true }),
       ])
       if (docsRes.data) {
         setRecentApps(groupRecentApplications(docsRes.data as DocumentWithJD[]))
       }
       if (appsRes.data) setRecentJobApps(appsRes.data as JobApplication[])
+      setVaultCounts({
+        certs: certsRes.count ?? 0,
+        skills: skillsRes.count ?? 0,
+        samples: samplesRes.count ?? 0,
+        refs: refsRes.count ?? 0,
+      })
     }
     loadData()
   }, [])
@@ -245,6 +256,62 @@ export default function DashboardPage() {
                   <Badge variant="secondary" className="capitalize">{app.status}</Badge>
                 </div>
               ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Credential Vault */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="font-[family-name:var(--font-body)]">Credential Vault</CardTitle>
+          <Link href="/vault">
+            <Button variant="ghost" size="sm">
+              View All <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </CardHeader>
+        <CardContent>
+          {vaultCounts.certs + vaultCounts.skills + vaultCounts.samples + vaultCounts.refs === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <Award className="h-10 w-10 mx-auto mb-3 text-gray-300" />
+              <p>Store your certificates, skills, work samples, and references.</p>
+              <Link href="/vault">
+                <Button variant="default" className="mt-4">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+                <Award className="h-5 w-5 text-brand" />
+                <div>
+                  <p className="text-lg font-bold text-gray-900">{vaultCounts.certs}</p>
+                  <p className="text-xs text-gray-500">Certificates</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+                <Code className="h-5 w-5 text-brand" />
+                <div>
+                  <p className="text-lg font-bold text-gray-900">{vaultCounts.skills}</p>
+                  <p className="text-xs text-gray-500">Skills</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+                <FolderOpen className="h-5 w-5 text-brand" />
+                <div>
+                  <p className="text-lg font-bold text-gray-900">{vaultCounts.samples}</p>
+                  <p className="text-xs text-gray-500">Work Samples</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+                <UserCheck className="h-5 w-5 text-brand" />
+                <div>
+                  <p className="text-lg font-bold text-gray-900">{vaultCounts.refs}</p>
+                  <p className="text-xs text-gray-500">References</p>
+                </div>
+              </div>
             </div>
           )}
         </CardContent>

@@ -115,3 +115,55 @@ export interface JobApplication {
   created_at: string
   updated_at: string
 }
+
+// Credential Vault types
+export type VaultProficiency = 'beginner' | 'intermediate' | 'advanced' | 'expert'
+export type WorkSampleType = 'project' | 'portfolio' | 'publication' | 'presentation' | 'other'
+export type ReferenceRelationship = 'manager' | 'colleague' | 'client' | 'mentor' | 'other'
+
+export interface VaultCertificate {
+  id: string
+  user_id: string
+  name: string
+  issuer: string
+  issue_date: string
+  expiry_date: string | null
+  credential_url: string | null
+  description: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface VaultSkill {
+  id: string
+  user_id: string
+  name: string
+  category: string | null
+  proficiency: VaultProficiency
+  created_at: string
+  updated_at: string
+}
+
+export interface VaultWorkSample {
+  id: string
+  user_id: string
+  title: string
+  description: string | null
+  url: string
+  type: WorkSampleType
+  created_at: string
+  updated_at: string
+}
+
+export interface VaultReference {
+  id: string
+  user_id: string
+  name: string
+  title: string
+  company: string
+  email: string | null
+  phone: string | null
+  relationship: ReferenceRelationship
+  created_at: string
+  updated_at: string
+}
