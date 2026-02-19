@@ -84,32 +84,9 @@ export function filterByLocation(jobs: NormalizedJob[], params: JobSearchParams)
     }
   }
 
-  // If country is specified, filter jobs whose location mentions the country
-  if (params.country) {
-    const countryCode = params.country.toUpperCase()
-    const countryLower = params.country.toLowerCase()
-    // Map codes to full names for matching against job location text
-    const COUNTRY_NAMES: Record<string, string> = {
-      US: 'united states', GB: 'united kingdom', CA: 'canada', AU: 'australia',
-      DE: 'germany', FR: 'france', NL: 'netherlands', ES: 'spain', IT: 'italy',
-      PL: 'poland', IN: 'india', NZ: 'new zealand', BR: 'brazil', SG: 'singapore',
-      AT: 'austria', CH: 'switzerland', SE: 'sweden', IE: 'ireland', JP: 'japan',
-      ZA: 'south africa',
-    }
-    const countryName = COUNTRY_NAMES[countryCode] || ''
-    filtered = filtered.filter(job => {
-      const loc = job.location.toLowerCase()
-      // Keep if location mentions country code, country name, or is generic (remote/not specified)
-      return (
-        loc.includes(countryLower) ||
-        (countryName && loc.includes(countryName)) ||
-        loc === 'not specified' ||
-        loc === 'remote' ||
-        loc === 'worldwide' ||
-        (job.remote && !params.location) // remote jobs pass only when no city is specified
-      )
-    })
-  }
+  // Country filtering is handled upstream by providers (e.g. Adzuna uses country
+  // in its API endpoint, JSearch/Findwork append it to location). No post-filter
+  // needed here — provider results are already country-scoped.
 
   return filtered
 }
