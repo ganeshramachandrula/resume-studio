@@ -216,7 +216,7 @@ export async function POST(request: Request) {
 
       case 'invoice.payment_failed': {
         const invoice = event.data.object
-        console.error('Payment failed for customer:', invoice.customer)
+        logSecurityEvent('webhook_received', request, undefined, { event: 'payment_failed' })
         break
       }
     }
