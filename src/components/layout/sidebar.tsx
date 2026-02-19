@@ -17,6 +17,7 @@ import {
   Users,
   ExternalLink,
   Search,
+  Globe,
   LogOut,
   LifeBuoy,
 } from 'lucide-react'
@@ -32,6 +33,7 @@ const navigation = [
   { name: 'Applications', href: '/documents', icon: FileText },
   { name: 'Job Feed', href: '/job-feed', icon: Search },
   { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase },
+  { name: 'Job Sites', href: '/job-sites', icon: Globe },
   { name: 'Settings', href: '/settings', icon: Settings },
   { name: 'Support', href: '/support', icon: LifeBuoy },
 ]
