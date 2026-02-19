@@ -7,6 +7,7 @@ export type DocumentType =
   | 'cold_email'
   | 'interview_prep'
   | 'certification_guide'
+  | 'country_resume'
 
 export type JobStatus =
   | 'saved'

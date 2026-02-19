@@ -1,4 +1,4 @@
-import type { ParsedJD, ResumeData, CoverLetterData, LinkedInData, ColdEmailData, InterviewPrepData, CertificationGuideData, ATSScoreData } from '@/types/documents'
+import type { ParsedJD, ResumeData, CoverLetterData, LinkedInData, ColdEmailData, InterviewPrepData, CertificationGuideData, ATSScoreData, CountryResumeData } from '@/types/documents'
 
 export const mockParsedJD: ParsedJD = {
   role_title: 'Marketing Manager',
@@ -371,4 +371,119 @@ export const mockATSScoreData: ATSScoreData = {
     ],
   },
   summary: 'Strong resume with excellent keyword coverage and quantified achievements. To boost your score further, add experience with content strategy and marketing automation (mentioned in preferred skills), and quantify remaining bullets. Your resume is well-formatted for ATS parsing.',
+}
+
+export const mockCountryResumeData: CountryResumeData = {
+  resume: {
+    header: {
+      name: 'Jordan Rivera',
+      title: 'Marketing Manager',
+      email: 'jordan.rivera@email.com',
+      phone: '(555) 234-5678',
+      location: 'Chicago, IL',
+      linkedin: 'linkedin.com/in/jordanrivera',
+      website: null,
+    },
+    summary: 'Results-driven Marketing Manager with 6+ years of experience leading integrated campaigns across digital and traditional channels for consumer brands. Proven track record of growing brand awareness by 40%, managing $2M+ budgets, and delivering measurable ROI through data-driven strategy.',
+    experience: [
+      {
+        company: 'Crestline Consumer Products',
+        title: 'Marketing Manager',
+        location: 'Chicago, IL',
+        start_date: '2022',
+        end_date: 'Present',
+        bullets: [
+          'Led rebranding initiative for flagship product line, increasing brand awareness by 40% and driving $3.2M in incremental revenue within 12 months',
+          'Managed $2.1M annual marketing budget across digital, print, and event channels, achieving 28% improvement in cost-per-acquisition',
+          'Designed and executed SEO/SEM strategy that increased organic traffic by 65% and reduced paid search spend by 20%',
+        ],
+      },
+      {
+        company: 'Meridian Brands Group',
+        title: 'Senior Marketing Coordinator',
+        location: 'Milwaukee, WI',
+        start_date: '2019',
+        end_date: '2022',
+        bullets: [
+          'Planned and executed 12+ multichannel campaigns per year, generating 35% increase in qualified leads',
+          'Conducted market research and competitive analysis that informed pricing strategy, contributing to 18% revenue growth',
+          'Managed CRM platform (HubSpot) and marketing automation workflows, improving email open rates by 22%',
+        ],
+      },
+    ],
+    skills: {
+      core: ['Brand Management', 'Digital Marketing', 'SEO/SEM', 'Market Research', 'Campaign Strategy'],
+      interpersonal: ['Cross-functional Leadership', 'Team Mentoring', 'Stakeholder Communication'],
+      tools: ['HubSpot', 'Google Analytics', 'Salesforce', 'Tableau'],
+    },
+    education: [
+      {
+        institution: 'University of Wisconsin-Madison',
+        degree: 'Bachelor of Business Administration',
+        field: 'Marketing',
+        graduation_date: '2018',
+        gpa: '3.6',
+        honors: "Dean's List",
+      },
+    ],
+    certifications: ['Google Analytics Certified', 'HubSpot Inbound Marketing Certified'],
+    ats_keywords_used: ['brand management', 'digital marketing', 'SEO', 'SEM', 'market research', 'campaign management', 'budget management', 'analytics', 'CRM', 'ROI'],
+  },
+  cover_letter: {
+    greeting: 'Dear Hiring Manager,',
+    opening_paragraph: "I'm writing to express my strong interest in the Marketing Manager position at Brightwave Consumer Brands. With over 6 years of experience leading integrated marketing campaigns and managing multimillion-dollar budgets, I'm excited to contribute to Brightwave's growth.",
+    body_paragraphs: [
+      'In my current role at Crestline Consumer Products, I led a rebranding initiative that increased brand awareness by 40% and drove $3.2M in incremental revenue. I manage a $2.1M annual budget across digital, print, and event channels, consistently improving cost-per-acquisition.',
+      "What excites me most about Brightwave is your growth-oriented culture and focus on building brands that resonate with consumers. I'm eager to bring my experience in brand management, analytics, and team leadership to help drive your next chapter of growth.",
+    ],
+    closing_paragraph: "I'd welcome the chance to discuss how my background can contribute to Brightwave's continued success. Thank you for considering my application.",
+    sign_off: 'Best regards,\nJordan Rivera',
+  },
+  cultural_tips: {
+    work_culture: [
+      'US workplaces value individual initiative and results-driven performance',
+      'Open communication and sharing ideas in meetings is encouraged',
+      'Networking is crucial for career advancement in the US market',
+      'Work-life balance expectations vary significantly by company and industry',
+    ],
+    communication_style: 'Direct and professional. Americans tend to be straightforward in business communication while maintaining a friendly tone. Email is the primary mode of professional communication.',
+    business_etiquette: [
+      'Firm handshake and direct eye contact during introductions',
+      'Business cards are exchanged casually, not ceremonially',
+      'Punctuality is important for meetings and interviews',
+      'First-name basis is common even with senior colleagues',
+    ],
+    common_mistakes: [
+      'Including a photo on your resume — this is strongly discouraged in the US',
+      'Writing a resume longer than 1 page for less than 10 years of experience',
+      'Not tailoring the resume to each specific job description',
+      'Forgetting to follow up with a thank-you email after interviews',
+    ],
+  },
+  ats_analysis: {
+    overall_score: 87,
+    keyword_match: {
+      matched: ['brand management', 'digital marketing', 'SEO', 'SEM', 'market research', 'campaign management', 'budget management', 'analytics', 'CRM', 'ROI'],
+      missing: ['content strategy', 'marketing automation'],
+    },
+    country_notes: [
+      'US ATS systems prioritize keyword density and exact phrase matching',
+      'Standard section headers (Experience, Education, Skills) parse better in US ATS',
+      'One-page resumes scan more efficiently through most US ATS platforms',
+    ],
+    format_compliance: 'Resume follows US formatting standards: no photo, no personal details, concise one-page format with standard section headers. ATS-optimized for US hiring platforms.',
+  },
+  interview_tips: {
+    typical_process: 'US interviews typically involve a phone screen with HR (30 min), followed by 1-2 rounds of interviews with the hiring manager and team members. Final rounds may include a presentation or case study. The entire process usually takes 2-4 weeks.',
+    dress_code: 'Business professional for traditional industries (finance, law). Business casual is acceptable for tech and creative industries. When in doubt, overdress slightly.',
+    salary_discussion: 'Salary is typically discussed after receiving an offer, though some companies ask for expectations early. Research market rates on Glassdoor and Payscale. Negotiation is expected and acceptable.',
+    follow_up: 'Send a personalized thank-you email within 24 hours of each interview round. Reference specific topics discussed and reiterate your interest in the role.',
+    common_questions: [
+      'Tell me about yourself and why you are interested in this role.',
+      'Describe a time you led a project that exceeded expectations.',
+      'How do you prioritize competing deadlines?',
+      'What is your approach to managing a large marketing budget?',
+      'Where do you see yourself in 5 years?',
+    ],
+  },
 }

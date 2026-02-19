@@ -129,6 +129,24 @@ export const jobPreferencesSchema = z.object({
   remote_preference: z.enum(['any', 'remote', 'hybrid', 'onsite']).optional().default('any'),
 })
 
+export const countryResumeSchema = z.object({
+  parsedJD: z.record(z.string(), z.unknown())
+    .refine((v) => Object.keys(v).length > 0, { message: 'Parsed job description is required' })
+    .refine(jsonSizeLimit(), jsonSizeLimitMessage('parsedJD')),
+  experience: z
+    .string()
+    .min(10, 'Experience must be at least 10 characters')
+    .max(20_000, 'Experience must be under 20,000 characters'),
+  jobDescriptionId: z.string().uuid('Invalid job description ID'),
+  countryCode: z.string().length(2, 'Country code must be exactly 2 characters').toUpperCase(),
+  contactInfo: contactInfoSchema.optional(),
+  language: z.string().max(100, 'Language too long').optional(),
+  vaultData: z.object({
+    certificates: z.array(z.object({ name: z.string(), issuer: z.string() })).optional(),
+    skills: z.array(z.object({ name: z.string(), proficiency: z.string() })).optional(),
+  }).optional(),
+})
+
 export const extensionSubmitSchema = z.object({
   source_url: z.string().url('Invalid URL').max(2000, 'URL too long').optional(),
   source_site: z.string().max(100, 'Site name too long').optional(),

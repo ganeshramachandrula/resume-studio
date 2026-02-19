@@ -12,6 +12,7 @@ export const DOCUMENT_TYPES = [
   'cold_email',
   'interview_prep',
   'certification_guide',
+  'country_resume',
 ] as const
 
 export const DOCUMENT_TYPE_LABELS: Record<string, string> = {
@@ -21,6 +22,7 @@ export const DOCUMENT_TYPE_LABELS: Record<string, string> = {
   cold_email: 'Cold Email',
   interview_prep: 'Interview Prep',
   certification_guide: 'Certification Guide',
+  country_resume: 'Country Resume',
 }
 
 export const JOB_STATUSES = [

@@ -136,6 +136,39 @@ export interface ATSScoreData {
   summary: string
 }
 
+export interface CountryResumeData {
+  resume: ResumeData
+  cover_letter: {
+    greeting: string
+    opening_paragraph: string
+    body_paragraphs: string[]
+    closing_paragraph: string
+    sign_off: string
+  }
+  cultural_tips: {
+    work_culture: string[]
+    communication_style: string
+    business_etiquette: string[]
+    common_mistakes: string[]
+  }
+  ats_analysis: {
+    overall_score: number
+    keyword_match: {
+      matched: string[]
+      missing: string[]
+    }
+    country_notes: string[]
+    format_compliance: string
+  }
+  interview_tips: {
+    typical_process: string
+    dress_code: string
+    salary_discussion: string
+    follow_up: string
+    common_questions: string[]
+  }
+}
+
 export interface ParsedJD {
   role_title: string
   company_name: string | null

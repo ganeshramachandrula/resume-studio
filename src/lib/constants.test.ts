@@ -11,8 +11,8 @@ import {
 } from '@/lib/constants'
 
 describe('DOCUMENT_TYPES', () => {
-  it('has exactly 6 entries', () => {
-    expect(DOCUMENT_TYPES).toHaveLength(6)
+  it('has exactly 7 entries', () => {
+    expect(DOCUMENT_TYPES).toHaveLength(7)
   })
 
   it('every DOCUMENT_TYPE has a label in DOCUMENT_TYPE_LABELS', () => {

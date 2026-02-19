@@ -21,6 +21,7 @@ import {
   LifeBuoy,
   Award,
   DollarSign,
+  MapPin,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -30,6 +31,7 @@ import { createClient } from '@/lib/supabase/client'
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Generate', href: '/generate', icon: Sparkles },
+  { name: 'Country Resume', href: '/country-resume', icon: MapPin },
   { name: 'Applications', href: '/documents', icon: FileText },
   { name: 'Job Feed', href: '/job-feed', icon: Search },
   { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase },
