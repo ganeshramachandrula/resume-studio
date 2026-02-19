@@ -42,15 +42,18 @@ export const JOB_STATUS_LABELS: Record<string, string> = {
 }
 
 // Support
-export const SUPPORT_CATEGORIES = ['bug', 'feature', 'billing', 'general'] as const
+export const SUPPORT_CATEGORIES = ['bug', 'feature', 'billing', 'account', 'technical', 'advice', 'general'] as const
 export const SUPPORT_STATUSES = ['new', 'in_progress', 'resolved', 'closed'] as const
 export const MAX_SUPPORT_MESSAGE_LENGTH = 5000
 
 export const SUPPORT_CATEGORY_LABELS: Record<string, string> = {
   bug: 'Bug Report',
   feature: 'Feature Request',
-  billing: 'Billing',
-  general: 'General',
+  billing: 'Billing & Subscription',
+  account: 'Account Access',
+  technical: 'Technical Issue',
+  advice: 'Career Advice',
+  general: 'General Inquiry',
 }
 
 export const SUPPORT_STATUS_LABELS: Record<string, string> = {

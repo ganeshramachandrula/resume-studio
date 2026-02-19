@@ -436,7 +436,7 @@ describe('supportContactSchema', () => {
   })
 
   it('accepts all valid categories', () => {
-    for (const category of ['bug', 'feature', 'billing', 'general'] as const) {
+    for (const category of ['bug', 'feature', 'billing', 'account', 'technical', 'advice', 'general'] as const) {
       const result = supportContactSchema.safeParse({ ...validSupport, category })
       expect(result.success).toBe(true)
     }

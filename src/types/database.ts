@@ -18,7 +18,7 @@ export type JobStatus =
 
 export type UserRole = 'user' | 'admin'
 
-export type SupportCategory = 'bug' | 'feature' | 'billing' | 'general'
+export type SupportCategory = 'bug' | 'feature' | 'billing' | 'account' | 'technical' | 'advice' | 'general'
 export type SupportStatus = 'new' | 'in_progress' | 'resolved' | 'closed'
 
 export interface Profile {

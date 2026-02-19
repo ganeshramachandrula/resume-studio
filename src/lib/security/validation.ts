@@ -91,7 +91,7 @@ export const supportContactSchema = z.object({
     .string()
     .min(10, 'Message must be at least 10 characters')
     .max(5000, 'Message must be under 5,000 characters'),
-  category: z.enum(['bug', 'feature', 'billing', 'general']).default('general'),
+  category: z.enum(['bug', 'feature', 'billing', 'account', 'technical', 'advice', 'general']).default('general'),
 })
 
 export const adminUserUpdateSchema = z.object({
