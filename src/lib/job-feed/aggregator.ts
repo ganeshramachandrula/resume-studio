@@ -46,6 +46,49 @@ export function deduplicateJobs(jobs: NormalizedJob[]): NormalizedJob[] {
   })
 }
 
+/**
+ * Filter jobs by relevance to the search query.
+ * Checks if any meaningful word from the query appears in the job title,
+ * company, tags, or description.
+ */
+export function filterByRelevance(jobs: NormalizedJob[], params: JobSearchParams): NormalizedJob[] {
+  const queryWords = params.query.toLowerCase().split(/\s+/).filter(w => w.length > 2)
+  if (queryWords.length === 0) return jobs
+
+  return jobs.filter((job) => {
+    const text = `${job.title} ${job.company} ${(job.tags || []).join(' ')} ${job.description}`.toLowerCase()
+    return queryWords.some(word => text.includes(word))
+  })
+}
+
+/**
+ * Filter jobs by location and remote preference.
+ */
+export function filterByLocation(jobs: NormalizedJob[], params: JobSearchParams): NormalizedJob[] {
+  let filtered = jobs
+
+  // If remote_only is set, keep only remote jobs
+  if (params.remote_only) {
+    filtered = filtered.filter(job => job.remote)
+  }
+
+  // If location is specified, filter by location text match
+  if (params.location) {
+    const loc = params.location.toLowerCase()
+    // "remote" as location means remote_only
+    if (loc === 'remote') {
+      filtered = filtered.filter(job => job.remote)
+    } else {
+      filtered = filtered.filter(job =>
+        job.remote ||
+        job.location.toLowerCase().includes(loc)
+      )
+    }
+  }
+
+  return filtered
+}
+
 export function sortByDate(jobs: NormalizedJob[]): NormalizedJob[] {
   return jobs.sort((a, b) => {
     if (!a.posted_at && !b.posted_at) return 0
@@ -93,7 +136,9 @@ export async function searchAllProviders(
 
   if (providersToQuery.length === 0) {
     // All providers cached
-    const deduped = deduplicateJobs(freshCached)
+    const relevant = filterByRelevance(freshCached, params)
+    const located = filterByLocation(relevant, params)
+    const deduped = deduplicateJobs(located)
     const sorted = sortByDate(deduped)
     return {
       jobs: sorted.slice(0, maxResults),
@@ -134,7 +179,9 @@ export async function searchAllProviders(
     }
   }
 
-  const deduped = deduplicateJobs(freshJobs)
+  const relevant = filterByRelevance(freshJobs, params)
+  const located = filterByLocation(relevant, params)
+  const deduped = deduplicateJobs(located)
   const sorted = sortByDate(deduped)
 
   return {

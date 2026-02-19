@@ -27,11 +27,11 @@ export async function searchRemoteOK(params: JobSearchParams): Promise<Normalize
     // First element is metadata, rest are jobs
     const results: RemoteOKResult[] = Array.isArray(json) ? json.slice(1) : []
 
-    // Client-side filter by query
-    const queryLower = params.query.toLowerCase()
+    // Client-side filter by query — match any word from the query
+    const queryWords = params.query.toLowerCase().split(/\s+/).filter(w => w.length > 2)
     const filtered = results.filter((job) => {
-      const text = `${job.position || ''} ${job.company || ''} ${(job.tags || []).join(' ')}`.toLowerCase()
-      return text.includes(queryLower)
+      const text = `${job.position || ''} ${job.company || ''} ${(job.tags || []).join(' ')} ${job.description || ''}`.toLowerCase()
+      return queryWords.some(word => text.includes(word))
     })
 
     return filtered.slice(0, 20).map((job): NormalizedJob => {
