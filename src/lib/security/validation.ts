@@ -114,6 +114,7 @@ export const jobSearchSchema = z.object({
     .min(2, 'Search query must be at least 2 characters')
     .max(200, 'Search query must be under 200 characters'),
   location: z.string().max(100, 'Location too long').optional(),
+  country: z.string().max(2, 'Country code must be 2 characters').toUpperCase().optional(),
   remote_only: z.boolean().optional().default(false),
   page: z.number().int().min(1).max(100).optional().default(1),
 })
@@ -122,6 +123,7 @@ export const jobPreferencesSchema = z.object({
   skills: z.array(z.string().max(100)).max(20, 'Maximum 20 skills').optional().default([]),
   roles: z.array(z.string().max(100)).max(10, 'Maximum 10 roles').optional().default([]),
   locations: z.array(z.string().max(100)).max(10, 'Maximum 10 locations').optional().default([]),
+  country: z.string().max(2, 'Country code must be 2 characters').toUpperCase().optional(),
   salary_min: z.number().int().min(0).max(1_000_000).optional().nullable(),
   salary_max: z.number().int().min(0).max(1_000_000).optional().nullable(),
   remote_preference: z.enum(['any', 'remote', 'hybrid', 'onsite']).optional().default('any'),

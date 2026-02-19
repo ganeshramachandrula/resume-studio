@@ -26,7 +26,8 @@ export async function searchJSearch(params: JobSearchParams): Promise<Normalized
 
   try {
     const query = encodeURIComponent(params.query)
-    const location = params.location ? `&location=${encodeURIComponent(params.location)}` : ''
+    const locationParts = [params.location, params.country].filter(Boolean).join(', ')
+    const location = locationParts ? `&location=${encodeURIComponent(locationParts)}` : ''
     const remote = params.remote_only ? '&remote_jobs_only=true' : ''
     const page = params.page || 1
 

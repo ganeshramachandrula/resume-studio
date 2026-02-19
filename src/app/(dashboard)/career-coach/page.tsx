@@ -174,7 +174,7 @@ export default function CareerCoachPage() {
       <div className="max-w-lg mx-auto py-12">
         <AnnualUpgradePrompt
           feature="Career Coach"
-          description="Get personalized career advice from an experienced coach. Covers resume strategy, interview prep, salary negotiation, career transitions, and more."
+          description="Get AI-powered career guidance on resume strategy, interview prep, salary negotiation, career transitions, and more."
         />
       </div>
     )
@@ -203,7 +203,7 @@ export default function CareerCoachPage() {
             </div>
             <div>
               <h1 className="text-lg font-semibold text-gray-900">Career Coach</h1>
-              <p className="text-xs text-gray-500">Your personal career advisor</p>
+              <p className="text-xs text-gray-500">AI-powered career guidance</p>
             </div>
           </div>
         </div>
@@ -215,7 +215,7 @@ export default function CareerCoachPage() {
               <GraduationCap className="h-12 w-12 text-amber-200 mb-4" />
               <h2 className="text-lg font-semibold text-gray-900 mb-2">How can I help you today?</h2>
               <p className="text-sm text-gray-500 max-w-md mb-6">
-                I can help with resume strategy, interview preparation, career transitions, salary negotiation, and more.
+                Ask about resume strategy, interview preparation, career transitions, salary negotiation, and more.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-lg w-full">
                 {[

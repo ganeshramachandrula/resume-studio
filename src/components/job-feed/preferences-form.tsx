@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { TagInput } from './tag-input'
 import { Loader2, Save } from 'lucide-react'
 import type { JobPreferences, RemotePreference } from '@/types/job-feed'
+import { COUNTRIES } from '@/lib/job-feed/countries'
 
 interface PreferencesFormProps {
   initialPreferences: JobPreferences | null
@@ -26,6 +27,7 @@ export function PreferencesForm({ initialPreferences, onSave, loading }: Prefere
   const [locations, setLocations] = useState<string[]>([])
   const [salaryMin, setSalaryMin] = useState('')
   const [salaryMax, setSalaryMax] = useState('')
+  const [country, setCountry] = useState('US')
   const [remotePreference, setRemotePreference] = useState<RemotePreference>('any')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,6 +37,7 @@ export function PreferencesForm({ initialPreferences, onSave, loading }: Prefere
       setSkills(initialPreferences.skills || [])
       setRoles(initialPreferences.roles || [])
       setLocations(initialPreferences.locations || [])
+      setCountry(initialPreferences.country || 'US')
       setSalaryMin(initialPreferences.salary_min?.toString() || '')
       setSalaryMax(initialPreferences.salary_max?.toString() || '')
       setRemotePreference(initialPreferences.remote_preference || 'any')
@@ -59,6 +62,7 @@ export function PreferencesForm({ initialPreferences, onSave, loading }: Prefere
           skills,
           roles,
           locations,
+          country,
           salary_min: salaryMin ? parseInt(salaryMin, 10) : null,
           salary_max: salaryMax ? parseInt(salaryMax, 10) : null,
           remote_preference: remotePreference,
@@ -100,6 +104,21 @@ export function PreferencesForm({ initialPreferences, onSave, loading }: Prefere
         placeholder="e.g. San Francisco, New York"
         maxTags={10}
       />
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Country</label>
+        <select
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          className="h-9 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand/30"
+        >
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>

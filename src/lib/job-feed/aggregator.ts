@@ -32,7 +32,7 @@ function getAdminClient() {
 }
 
 export function hashQuery(params: JobSearchParams): string {
-  const key = `${params.query}|${params.location || ''}|${params.remote_only || false}|${params.page || 1}`
+  const key = `${params.query}|${params.location || ''}|${params.country || ''}|${params.remote_only || false}|${params.page || 1}`
   return createHash('sha256').update(key).digest('hex').slice(0, 32)
 }
 
@@ -62,7 +62,7 @@ export function filterByRelevance(jobs: NormalizedJob[], params: JobSearchParams
 }
 
 /**
- * Filter jobs by location and remote preference.
+ * Filter jobs by location, country, and remote preference.
  */
 export function filterByLocation(jobs: NormalizedJob[], params: JobSearchParams): NormalizedJob[] {
   let filtered = jobs
@@ -75,15 +75,40 @@ export function filterByLocation(jobs: NormalizedJob[], params: JobSearchParams)
   // If location is specified, filter by location text match
   if (params.location) {
     const loc = params.location.toLowerCase()
-    // "remote" as location means remote_only
     if (loc === 'remote') {
       filtered = filtered.filter(job => job.remote)
     } else {
       filtered = filtered.filter(job =>
-        job.remote ||
         job.location.toLowerCase().includes(loc)
       )
     }
+  }
+
+  // If country is specified, filter jobs whose location mentions the country
+  if (params.country) {
+    const countryCode = params.country.toUpperCase()
+    const countryLower = params.country.toLowerCase()
+    // Map codes to full names for matching against job location text
+    const COUNTRY_NAMES: Record<string, string> = {
+      US: 'united states', GB: 'united kingdom', CA: 'canada', AU: 'australia',
+      DE: 'germany', FR: 'france', NL: 'netherlands', ES: 'spain', IT: 'italy',
+      PL: 'poland', IN: 'india', NZ: 'new zealand', BR: 'brazil', SG: 'singapore',
+      AT: 'austria', CH: 'switzerland', SE: 'sweden', IE: 'ireland', JP: 'japan',
+      ZA: 'south africa',
+    }
+    const countryName = COUNTRY_NAMES[countryCode] || ''
+    filtered = filtered.filter(job => {
+      const loc = job.location.toLowerCase()
+      // Keep if location mentions country code, country name, or is generic (remote/not specified)
+      return (
+        loc.includes(countryLower) ||
+        (countryName && loc.includes(countryName)) ||
+        loc === 'not specified' ||
+        loc === 'remote' ||
+        loc === 'worldwide' ||
+        (job.remote && !params.location) // remote jobs pass only when no city is specified
+      )
+    })
   }
 
   return filtered

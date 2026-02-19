@@ -30,6 +30,7 @@ const defaultFilters: JobFeedFilters = {
   location: '',
   sort_by: 'date',
   search_query: '',
+  date_range: '30d',
 }
 
 const initialState = {
@@ -82,6 +83,16 @@ export function filterJobs(jobs: NormalizedJob[], filters: JobFeedFilters): Norm
   if (filters.location.trim()) {
     const loc = filters.location.toLowerCase()
     filtered = filtered.filter((j) => j.location.toLowerCase().includes(loc))
+  }
+
+  // Filter by date range
+  if (filters.date_range) {
+    const days = filters.date_range === '7d' ? 7 : filters.date_range === '14d' ? 14 : 30
+    const cutoff = Date.now() - days * 24 * 60 * 60 * 1000
+    filtered = filtered.filter((j) => {
+      if (!j.posted_at) return true // keep jobs with unknown date
+      return new Date(j.posted_at).getTime() >= cutoff
+    })
   }
 
   // Filter by search query (client-side text filter)

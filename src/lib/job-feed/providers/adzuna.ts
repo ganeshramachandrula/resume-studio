@@ -23,8 +23,9 @@ export async function searchAdzuna(params: JobSearchParams): Promise<NormalizedJ
     const location = params.location ? `&where=${encodeURIComponent(params.location)}` : ''
     const page = params.page || 1
 
+    const country = (params.country || 'US').toLowerCase()
     const res = await fetch(
-      `https://api.adzuna.com/v1/api/jobs/us/search/${page}?app_id=${appId}&app_key=${appKey}&what=${query}${location}&results_per_page=20`,
+      `https://api.adzuna.com/v1/api/jobs/${country}/search/${page}?app_id=${appId}&app_key=${appKey}&what=${query}${location}&results_per_page=20`,
       { signal: AbortSignal.timeout(10_000) }
     )
 

@@ -20,7 +20,8 @@ export async function searchFindwork(params: JobSearchParams): Promise<Normalize
 
   try {
     const query = encodeURIComponent(params.query)
-    const location = params.location ? `&location=${encodeURIComponent(params.location)}` : ''
+    const locationParts = [params.location, params.country].filter(Boolean).join(', ')
+    const location = locationParts ? `&location=${encodeURIComponent(locationParts)}` : ''
     const remote = params.remote_only ? '&remote=true' : ''
 
     const res = await fetch(

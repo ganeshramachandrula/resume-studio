@@ -4,8 +4,14 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { JOB_PROVIDERS, JOB_PROVIDER_LABELS } from '@/lib/constants'
 import { useJobFeedStore } from '@/store/job-feed-store'
-import { Filter, Wifi, ArrowUpDown } from 'lucide-react'
-import type { JobProvider } from '@/types/job-feed'
+import { Filter, Wifi, ArrowUpDown, Calendar } from 'lucide-react'
+import type { JobProvider, DateRange } from '@/types/job-feed'
+
+const DATE_RANGE_OPTIONS: { value: DateRange; label: string }[] = [
+  { value: '7d', label: '7 days' },
+  { value: '14d', label: '14 days' },
+  { value: '30d', label: '1 month' },
+]
 
 export function JobFilters() {
   const { filters, setFilters } = useJobFeedStore()
@@ -71,6 +77,25 @@ export function JobFilters() {
           <ArrowUpDown className="h-3 w-3" />
           {filters.sort_by === 'date' ? 'Newest First' : 'Relevance'}
         </button>
+
+        {/* Date range */}
+        <div className="inline-flex items-center gap-1">
+          <Calendar className="h-3 w-3 text-gray-500" />
+          {DATE_RANGE_OPTIONS.map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setFilters({ date_range: value })}
+              className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                filters.date_range === value
+                  ? 'bg-brand text-white'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Location filter */}
@@ -84,7 +109,7 @@ export function JobFilters() {
       </div>
 
       {/* Active filters indicator */}
-      {(filters.providers.length > 0 || filters.remote_only || filters.location) && (
+      {(filters.providers.length > 0 || filters.remote_only || filters.location || filters.date_range !== '30d') && (
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500">Active:</span>
           {filters.providers.length > 0 && (
@@ -98,10 +123,15 @@ export function JobFilters() {
           {filters.location && (
             <Badge variant="secondary" className="text-[10px]">{filters.location}</Badge>
           )}
+          {filters.date_range !== '30d' && (
+            <Badge variant="secondary" className="text-[10px]">
+              {filters.date_range === '7d' ? '7 days' : '14 days'}
+            </Badge>
+          )}
           <button
             type="button"
             onClick={() =>
-              setFilters({ providers: [], remote_only: false, location: '', search_query: '' })
+              setFilters({ providers: [], remote_only: false, location: '', search_query: '', date_range: '30d' })
             }
             className="text-xs text-red-500 hover:underline"
           >

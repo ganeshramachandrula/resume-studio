@@ -26,6 +26,7 @@ export interface NormalizedJob {
 export interface JobSearchParams {
   query: string
   location?: string
+  country?: string
   remote_only?: boolean
   page?: number
 }
@@ -38,12 +39,15 @@ export interface JobSearchResponse {
   cached: boolean
 }
 
+export type DateRange = '7d' | '14d' | '30d'
+
 export interface JobFeedFilters {
   providers: JobProvider[]
   remote_only: boolean
   location: string
   sort_by: 'date' | 'relevance'
   search_query: string
+  date_range: DateRange
 }
 
 export type RemotePreference = 'any' | 'remote' | 'hybrid' | 'onsite'
@@ -54,6 +58,7 @@ export interface JobPreferences {
   skills: string[]
   roles: string[]
   locations: string[]
+  country?: string
   salary_min: number | null
   salary_max: number | null
   remote_preference: RemotePreference

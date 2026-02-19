@@ -13,7 +13,7 @@ const makeJob = (overrides: Partial<NormalizedJob> = {}): NormalizedJob => ({
   description: 'Test',
   full_description: 'Test full',
   url: 'https://example.com',
-  posted_at: '2026-01-01',
+  posted_at: '2026-02-15',
   logo_url: null,
   tags: ['react'],
   ...overrides,
@@ -25,6 +25,7 @@ const defaultFilters: JobFeedFilters = {
   location: '',
   sort_by: 'date',
   search_query: '',
+  date_range: '30d',
 }
 
 describe('filterJobs', () => {
@@ -98,10 +99,10 @@ describe('filterJobs', () => {
 
   it('sorts by date (newest first), null dates last', () => {
     const jobs = [
-      makeJob({ id: '1', posted_at: '2026-01-01' }),
-      makeJob({ id: '2', posted_at: '2026-02-15' }),
+      makeJob({ id: '1', posted_at: '2026-02-05' }),
+      makeJob({ id: '2', posted_at: '2026-02-18' }),
       makeJob({ id: '3', posted_at: null }),
-      makeJob({ id: '4', posted_at: '2026-01-10' }),
+      makeJob({ id: '4', posted_at: '2026-02-10' }),
     ]
     const result = filterJobs(jobs, { ...defaultFilters, sort_by: 'date' })
     expect(result.map((j) => j.id)).toEqual(['2', '4', '1', '3'])
@@ -120,6 +121,7 @@ describe('filterJobs', () => {
       location: '',
       sort_by: 'date',
       search_query: 'react',
+      date_range: '30d',
     })
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('1')

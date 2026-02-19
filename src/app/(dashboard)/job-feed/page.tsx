@@ -58,7 +58,7 @@ export default function JobFeedPage() {
   }, [setPreferences, setLoading])
 
   const handleSearch = useCallback(
-    async (query: string, location: string) => {
+    async (query: string, location: string, country?: string, remoteOnly?: boolean) => {
       setSearching(true)
       setError(null)
 
@@ -69,7 +69,8 @@ export default function JobFeedPage() {
           body: JSON.stringify({
             query,
             location: location || undefined,
-            remote_only: false,
+            country: country || undefined,
+            remote_only: remoteOnly || false,
           }),
         })
 
@@ -95,7 +96,7 @@ export default function JobFeedPage() {
       const query = [...(preferences.roles || []), ...(preferences.skills || []).slice(0, 3)].join(' ')
       if (query.trim().length >= 2) {
         const location = (preferences.locations || [])[0] || ''
-        handleSearch(query, location)
+        handleSearch(query, location, preferences.country || 'US')
       }
     }
   }, [preferences, jobs.length, searching, loading, handleSearch])
@@ -147,6 +148,7 @@ export default function JobFeedPage() {
       <JobSearchBar
         initialQuery={defaultQuery}
         initialLocation={defaultLocation}
+        initialCountry={preferences?.country || 'US'}
         onSearch={handleSearch}
         searching={searching}
       />

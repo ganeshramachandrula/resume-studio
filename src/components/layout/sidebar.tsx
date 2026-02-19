@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   Sparkles,
@@ -16,11 +17,13 @@ import {
   Users,
   ExternalLink,
   Search,
+  LogOut,
 } from 'lucide-react'
 import { AFFILIATE_PARTNERS, buildAffiliateUrl } from '@/lib/affiliate-partners'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useAppStore } from '@/store/app-store'
+import { createClient } from '@/lib/supabase/client'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -33,7 +36,17 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { profile, sidebarOpen, setSidebarOpen } = useAppStore()
+  const [signingOut, setSigningOut] = useState(false)
+
+  const handleSignOut = async () => {
+    setSigningOut(true)
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
   const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
   const userIsAnnual = profile?.plan === 'pro_annual' || profile?.plan === 'team'
   const isTeam = profile?.plan === 'team'
@@ -203,6 +216,17 @@ export function Sidebar() {
             </Link>
           </div>
         )}
+
+        <div className="px-3 pb-4">
+          <button
+            onClick={handleSignOut}
+            disabled={signingOut}
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          >
+            <LogOut className="h-5 w-5" />
+            {signingOut ? 'Signing out...' : 'Sign Out'}
+          </button>
+        </div>
       </aside>
     </>
   )
