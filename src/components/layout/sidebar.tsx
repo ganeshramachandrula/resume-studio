@@ -169,7 +169,25 @@ export function Sidebar() {
           ))}
         </div>
 
-        {!isPro && (
+        {isPro ? (
+          <div className="p-4 m-3 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20">
+            <div className="flex items-center gap-2 mb-1">
+              <Crown className="h-4 w-4 text-accent" />
+              <span className="text-sm font-semibold text-gray-900">
+                {profile?.plan === 'team'
+                  ? 'Team Plan'
+                  : profile?.plan === 'pro_annual'
+                    ? 'Pro Annual'
+                    : 'Pro Monthly'}
+              </span>
+            </div>
+            {profile?.subscription_period_end && (
+              <p className="text-xs text-gray-500 mt-1">
+                Renews {new Date(profile.subscription_period_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </p>
+            )}
+          </div>
+        ) : (
           <div className="p-4 m-3 rounded-xl bg-gradient-to-br from-brand to-brand-dark text-white">
             <div className="flex items-center gap-2 mb-2">
               <Crown className="h-4 w-4" />
@@ -178,7 +196,7 @@ export function Sidebar() {
             <p className="text-xs text-white/80 mb-3">
               Unlimited documents, all templates, and more.
             </p>
-            <Link href="/pricing">
+            <Link href="/upgrade">
               <Button size="sm" className="w-full bg-white text-brand hover:bg-white/90">
                 Upgrade
               </Button>

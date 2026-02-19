@@ -156,7 +156,7 @@ export default function SettingsPage() {
                 Manage Subscription
               </Button>
             ) : (
-              <Button onClick={() => router.push('/pricing')}>
+              <Button onClick={() => router.push('/upgrade')}>
                 <Crown className="h-4 w-4" />
                 Upgrade to Pro
               </Button>

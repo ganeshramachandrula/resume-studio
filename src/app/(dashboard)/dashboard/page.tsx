@@ -260,7 +260,7 @@ export default function DashboardPage() {
                 Save up to 10 applications, unlimited documents, all templates, and more.
               </p>
             </div>
-            <Link href="/pricing">
+            <Link href="/upgrade">
               <Button className="bg-white text-brand hover:bg-white/90">
                 Upgrade Now
               </Button>

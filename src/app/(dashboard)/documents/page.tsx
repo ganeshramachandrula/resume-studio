@@ -146,7 +146,7 @@ export default function DocumentsPage() {
             Generate and preview documents for free. Upgrade to Pro to save, organize, and access your documents anytime.
           </p>
           <div className="flex items-center justify-center gap-3 mt-6">
-            <Link href="/pricing">
+            <Link href="/upgrade">
               <Button>
                 <Crown className="h-4 w-4" /> Upgrade to Pro
               </Button>

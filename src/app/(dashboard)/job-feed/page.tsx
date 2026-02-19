@@ -199,7 +199,7 @@ export default function JobFeedPage() {
               <p className="text-sm text-gray-500 mb-3">
                 Free users see up to 10 results. Pro users get up to 50 per search.
               </p>
-              <Button size="sm" onClick={() => router.push('/pricing')}>
+              <Button size="sm" onClick={() => router.push('/upgrade')}>
                 Upgrade to Pro
               </Button>
             </div>

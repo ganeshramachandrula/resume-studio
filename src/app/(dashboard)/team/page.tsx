@@ -115,7 +115,7 @@ export default function TeamPage() {
         <p className="text-gray-500 mb-6">
           You&apos;re not on a team plan. Contact your team admin or upgrade to a team plan.
         </p>
-        <Button onClick={() => window.location.href = '/pricing'}>View Plans</Button>
+        <Button onClick={() => window.location.href = '/upgrade'}>View Plans</Button>
       </div>
     )
   }

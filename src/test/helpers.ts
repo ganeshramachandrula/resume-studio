@@ -14,6 +14,8 @@ export function createProfile(overrides: Partial<Profile> = {}): Profile {
     team_id: null,
     stripe_customer_id: null,
     stripe_subscription_id: null,
+    subscription_period_start: null,
+    subscription_period_end: null,
     role: 'user',
     is_disabled: false,
     saved_applications_count: 0,

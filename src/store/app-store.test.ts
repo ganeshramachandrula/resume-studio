@@ -22,6 +22,8 @@ describe('app-store', () => {
       plan: 'pro_annual' as const,
       stripe_customer_id: null,
       stripe_subscription_id: null,
+      subscription_period_start: null,
+      subscription_period_end: null,
       usage_count: 0,
       saved_applications_count: 0,
       coach_messages_count: 0,

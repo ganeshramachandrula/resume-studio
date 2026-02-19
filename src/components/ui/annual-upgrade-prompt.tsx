@@ -20,7 +20,7 @@ export function AnnualUpgradePrompt({
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-1">{feature}</h3>
         <p className="text-sm text-gray-600 mb-4 max-w-sm">{description}</p>
-        <Link href="/pricing">
+        <Link href="/upgrade">
           <Button className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white">
             <Crown className="h-4 w-4" />
             Upgrade to Pro Annual

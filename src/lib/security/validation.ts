@@ -73,7 +73,9 @@ export const createCheckoutSchema = z.object({
   priceId: z
     .string()
     .min(1, 'Price ID is required')
-    .max(100, 'Invalid price ID'),
+    .max(100, 'Invalid price ID')
+    .optional(),
+  plan: z.enum(['pro_monthly', 'pro_annual', 'team', 'credits']).optional(),
   mode: z.enum(['subscription', 'payment', 'team']).optional().default('subscription'),
   quantity: z.number().int().min(5).max(100).optional(),
 })

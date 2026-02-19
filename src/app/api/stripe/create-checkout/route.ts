@@ -49,7 +49,19 @@ export async function POST(request: Request) {
       return body
     }
 
-    const { priceId, mode = 'subscription', quantity } = body
+    const { priceId: rawPriceId, plan, mode = 'subscription', quantity } = body
+
+    // Resolve plan name to price ID if plan was provided instead of priceId
+    const PLAN_PRICE_MAP: Record<string, string | undefined> = {
+      pro_monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+      pro_annual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
+      team: process.env.STRIPE_TEAM_PRICE_ID,
+      credits: process.env.STRIPE_CREDIT_PACK_PRICE_ID,
+    }
+    const priceId = rawPriceId || (plan ? PLAN_PRICE_MAP[plan] : undefined)
+    if (!priceId) {
+      return NextResponse.json({ error: 'Price ID or plan is required' }, { status: 400 })
+    }
 
     // Mock mode: simulate upgrade without real Stripe
     if (!isStripeConfigured()) {
@@ -129,8 +141,8 @@ export async function POST(request: Request) {
         customer: customerId,
         line_items: [{ price: priceId, quantity: 1 }],
         mode: 'payment',
-        automatic_tax: { enabled: true },
-        customer_update: { address: 'auto' },
+        // automatic_tax: { enabled: true },
+        // customer_update: { address: 'auto' },
         success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=credits`,
         cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?checkout=cancelled`,
         metadata: { supabase_user_id: user.id, type: 'credit_pack' },
@@ -146,8 +158,8 @@ export async function POST(request: Request) {
         customer: customerId,
         line_items: [{ price: priceId, quantity: seats }],
         mode: 'subscription',
-        automatic_tax: { enabled: true },
-        customer_update: { address: 'auto' },
+        // automatic_tax: { enabled: true },
+        // customer_update: { address: 'auto' },
         success_url: `${process.env.NEXT_PUBLIC_APP_URL}/team?checkout=success`,
         cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?checkout=cancelled`,
         metadata: { supabase_user_id: user.id, type: 'team', seat_count: String(seats) },
@@ -161,8 +173,8 @@ export async function POST(request: Request) {
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      automatic_tax: { enabled: true },
-      customer_update: { address: 'auto' },
+      // automatic_tax: { enabled: true },
+      // customer_update: { address: 'auto' },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?checkout=cancelled`,
       metadata: { supabase_user_id: user.id },

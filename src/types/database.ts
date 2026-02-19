@@ -29,6 +29,8 @@ export interface Profile {
   plan: Plan
   stripe_customer_id: string | null
   stripe_subscription_id: string | null
+  subscription_period_start: string | null
+  subscription_period_end: string | null
   usage_count: number
   saved_applications_count: number
   coach_messages_count: number

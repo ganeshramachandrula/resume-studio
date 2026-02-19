@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe/server'
 import { createServerClient } from '@supabase/ssr'
 import { safeErrorResponse } from '@/lib/security/sanitize'
-import { checkRateLimit, getClientIP, rateLimitResponse, STRIPE_RATE_LIMIT } from '@/lib/security/rate-limit'
+import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/security/rate-limit'
+
+// Webhooks need a higher rate limit — Stripe sends many events per checkout
+const WEBHOOK_RATE_LIMIT = { maxRequests: 100, windowSeconds: 60 }
 import { logSecurityEvent } from '@/lib/security/audit-log'
 
 // Use service role key to bypass RLS
@@ -39,7 +42,7 @@ export async function POST(request: Request) {
   try {
     // Rate limit by IP
     const ip = getClientIP(request)
-    const rl = checkRateLimit(ip, STRIPE_RATE_LIMIT)
+    const rl = checkRateLimit(`webhook_${ip}`, WEBHOOK_RATE_LIMIT)
     if (!rl.allowed) {
       logSecurityEvent('rate_limit_hit', request, undefined, { route: 'webhook' })
       return rateLimitResponse(rl.retryAfterSeconds!)
@@ -95,7 +98,7 @@ export async function POST(request: Request) {
         if (metadataType === 'team') {
           const userId = session.metadata?.supabase_user_id
           const seatCount = parseInt(session.metadata?.seat_count || '5', 10)
-          if (userId) {
+          if (userId && session.subscription) {
             const subscription = await stripe.subscriptions.retrieve(
               session.subscription as string
             )
@@ -119,6 +122,8 @@ export async function POST(request: Request) {
                   team_id: team.id,
                   stripe_subscription_id: subscription.id,
                   stripe_customer_id: session.customer as string,
+                  subscription_period_start: new Date(subscription.items.data[0].current_period_start * 1000).toISOString(),
+                  subscription_period_end: new Date(subscription.items.data[0].current_period_end * 1000).toISOString(),
                 })
                 .eq('id', userId)
             }
@@ -127,6 +132,7 @@ export async function POST(request: Request) {
         }
 
         // Regular subscription (pro monthly/annual)
+        if (!session.subscription) break
         const subscription = await stripe.subscriptions.retrieve(
           session.subscription as string
         )
@@ -145,6 +151,8 @@ export async function POST(request: Request) {
             plan,
             stripe_subscription_id: subscription.id,
             stripe_customer_id: session.customer as string,
+            subscription_period_start: new Date(subscription.items.data[0].current_period_start * 1000).toISOString(),
+            subscription_period_end: new Date(subscription.items.data[0].current_period_end * 1000).toISOString(),
           })
           .eq('id', session.metadata?.supabase_user_id)
 
@@ -175,7 +183,11 @@ export async function POST(request: Request) {
 
         await supabase
           .from('profiles')
-          .update({ plan })
+          .update({
+            plan,
+            subscription_period_start: new Date(subscription.items.data[0].current_period_start * 1000).toISOString(),
+            subscription_period_end: new Date(subscription.items.data[0].current_period_end * 1000).toISOString(),
+          })
           .eq('stripe_subscription_id', subscription.id)
 
         break
