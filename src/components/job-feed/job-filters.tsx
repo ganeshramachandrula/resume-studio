@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { JOB_PROVIDERS, JOB_PROVIDER_LABELS } from '@/lib/constants'
 import { useJobFeedStore } from '@/store/job-feed-store'
-import { Filter, Wifi, ArrowUpDown, Calendar } from 'lucide-react'
+import { Filter, Wifi, ArrowUpDown, Calendar, EyeOff } from 'lucide-react'
 import type { JobProvider, DateRange } from '@/types/job-feed'
 
 const DATE_RANGE_OPTIONS: { value: DateRange; label: string }[] = [
@@ -13,7 +13,12 @@ const DATE_RANGE_OPTIONS: { value: DateRange; label: string }[] = [
   { value: '30d', label: '1 month' },
 ]
 
-export function JobFilters() {
+interface JobFiltersProps {
+  hiddenCount?: number
+  onUnhideAll?: () => void
+}
+
+export function JobFilters({ hiddenCount = 0, onUnhideAll }: JobFiltersProps) {
   const { filters, setFilters } = useJobFeedStore()
 
   const toggleProvider = (provider: JobProvider) => {
@@ -96,6 +101,25 @@ export function JobFilters() {
             </button>
           ))}
         </div>
+
+        {/* Hidden jobs indicator */}
+        {hiddenCount > 0 && (
+          <div className="inline-flex items-center gap-1.5">
+            <Badge variant="secondary" className="text-[10px]">
+              <EyeOff className="h-2.5 w-2.5 mr-0.5" />
+              {hiddenCount} hidden
+            </Badge>
+            {onUnhideAll && (
+              <button
+                type="button"
+                onClick={onUnhideAll}
+                className="text-xs text-brand hover:underline"
+              >
+                Unhide all
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Location filter */}

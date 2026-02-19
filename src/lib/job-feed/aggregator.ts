@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { createHash } from 'crypto'
 import type { NormalizedJob, JobSearchParams, JobProvider } from '@/types/job-feed'
+import { isAmbiguousLocation, detectCountry, COUNTRY_HINTS } from './country-hints'
 import { searchJSearch } from './providers/jsearch'
 import { searchAdzuna } from './providers/adzuna'
 import { searchTheMuse } from './providers/themuse'
@@ -84,11 +85,30 @@ export function filterByLocation(jobs: NormalizedJob[], params: JobSearchParams)
     }
   }
 
-  // Country filtering is handled upstream by providers (e.g. Adzuna uses country
-  // in its API endpoint, JSearch/Findwork append it to location). No post-filter
-  // needed here — provider results are already country-scoped.
-
   return filtered
+}
+
+/**
+ * Smart post-filter: remove jobs whose location clearly belongs to a different country.
+ * Keeps ambiguous locations (Remote, Worldwide, etc.) and jobs matching the target country.
+ */
+export function filterByCountry(jobs: NormalizedJob[], params: JobSearchParams): NormalizedJob[] {
+  const targetCountry = params.country?.toUpperCase()
+  if (!targetCountry || !COUNTRY_HINTS[targetCountry]) return jobs
+
+  return jobs.filter((job) => {
+    // Keep jobs with ambiguous/unspecified locations
+    if (isAmbiguousLocation(job.location)) return true
+
+    // Detect which country this job likely belongs to
+    const detected = detectCountry(job.location)
+
+    // If we can't determine the country, keep it
+    if (!detected) return true
+
+    // Keep only if it matches the target country
+    return detected === targetCountry
+  })
 }
 
 export function sortByDate(jobs: NormalizedJob[]): NormalizedJob[] {
@@ -140,7 +160,8 @@ export async function searchAllProviders(
     // All providers cached
     const relevant = filterByRelevance(freshCached, params)
     const located = filterByLocation(relevant, params)
-    const deduped = deduplicateJobs(located)
+    const countryFiltered = filterByCountry(located, params)
+    const deduped = deduplicateJobs(countryFiltered)
     const sorted = sortByDate(deduped)
     return {
       jobs: sorted.slice(0, maxResults),
@@ -183,7 +204,8 @@ export async function searchAllProviders(
 
   const relevant = filterByRelevance(freshJobs, params)
   const located = filterByLocation(relevant, params)
-  const deduped = deduplicateJobs(located)
+  const countryFiltered = filterByCountry(located, params)
+  const deduped = deduplicateJobs(countryFiltered)
   const sorted = sortByDate(deduped)
 
   return {

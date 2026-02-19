@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { NormalizedJob, JobPreferences, JobFeedFilters, JobProvider } from '@/types/job-feed'
+import { scoreJobs, type ScoredJob } from '@/lib/job-feed/relevance'
 
 interface JobFeedStore {
   jobs: NormalizedJob[]
@@ -11,6 +12,7 @@ interface JobFeedStore {
   totalResults: number
   remainingSearches: number | null
   providersQueried: string[]
+  ignoredJobIds: Set<string>
 
   setJobs: (jobs: NormalizedJob[]) => void
   setPreferences: (prefs: JobPreferences | null) => void
@@ -21,6 +23,8 @@ interface JobFeedStore {
   setTotalResults: (total: number) => void
   setRemainingSearches: (remaining: number | null) => void
   setProvidersQueried: (providers: string[]) => void
+  setIgnoredJobIds: (ids: Set<string>) => void
+  addIgnoredJob: (id: string) => void
   reset: () => void
 }
 
@@ -43,6 +47,7 @@ const initialState = {
   totalResults: 0,
   remainingSearches: null as number | null,
   providersQueried: [] as string[],
+  ignoredJobIds: new Set<string>(),
 }
 
 export const useJobFeedStore = create<JobFeedStore>((set) => ({
@@ -60,14 +65,31 @@ export const useJobFeedStore = create<JobFeedStore>((set) => ({
   setTotalResults: (totalResults) => set({ totalResults }),
   setRemainingSearches: (remainingSearches) => set({ remainingSearches }),
   setProvidersQueried: (providersQueried) => set({ providersQueried }),
-  reset: () => set(initialState),
+  setIgnoredJobIds: (ignoredJobIds) => set({ ignoredJobIds }),
+  addIgnoredJob: (id) =>
+    set((state) => {
+      const next = new Set(state.ignoredJobIds)
+      next.add(id)
+      return { ignoredJobIds: next }
+    }),
+  reset: () => set({ ...initialState, ignoredJobIds: new Set<string>() }),
 }))
 
 /**
  * Client-side filtering of jobs by the current filter state.
+ * Optionally scores jobs against preferences and filters out ignored jobs.
  */
-export function filterJobs(jobs: NormalizedJob[], filters: JobFeedFilters): NormalizedJob[] {
+export function filterJobs(
+  jobs: NormalizedJob[],
+  filters: JobFeedFilters,
+  options?: { preferences?: JobPreferences | null; ignoredJobIds?: Set<string> }
+): ScoredJob[] {
   let filtered = [...jobs]
+
+  // Filter out ignored jobs first
+  if (options?.ignoredJobIds && options.ignoredJobIds.size > 0) {
+    filtered = filtered.filter((j) => !options.ignoredJobIds!.has(j.id))
+  }
 
   // Filter by provider
   if (filters.providers.length > 0) {
@@ -106,9 +128,18 @@ export function filterJobs(jobs: NormalizedJob[], filters: JobFeedFilters): Norm
     )
   }
 
+  // Score against preferences
+  const prefs = options?.preferences
+  const scored: ScoredJob[] = prefs
+    ? scoreJobs(filtered, prefs)
+    : filtered.map((j) => ({ ...j, relevanceScore: 0 }))
+
   // Sort
-  if (filters.sort_by === 'date') {
-    filtered.sort((a, b) => {
+  if (filters.sort_by === 'relevance' && prefs) {
+    scored.sort((a, b) => b.relevanceScore - a.relevanceScore)
+  } else {
+    // Default: date sort
+    scored.sort((a, b) => {
       if (!a.posted_at && !b.posted_at) return 0
       if (!a.posted_at) return 1
       if (!b.posted_at) return -1
@@ -116,5 +147,5 @@ export function filterJobs(jobs: NormalizedJob[], filters: JobFeedFilters): Norm
     })
   }
 
-  return filtered
+  return scored
 }

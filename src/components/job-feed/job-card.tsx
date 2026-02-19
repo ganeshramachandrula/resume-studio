@@ -4,13 +4,14 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Clock, ExternalLink, Sparkles, Wifi } from 'lucide-react'
+import { MapPin, Clock, ExternalLink, Sparkles, Wifi, X } from 'lucide-react'
 import { useGenerationStore } from '@/store/generation-store'
 import { JOB_PROVIDER_LABELS } from '@/lib/constants'
-import type { NormalizedJob } from '@/types/job-feed'
+import type { ScoredJob } from '@/lib/job-feed/relevance'
 
 interface JobCardProps {
-  job: NormalizedJob
+  job: ScoredJob
+  onDismiss?: (id: string) => void
 }
 
 function timeAgo(dateStr: string | null): string {
@@ -24,7 +25,7 @@ function timeAgo(dateStr: string | null): string {
   return months === 1 ? '1 month ago' : `${months} months ago`
 }
 
-export function JobCard({ job }: JobCardProps) {
+export function JobCard({ job, onDismiss }: JobCardProps) {
   const router = useRouter()
   const { setJobDescription, reset } = useGenerationStore()
 
@@ -60,9 +61,29 @@ export function JobCard({ job }: JobCardProps) {
               <p className="text-sm text-gray-600 truncate">{job.company}</p>
             </div>
           </div>
-          <Badge variant="secondary" className="text-[10px] shrink-0 uppercase">
-            {JOB_PROVIDER_LABELS[job.provider] || job.provider}
-          </Badge>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {job.relevanceScore > 0 && (
+              <Badge
+                variant={job.relevanceScore >= 70 ? 'accent' : 'secondary'}
+                className="text-[10px]"
+              >
+                {job.relevanceScore}% match
+              </Badge>
+            )}
+            <Badge variant="secondary" className="text-[10px] uppercase">
+              {JOB_PROVIDER_LABELS[job.provider] || job.provider}
+            </Badge>
+            {onDismiss && (
+              <button
+                type="button"
+                onClick={() => onDismiss(job.id)}
+                className="p-0.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                title="Hide this job"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">

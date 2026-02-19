@@ -4,6 +4,7 @@ import { useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useJobFeedStore, filterJobs } from '@/store/job-feed-store'
 import { useAppStore } from '@/store/app-store'
+import { getIgnoredJobIds, ignoreJob, clearIgnoredJobs } from '@/lib/job-feed/ignored-jobs'
 import { JobSearchBar } from '@/components/job-feed/job-search-bar'
 import { JobCard } from '@/components/job-feed/job-card'
 import { JobFilters } from '@/components/job-feed/job-filters'
@@ -24,6 +25,7 @@ export default function JobFeedPage() {
     totalResults,
     remainingSearches,
     providersQueried,
+    ignoredJobIds,
     setJobs,
     setPreferences,
     setSearching,
@@ -32,11 +34,13 @@ export default function JobFeedPage() {
     setTotalResults,
     setRemainingSearches,
     setProvidersQueried,
+    setIgnoredJobIds,
+    addIgnoredJob,
   } = useJobFeedStore()
 
   const isFree = profile?.plan === 'free'
 
-  // Load preferences on mount
+  // Load preferences + ignored jobs on mount
   useEffect(() => {
     let cancelled = false
     async function loadPreferences() {
@@ -54,8 +58,12 @@ export default function JobFeedPage() {
       }
     }
     loadPreferences()
+
+    // Load ignored job IDs from localStorage
+    setIgnoredJobIds(getIgnoredJobIds())
+
     return () => { cancelled = true }
-  }, [setPreferences, setLoading])
+  }, [setPreferences, setLoading, setIgnoredJobIds])
 
   const handleSearch = useCallback(
     async (query: string, location: string, country?: string, remoteOnly?: boolean) => {
@@ -101,7 +109,26 @@ export default function JobFeedPage() {
     }
   }, [preferences, jobs.length, searching, loading, handleSearch])
 
-  const filteredJobs = filterJobs(jobs, filters)
+  const handleDismissJob = useCallback(
+    (id: string) => {
+      const updated = ignoreJob(id)
+      addIgnoredJob(id)
+      setIgnoredJobIds(updated)
+    },
+    [addIgnoredJob, setIgnoredJobIds]
+  )
+
+  const handleUnhideAll = useCallback(() => {
+    clearIgnoredJobs()
+    setIgnoredJobIds(new Set())
+  }, [setIgnoredJobIds])
+
+  const filteredJobs = filterJobs(jobs, filters, {
+    preferences,
+    ignoredJobIds,
+  })
+  const hiddenCount = ignoredJobIds.size
+
   const defaultQuery =
     preferences
       ? [...(preferences.roles || []), ...(preferences.skills || []).slice(0, 3)].join(' ')
@@ -176,7 +203,12 @@ export default function JobFeedPage() {
         </div>
       )}
 
-      {jobs.length > 0 && <JobFilters />}
+      {jobs.length > 0 && (
+        <JobFilters
+          hiddenCount={hiddenCount}
+          onUnhideAll={handleUnhideAll}
+        />
+      )}
 
       {/* Results */}
       {searching ? (
@@ -188,7 +220,7 @@ export default function JobFeedPage() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredJobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <JobCard key={job.id} job={job} onDismiss={handleDismissJob} />
             ))}
           </div>
 

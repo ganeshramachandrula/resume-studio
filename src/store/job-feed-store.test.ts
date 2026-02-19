@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useJobFeedStore, filterJobs } from '@/store/job-feed-store'
-import type { NormalizedJob, JobFeedFilters } from '@/types/job-feed'
+import type { NormalizedJob, JobFeedFilters, JobPreferences } from '@/types/job-feed'
 
 const makeJob = (overrides: Partial<NormalizedJob> = {}): NormalizedJob => ({
   id: '1',
@@ -27,6 +27,20 @@ const defaultFilters: JobFeedFilters = {
   search_query: '',
   date_range: '30d',
 }
+
+const makePrefs = (overrides: Partial<JobPreferences> = {}): JobPreferences => ({
+  id: 'pref-1',
+  user_id: 'user-1',
+  skills: ['react', 'typescript'],
+  roles: ['frontend engineer'],
+  locations: ['San Francisco'],
+  salary_min: null,
+  salary_max: null,
+  remote_preference: 'remote',
+  created_at: '2026-01-01',
+  updated_at: '2026-01-01',
+  ...overrides,
+})
 
 describe('filterJobs', () => {
   it('returns all jobs when no filters are applied', () => {
@@ -126,6 +140,49 @@ describe('filterJobs', () => {
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('1')
   })
+
+  it('filters out ignored job IDs', () => {
+    const jobs = [
+      makeJob({ id: '1' }),
+      makeJob({ id: '2' }),
+      makeJob({ id: '3' }),
+    ]
+    const result = filterJobs(jobs, defaultFilters, {
+      ignoredJobIds: new Set(['2']),
+    })
+    expect(result).toHaveLength(2)
+    expect(result.map(j => j.id)).toEqual(['1', '3'])
+  })
+
+  it('scores jobs when preferences provided', () => {
+    const jobs = [
+      makeJob({ id: '1', title: 'Frontend Engineer', tags: ['react', 'typescript'], description: 'React and TypeScript role' }),
+      makeJob({ id: '2', title: 'Backend Developer', tags: ['python'], description: 'Python backend' }),
+    ]
+    const prefs = makePrefs()
+    const result = filterJobs(jobs, defaultFilters, { preferences: prefs })
+    // Job 1 should score higher (skills + role match)
+    expect(result[0].relevanceScore).toBeGreaterThan(0)
+    expect(result[0].relevanceScore).toBeGreaterThan(result[1].relevanceScore)
+  })
+
+  it('sorts by relevance when sort_by=relevance and preferences provided', () => {
+    const jobs = [
+      makeJob({ id: '1', title: 'Backend Developer', tags: ['python'], description: 'Python dev', posted_at: '2026-02-18' }),
+      makeJob({ id: '2', title: 'Frontend Engineer', tags: ['react', 'typescript'], description: 'React and TypeScript', posted_at: '2026-02-01' }),
+    ]
+    const prefs = makePrefs()
+    const result = filterJobs(jobs, { ...defaultFilters, sort_by: 'relevance' }, { preferences: prefs })
+    // Job 2 should be first (higher relevance) despite older date
+    expect(result[0].id).toBe('2')
+    expect(result[0].relevanceScore).toBeGreaterThan(result[1].relevanceScore)
+  })
+
+  it('returns 0 relevanceScore when no preferences', () => {
+    const jobs = [makeJob({ id: '1' })]
+    const result = filterJobs(jobs, defaultFilters)
+    expect(result[0].relevanceScore).toBe(0)
+  })
 })
 
 describe('job-feed-store', () => {
@@ -144,6 +201,7 @@ describe('job-feed-store', () => {
     expect(state.totalResults).toBe(0)
     expect(state.remainingSearches).toBeNull()
     expect(state.providersQueried).toEqual([])
+    expect(state.ignoredJobIds.size).toBe(0)
   })
 
   it('setJobs replaces jobs array', () => {
@@ -177,6 +235,24 @@ describe('job-feed-store', () => {
     expect(useJobFeedStore.getState().error).toBeNull()
   })
 
+  it('addIgnoredJob adds to the set', () => {
+    useJobFeedStore.getState().addIgnoredJob('job-1')
+    useJobFeedStore.getState().addIgnoredJob('job-2')
+    const ids = useJobFeedStore.getState().ignoredJobIds
+    expect(ids.has('job-1')).toBe(true)
+    expect(ids.has('job-2')).toBe(true)
+    expect(ids.size).toBe(2)
+  })
+
+  it('setIgnoredJobIds replaces the set', () => {
+    useJobFeedStore.getState().addIgnoredJob('job-1')
+    useJobFeedStore.getState().setIgnoredJobIds(new Set(['job-3', 'job-4']))
+    const ids = useJobFeedStore.getState().ignoredJobIds
+    expect(ids.has('job-1')).toBe(false)
+    expect(ids.has('job-3')).toBe(true)
+    expect(ids.has('job-4')).toBe(true)
+  })
+
   it('reset restores initial state', () => {
     useJobFeedStore.getState().setJobs([makeJob()])
     useJobFeedStore.getState().setFilters({ remote_only: true })
@@ -185,6 +261,7 @@ describe('job-feed-store', () => {
     useJobFeedStore.getState().setTotalResults(50)
     useJobFeedStore.getState().setRemainingSearches(3)
     useJobFeedStore.getState().setProvidersQueried(['jsearch'])
+    useJobFeedStore.getState().addIgnoredJob('job-1')
 
     useJobFeedStore.getState().reset()
 
@@ -196,5 +273,6 @@ describe('job-feed-store', () => {
     expect(state.totalResults).toBe(0)
     expect(state.remainingSearches).toBeNull()
     expect(state.providersQueried).toEqual([])
+    expect(state.ignoredJobIds.size).toBe(0)
   })
 })

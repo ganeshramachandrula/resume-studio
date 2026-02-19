@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { hashQuery, deduplicateJobs, sortByDate } from '@/lib/job-feed/aggregator'
+import { hashQuery, deduplicateJobs, sortByDate, filterByCountry } from '@/lib/job-feed/aggregator'
 import type { NormalizedJob, JobSearchParams } from '@/types/job-feed'
 
 const makeJob = (overrides: Partial<NormalizedJob> = {}): NormalizedJob => ({
@@ -123,5 +123,89 @@ describe('sortByDate', () => {
   it('returns empty array for empty input', () => {
     const result = sortByDate([])
     expect(result).toEqual([])
+  })
+})
+
+describe('filterByCountry', () => {
+  it('returns all jobs when no country param', () => {
+    const jobs = [
+      makeJob({ id: '1', location: 'Dallas, TX' }),
+      makeJob({ id: '2', location: 'London, UK' }),
+    ]
+    const result = filterByCountry(jobs, { query: 'dev' })
+    expect(result).toHaveLength(2)
+  })
+
+  it('keeps jobs matching the target country', () => {
+    const jobs = [
+      makeJob({ id: '1', location: 'London, UK' }),
+      makeJob({ id: '2', location: 'Manchester, England' }),
+      makeJob({ id: '3', location: 'Dallas, TX' }),
+    ]
+    const result = filterByCountry(jobs, { query: 'dev', country: 'GB' })
+    expect(result).toHaveLength(2)
+    expect(result.map(j => j.id).sort()).toEqual(['1', '2'])
+  })
+
+  it('keeps ambiguous locations (Remote, Worldwide)', () => {
+    const jobs = [
+      makeJob({ id: '1', location: 'Remote' }),
+      makeJob({ id: '2', location: 'Worldwide' }),
+      makeJob({ id: '3', location: 'Anywhere' }),
+      makeJob({ id: '4', location: 'Dallas, TX' }),
+    ]
+    const result = filterByCountry(jobs, { query: 'dev', country: 'GB' })
+    // 3 ambiguous kept, 1 US job removed
+    expect(result).toHaveLength(3)
+    expect(result.find(j => j.id === '4')).toBeUndefined()
+  })
+
+  it('removes US jobs when searching for India', () => {
+    const jobs = [
+      makeJob({ id: '1', location: 'San Francisco, CA' }),
+      makeJob({ id: '2', location: 'Bangalore, India' }),
+      makeJob({ id: '3', location: 'New York, NY' }),
+    ]
+    const result = filterByCountry(jobs, { query: 'dev', country: 'IN' })
+    expect(result).toHaveLength(1)
+    expect(result[0].id).toBe('2')
+  })
+
+  it('removes non-US jobs when searching for US', () => {
+    const jobs = [
+      makeJob({ id: '1', location: 'Austin, TX' }),
+      makeJob({ id: '2', location: 'London, UK' }),
+      makeJob({ id: '3', location: 'Berlin, Germany' }),
+    ]
+    const result = filterByCountry(jobs, { query: 'dev', country: 'US' })
+    expect(result).toHaveLength(1)
+    expect(result[0].id).toBe('1')
+  })
+
+  it('keeps jobs with unrecognized locations', () => {
+    const jobs = [
+      makeJob({ id: '1', location: 'Unknown City' }),
+      makeJob({ id: '2', location: 'London' }),
+    ]
+    const result = filterByCountry(jobs, { query: 'dev', country: 'GB' })
+    expect(result).toHaveLength(2) // both kept (one matched, one unknown)
+  })
+
+  it('detects US state abbreviation pattern', () => {
+    const jobs = [
+      makeJob({ id: '1', location: 'Raleigh, NC' }),
+      makeJob({ id: '2', location: 'Remote' }),
+    ]
+    const result = filterByCountry(jobs, { query: 'dev', country: 'GB' })
+    expect(result).toHaveLength(1)
+    expect(result[0].id).toBe('2') // Raleigh NC filtered out
+  })
+
+  it('keeps empty locations as ambiguous', () => {
+    const jobs = [
+      makeJob({ id: '1', location: '' }),
+    ]
+    const result = filterByCountry(jobs, { query: 'dev', country: 'GB' })
+    expect(result).toHaveLength(1)
   })
 })
