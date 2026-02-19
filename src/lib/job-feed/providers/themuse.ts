@@ -14,12 +14,11 @@ interface TheMuseResult {
 
 export async function searchTheMuse(params: JobSearchParams): Promise<NormalizedJob[]> {
   try {
-    const query = encodeURIComponent(params.query)
     const location = params.location ? `&location=${encodeURIComponent(params.location)}` : ''
     const page = params.page || 1
 
     const res = await fetch(
-      `https://www.themuse.com/api/public/jobs?page=${page - 1}&descending=true&category=${query}${location}`,
+      `https://www.themuse.com/api/public/jobs?page=${page - 1}&descending=true${location}`,
       { signal: AbortSignal.timeout(10_000) }
     )
 
