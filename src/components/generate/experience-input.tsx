@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft, Lock } from 'lucide-react'
 import { useGenerationStore } from '@/store/generation-store'
 import { useAppStore } from '@/store/app-store'
+import { EXPERIENCE_MAX_CHARS } from '@/lib/security/validation'
 
 export function ExperienceInput() {
   const { experience, setExperience, contactInfo, setContactInfo, setStep } = useGenerationStore()
@@ -112,12 +113,32 @@ export function ExperienceInput() {
         </p>
       </div>
 
-      <Textarea
-        placeholder={`Paste your resume or describe your experience here. Include:\n\n- Work history (company, title, dates, responsibilities)\n- Education (degree, school, graduation year)\n- Skills (professional skills, tools, certifications)\n- Certifications\n- Notable achievements`}
-        value={experience}
-        onChange={(e) => setExperience(e.target.value)}
-        className="min-h-[350px]"
-      />
+      <div>
+        <Textarea
+          placeholder={`Paste your resume or describe your experience here. Include:\n\n- Work history (company, title, dates, responsibilities)\n- Education (degree, school, graduation year)\n- Skills (professional skills, tools, certifications)\n- Certifications\n- Notable achievements`}
+          value={experience}
+          onChange={(e) => setExperience(e.target.value)}
+          className="min-h-[350px]"
+        />
+        <div className="flex items-center justify-between mt-1.5">
+          <span
+            className={`text-xs ${
+              experience.length > EXPERIENCE_MAX_CHARS
+                ? 'text-red-600 font-medium'
+                : experience.length > EXPERIENCE_MAX_CHARS * 0.8
+                  ? 'text-amber-600'
+                  : 'text-gray-400'
+            }`}
+          >
+            {experience.length.toLocaleString()} / {EXPERIENCE_MAX_CHARS.toLocaleString()} characters
+          </span>
+          {experience.length > EXPERIENCE_MAX_CHARS && (
+            <span className="text-xs text-red-600 font-medium">
+              Exceeds limit by {(experience.length - EXPERIENCE_MAX_CHARS).toLocaleString()} characters — please shorten to continue
+            </span>
+          )}
+        </div>
+      </div>
 
       <div className="flex items-center justify-between">
         <Button variant="outline" onClick={() => setStep('jd_input')}>
@@ -126,7 +147,7 @@ export function ExperienceInput() {
         </Button>
         <Button
           onClick={() => setStep('select_documents')}
-          disabled={experience.length < 50}
+          disabled={experience.length < 50 || experience.length > EXPERIENCE_MAX_CHARS}
         >
           Continue to Document Selection
         </Button>

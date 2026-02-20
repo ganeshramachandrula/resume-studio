@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 const MAX_JSON_FIELD_BYTES = 100 * 1024 // 100KB per JSON object field
 const MAX_BODY_BYTES = 500 * 1024 // 500KB overall request body
+export const EXPERIENCE_MAX_CHARS = 20_000
 
 /**
  * Zod refinement: rejects JSON object fields whose serialized size exceeds 100KB.
@@ -44,7 +45,7 @@ export const generateDocSchema = z.object({
   experience: z
     .string()
     .min(10, 'Experience must be at least 10 characters')
-    .max(20_000, 'Experience must be under 20,000 characters'),
+    .max(EXPERIENCE_MAX_CHARS, `Experience must be under ${EXPERIENCE_MAX_CHARS.toLocaleString()} characters`),
   jobDescriptionId: z.string().uuid('Invalid job description ID'),
   contactInfo: contactInfoSchema.optional(),
   language: z.string().max(100, 'Language too long').optional(),
@@ -136,7 +137,7 @@ export const countryResumeSchema = z.object({
   experience: z
     .string()
     .min(10, 'Experience must be at least 10 characters')
-    .max(20_000, 'Experience must be under 20,000 characters'),
+    .max(EXPERIENCE_MAX_CHARS, `Experience must be under ${EXPERIENCE_MAX_CHARS.toLocaleString()} characters`),
   jobDescriptionId: z.string().uuid('Invalid job description ID'),
   countryCode: z.string().length(2, 'Country code must be exactly 2 characters').toUpperCase(),
   contactInfo: contactInfoSchema.optional(),

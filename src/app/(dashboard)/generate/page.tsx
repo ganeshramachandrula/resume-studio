@@ -21,6 +21,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, FileText, Mail, Linkedin, MessageSquare, BookOpen, Award, Loader2, Sparkles } from 'lucide-react'
 import { DOCUMENT_TYPE_LABELS } from '@/lib/constants'
+import { EXPERIENCE_MAX_CHARS } from '@/lib/security/validation'
 import { detectBrowserLanguageCode } from '@/lib/i18n/currencies'
 import { PRESET_LANGUAGES } from '@/lib/templates/languages'
 import type { DocumentType } from '@/types/database'
@@ -289,6 +290,12 @@ function GeneratePageInner() {
             isAnnual={userIsAnnual}
           />
 
+          {experience.length > EXPERIENCE_MAX_CHARS && (
+            <div className="bg-red-50 text-red-700 text-sm p-3 rounded-xl border border-red-200">
+              Your experience text exceeds the {EXPERIENCE_MAX_CHARS.toLocaleString()} character limit. Go back and shorten it to generate documents.
+            </div>
+          )}
+
           {generationError && (
             <div className="bg-red-50 text-red-700 text-sm p-3 rounded-xl border border-red-200">
               {generationError}
@@ -301,7 +308,7 @@ function GeneratePageInner() {
             </Button>
             <Button
               onClick={handleGenerate}
-              disabled={selectedDocuments.length === 0 || isGenerating}
+              disabled={selectedDocuments.length === 0 || isGenerating || experience.length > EXPERIENCE_MAX_CHARS}
             >
               {isGenerating ? (
                 <>
