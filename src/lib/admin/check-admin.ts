@@ -7,8 +7,8 @@ import type { User } from '@supabase/supabase-js'
  */
 export function getServiceClient() {
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\s+/g, ''),
+    (process.env.SUPABASE_SERVICE_ROLE_KEY || '').replace(/\s+/g, ''),
     {
       cookies: {
         getAll() { return [] },

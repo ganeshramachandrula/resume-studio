@@ -98,8 +98,8 @@ export async function checkRateLimitDistributed(
   try {
     const { createServerClient } = await import('@supabase/ssr')
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\s+/g, ''),
+      (process.env.SUPABASE_SERVICE_ROLE_KEY || '').replace(/\s+/g, ''),
       { cookies: { getAll() { return [] }, setAll() {} } }
     )
 
@@ -222,8 +222,8 @@ async function syncBlockedIps(): Promise<void> {
     // Dynamic import to avoid circular dependencies
     const { createServerClient } = await import('@supabase/ssr')
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\s+/g, ''),
+      (process.env.SUPABASE_SERVICE_ROLE_KEY || '').replace(/\s+/g, ''),
       { cookies: { getAll() { return [] }, setAll() {} } }
     )
     const { data } = await supabase.from('blocked_ips').select('ip_address')
