@@ -142,7 +142,7 @@ bold ""
 bold "=== 1. MARKETING PAGES ==="
 
 for url in \
-  "/" "/privacy" "/terms" "/blog" "/contact" \
+  "/" "/privacy" "/terms" "/blog" "/contact" "/roast" \
   "/compare/chatgpt" "/compare/indeed" "/compare/linkedin" \
   "/es" "/fr" "/de" "/pt" "/hi" \
   "/login" "/signup"; do
@@ -323,6 +323,20 @@ else
     -d "{\"resumeJSON\":{\"header\":{\"name\":\"Test\"},\"summary\":\"Engineer\",\"experience\":[],\"skills\":{\"core\":[\"React\"]}},\"parsedJD\":$PARSED_DATA}")
   check_status "200" "$status" "POST /api/ai/ats-score"
 fi
+
+# Roast My Resume (public — no auth required)
+ROAST_JD="Senior Software Engineer at Acme Corp. 5+ years React, TypeScript, Node.js, PostgreSQL required. Remote-friendly position in San Francisco."
+ROAST_RESUME="Jordan Smith, Software Engineer. 3 years experience building React apps. Worked at StartupCo building dashboards. BS Computer Science."
+status=$(http_status -X POST "$BASE_URL/api/ai/roast-resume" \
+  -H "Content-Type: application/json" \
+  -d "{\"jobDescription\":\"$ROAST_JD\",\"resumeText\":\"$ROAST_RESUME\"}")
+check_status "200" "$status" "POST /api/ai/roast-resume (public, no auth)"
+
+# Roast: short input should fail validation
+status=$(http_status -X POST "$BASE_URL/api/ai/roast-resume" \
+  -H "Content-Type: application/json" \
+  -d '{"jobDescription":"short","resumeText":"short"}')
+check_status "400" "$status" "POST /api/ai/roast-resume (short input → 400)"
 
 # ═════════════════════════════════════════════════════════════════════════════
 # SECTION 5: CAREER COACH

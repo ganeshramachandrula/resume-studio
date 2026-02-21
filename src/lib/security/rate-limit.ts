@@ -157,6 +157,9 @@ export const JOB_SEARCH_RATE_LIMIT: RateLimitConfig = { maxRequests: 15, windowS
 /** Extension JD submission: 5 requests per minute per user */
 export const EXTENSION_RATE_LIMIT: RateLimitConfig = { maxRequests: 5, windowSeconds: 60 }
 
+/** Roast My Resume (public): 5 requests per 10 minutes per IP */
+export const ROAST_RATE_LIMIT: RateLimitConfig = { maxRequests: 5, windowSeconds: 600 }
+
 /** Clear the rate limit store. For testing only. */
 export function __clearRateLimitStore(): void {
   store.clear()

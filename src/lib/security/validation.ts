@@ -148,6 +148,17 @@ export const countryResumeSchema = z.object({
   }).optional(),
 })
 
+export const roastResumeSchema = z.object({
+  jobDescription: z
+    .string()
+    .min(50, 'Job description must be at least 50 characters')
+    .max(15_000, 'Job description must be under 15,000 characters'),
+  resumeText: z
+    .string()
+    .min(50, 'Resume text must be at least 50 characters')
+    .max(15_000, 'Resume text must be under 15,000 characters'),
+})
+
 export const extensionSubmitSchema = z.object({
   source_url: z.string().url('Invalid URL').max(2000, 'URL too long').optional(),
   source_site: z.string().max(100, 'Site name too long').optional(),

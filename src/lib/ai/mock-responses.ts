@@ -1,4 +1,4 @@
-import type { ParsedJD, ResumeData, CoverLetterData, LinkedInData, ColdEmailData, InterviewPrepData, CertificationGuideData, ATSScoreData, CountryResumeData } from '@/types/documents'
+import type { ParsedJD, ResumeData, CoverLetterData, LinkedInData, ColdEmailData, InterviewPrepData, CertificationGuideData, ATSScoreData, CountryResumeData, RoastResult } from '@/types/documents'
 
 export const mockParsedJD: ParsedJD = {
   role_title: 'Marketing Manager',
@@ -486,4 +486,56 @@ export const mockCountryResumeData: CountryResumeData = {
       'Where do you see yourself in 5 years?',
     ],
   },
+}
+
+export const mockRoastData: RoastResult = {
+  overall_score: 62,
+  verdict: 'Your resume reads like a LinkedIn post that forgot to include the results.',
+  keyword_match: {
+    score: 58,
+    matched: ['marketing', 'campaign management', 'analytics', 'SEO', 'budget management', 'CRM'],
+    missing: ['SEM', 'content strategy', 'marketing automation', 'A/B testing', 'cross-functional'],
+  },
+  impact_score: {
+    score: 55,
+    strong_bullets: [
+      'Led rebranding initiative that increased brand awareness by 40% and drove $3.2M in incremental revenue',
+      'Managed $2.1M annual marketing budget, achieving 28% improvement in cost-per-acquisition',
+    ],
+    weak_bullets: [
+      'Responsible for managing social media content calendars',
+      'Supported campaign execution for 8 consumer brand clients',
+      'Created monthly analytics reports for client presentations',
+    ],
+  },
+  ats_compatibility: {
+    score: 71,
+    issues: [
+      'Missing key SEM-related terms that appear 3 times in the JD',
+      'No dedicated "Projects" section to highlight major campaign wins',
+      'Skills section lacks marketing automation tools mentioned in JD',
+    ],
+  },
+  skills_gap: {
+    score: 65,
+    covered: ['Brand Management', 'Digital Marketing', 'SEO', 'Market Research', 'Analytics', 'CRM'],
+    missing: ['SEM', 'Content Strategy', 'Marketing Automation', 'A/B Testing'],
+  },
+  formatting_issues: [
+    'Consider a stronger opening summary — the current one is generic',
+    'Third job entry bullets lack quantified metrics',
+    'Certifications section could be expanded to match JD requirements',
+  ],
+  top_3_fixes: [
+    'Add SEM and marketing automation keywords throughout — these appear multiple times in the JD but are absent from your resume',
+    'Quantify every bullet point — your early career entries say "supported" and "created" with zero numbers attached',
+    'Add a "Key Projects" section highlighting 2-3 campaign case studies with measurable outcomes',
+  ],
+  roast_lines: [
+    'Your resume says "results-driven" but half your bullets forgot to include the results.',
+    "I've seen stronger action verbs on a restaurant menu. 'Supported'? 'Created'? Did you also 'facilitated synergies'?",
+    'You managed a $2M budget but your early career reads like you were an unpaid intern with a content calendar.',
+    'The good news: you clearly know marketing. The bad news: your resume doesn\'t market you.',
+    'This resume is like a movie trailer that spoils the ending in act one and forgets to mention act three exists.',
+  ],
 }

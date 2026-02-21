@@ -169,6 +169,33 @@ export interface CountryResumeData {
   }
 }
 
+export interface RoastResult {
+  overall_score: number
+  verdict: string
+  keyword_match: {
+    score: number
+    matched: string[]
+    missing: string[]
+  }
+  impact_score: {
+    score: number
+    strong_bullets: string[]
+    weak_bullets: string[]
+  }
+  ats_compatibility: {
+    score: number
+    issues: string[]
+  }
+  skills_gap: {
+    score: number
+    covered: string[]
+    missing: string[]
+  }
+  formatting_issues: string[]
+  top_3_fixes: string[]
+  roast_lines: string[]
+}
+
 export interface ParsedJD {
   role_title: string
   company_name: string | null

@@ -70,7 +70,7 @@ bold ""
 bold "=== 1. MARKETING PAGES ==="
 
 for url in \
-  "/" "/privacy" "/terms" "/blog" "/contact" \
+  "/" "/privacy" "/terms" "/blog" "/contact" "/roast" \
   "/compare/chatgpt" "/compare/indeed" "/compare/linkedin" \
   "/es" "/fr" "/de" "/pt" "/hi" \
   "/login" "/signup" "/pricing"; do
@@ -141,7 +141,7 @@ done
 bold ""
 bold "=== 3. SSR ERROR CHECK ==="
 
-for page in "/" "/privacy" "/terms" "/blog" "/contact" "/login" "/signup" \
+for page in "/" "/privacy" "/terms" "/blog" "/contact" "/roast" "/login" "/signup" \
   "/compare/chatgpt" "/es" "/fr" "/de" "/pt" "/hi" "/pricing"; do
   content=$(curl -s --max-time 15 "$BASE_URL$page")
   if echo "$content" | grep -qi "Application error\|Internal Server Error\|Unhandled Runtime Error\|NEXT_NOT_FOUND"; then
