@@ -151,15 +151,10 @@ done
 bold ""
 bold "=== 2. AUTH & ACCESS CONTROL ==="
 
-# Pages with server-side middleware redirect (307)
+# Dashboard pages use client-side auth (render 200, redirect in browser)
 for page in "/dashboard" "/generate" "/settings" "/admin" \
-  "/documents" "/job-tracker" "/career-coach"; do
-  status=$(http_status "$BASE_URL$page")
-  check_status "307" "$status" "Unauth GET $page → login redirect"
-done
-
-# Pages with client-side auth redirect (render 200, redirect in browser)
-for page in "/job-feed" "/vault" "/cost-of-living" "/support" \
+  "/documents" "/job-tracker" "/career-coach" \
+  "/job-feed" "/vault" "/cost-of-living" "/support" \
   "/upgrade" "/country-resume" "/job-sites"; do
   status=$(http_status "$BASE_URL$page")
   check_status "200" "$status" "Unauth GET $page → renders (client-side auth)"
