@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ChevronDown, ChevronUp, Trash2, FileText, Copy, Download, Check } from 'lucide-react'
+import { ChevronDown, ChevronUp, Trash2, FileText, Copy, Download, Check, Pencil } from 'lucide-react'
+import Link from 'next/link'
 import { DOCUMENT_TYPE_LABELS } from '@/lib/constants'
 import type { Document, DocumentType } from '@/types/database'
 import type {
@@ -152,6 +153,11 @@ export function ApplicationBundleCard({
                     <span className="text-sm text-gray-700 truncate">{doc.title}</span>
                   </div>
                   <div className="flex items-center gap-0.5 shrink-0">
+                    <Link href={`/documents/${doc.id}/edit`}>
+                      <Button size="icon" variant="ghost" className="h-8 w-8" title="Edit with AI">
+                        <Pencil className="h-4 w-4 text-gray-500" />
+                      </Button>
+                    </Link>
                     <DocCopyButton doc={doc} />
                     <DocDownloadButton doc={doc} />
                   </div>

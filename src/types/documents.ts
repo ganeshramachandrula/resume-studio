@@ -169,6 +169,42 @@ export interface CountryResumeData {
   }
 }
 
+export interface SkillAssessment {
+  skill: string
+  required_level: 'basic' | 'intermediate' | 'advanced' | 'expert'
+  current_level: 'none' | 'basic' | 'intermediate' | 'advanced' | 'expert'
+  gap_severity: 'none' | 'low' | 'medium' | 'high' | 'critical'
+  recommendation: string
+}
+
+export interface LearningStep {
+  order: number
+  skill: string
+  resource_name: string
+  resource_url: string
+  resource_type: 'course' | 'tutorial' | 'book' | 'practice' | 'certification'
+  estimated_hours: number
+  cost: 'free' | string
+  priority: 'essential' | 'recommended' | 'optional'
+}
+
+export interface SkillGapData {
+  role_title: string
+  overall_readiness: number
+  skills: SkillAssessment[]
+  learning_plan: LearningStep[]
+  quick_wins: string[]
+  summary: string
+}
+
+export interface FollowUpEmailData {
+  subject_line: string
+  body: string
+  key_points_referenced: string[]
+  next_steps: string
+  alternative_shorter_version: string
+}
+
 export interface RoastResult {
   overall_score: number
   verdict: string

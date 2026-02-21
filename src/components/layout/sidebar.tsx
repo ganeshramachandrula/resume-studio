@@ -22,6 +22,9 @@ import {
   Award,
   DollarSign,
   MapPin,
+  BarChart3,
+  TrendingUp,
+  Target,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -30,12 +33,14 @@ import { createClient } from '@/lib/supabase/client'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Generate', href: '/generate', icon: Sparkles },
   { name: 'Country Resume', href: '/country-resume', icon: MapPin },
   { name: 'Applications', href: '/documents', icon: FileText },
   { name: 'Job Feed', href: '/job-feed', icon: Search },
   { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase },
   { name: 'Job Sites', href: '/job-sites', icon: Globe },
+  { name: 'Market Insights', href: '/market-insights', icon: TrendingUp },
   { name: 'Settings', href: '/settings', icon: Settings },
   { name: 'Support', href: '/support', icon: LifeBuoy },
 ]
@@ -139,6 +144,21 @@ export function Sidebar() {
           >
             <Award className="h-5 w-5" />
             Credential Vault
+          </Link>
+
+          {/* Skill Gap Analysis */}
+          <Link
+            href="/skill-gap"
+            onClick={() => setSidebarOpen(false)}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+              pathname === '/skill-gap'
+                ? 'bg-brand/10 text-brand'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+            )}
+          >
+            <Target className="h-5 w-5" />
+            Skill Gap
           </Link>
 
           {/* Cost of Living */}

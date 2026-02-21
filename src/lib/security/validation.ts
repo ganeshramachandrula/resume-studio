@@ -148,6 +148,48 @@ export const countryResumeSchema = z.object({
   }).optional(),
 })
 
+export const followUpEmailSchema = z.object({
+  parsedJD: z.record(z.string(), z.unknown())
+    .refine((v) => Object.keys(v).length > 0, { message: 'Parsed job description is required' })
+    .refine(jsonSizeLimit(), jsonSizeLimitMessage('parsedJD')),
+  experience: z
+    .string()
+    .min(10, 'Experience must be at least 10 characters')
+    .max(EXPERIENCE_MAX_CHARS, `Experience must be under ${EXPERIENCE_MAX_CHARS.toLocaleString()} characters`),
+  jobDescriptionId: z.string().uuid('Invalid job description ID'),
+  interviewNotes: z
+    .string()
+    .min(10, 'Interview notes must be at least 10 characters')
+    .max(5000, 'Interview notes must be under 5,000 characters'),
+  contactInfo: contactInfoSchema.optional(),
+  language: z.string().max(100, 'Language too long').optional(),
+})
+
+export const documentEditorSchema = z.object({
+  documentId: z.string().uuid('Invalid document ID'),
+  documentType: z.string().min(1, 'Document type is required'),
+  currentContent: z.record(z.string(), z.unknown())
+    .refine((v) => Object.keys(v).length > 0, { message: 'Current content is required' })
+    .refine(jsonSizeLimit(), jsonSizeLimitMessage('currentContent')),
+  instruction: z
+    .string()
+    .min(3, 'Instruction must be at least 3 characters')
+    .max(1000, 'Instruction must be under 1,000 characters'),
+})
+
+export const skillGapSchema = z.object({
+  jobDescription: z
+    .string()
+    .min(50, 'Job description must be at least 50 characters')
+    .max(15_000, 'Job description must be under 15,000 characters'),
+  skills: z.array(z.object({
+    name: z.string(),
+    proficiency: z.string(),
+    category: z.string().optional(),
+  })).min(1, 'At least one skill is required').max(50, 'Maximum 50 skills'),
+  targetRole: z.string().max(200, 'Target role too long').optional(),
+})
+
 export const roastResumeSchema = z.object({
   jobDescription: z
     .string()

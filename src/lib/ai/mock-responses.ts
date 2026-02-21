@@ -1,4 +1,4 @@
-import type { ParsedJD, ResumeData, CoverLetterData, LinkedInData, ColdEmailData, InterviewPrepData, CertificationGuideData, ATSScoreData, CountryResumeData, RoastResult } from '@/types/documents'
+import type { ParsedJD, ResumeData, CoverLetterData, LinkedInData, ColdEmailData, InterviewPrepData, CertificationGuideData, ATSScoreData, CountryResumeData, RoastResult, FollowUpEmailData, SkillGapData } from '@/types/documents'
 
 export const mockParsedJD: ParsedJD = {
   role_title: 'Marketing Manager',
@@ -486,6 +486,47 @@ export const mockCountryResumeData: CountryResumeData = {
       'Where do you see yourself in 5 years?',
     ],
   },
+}
+
+export const mockSkillGapData: SkillGapData = {
+  role_title: 'Marketing Manager',
+  overall_readiness: 72,
+  skills: [
+    { skill: 'Brand Management', required_level: 'advanced', current_level: 'advanced', gap_severity: 'none', recommendation: 'Your brand management skills are well-aligned with the requirements. Continue building case studies.' },
+    { skill: 'Digital Marketing', required_level: 'advanced', current_level: 'intermediate', gap_severity: 'medium', recommendation: 'Deepen your digital marketing expertise, particularly in programmatic advertising and multi-channel attribution.' },
+    { skill: 'SEO/SEM', required_level: 'advanced', current_level: 'intermediate', gap_severity: 'medium', recommendation: 'Get Google Ads certified and practice with real campaigns to bridge this gap.' },
+    { skill: 'Marketing Automation', required_level: 'intermediate', current_level: 'basic', gap_severity: 'high', recommendation: 'Complete HubSpot Marketing Automation certification. This is a critical gap for the role.' },
+    { skill: 'Content Strategy', required_level: 'intermediate', current_level: 'none', gap_severity: 'critical', recommendation: 'Develop content strategy skills through HubSpot Content Marketing certification and hands-on practice.' },
+    { skill: 'Budget Management', required_level: 'advanced', current_level: 'advanced', gap_severity: 'none', recommendation: 'Strong alignment. Highlight your $2M+ budget management experience.' },
+    { skill: 'A/B Testing', required_level: 'intermediate', current_level: 'basic', gap_severity: 'low', recommendation: 'Run 2-3 A/B tests on your own projects to build practical experience.' },
+    { skill: 'Data Analytics', required_level: 'intermediate', current_level: 'intermediate', gap_severity: 'none', recommendation: 'Good match. Consider Tableau certification to stand out.' },
+  ],
+  learning_plan: [
+    { order: 1, skill: 'Content Strategy', resource_name: 'HubSpot Content Marketing Certification', resource_url: 'https://academy.hubspot.com/courses/content-marketing', resource_type: 'certification', estimated_hours: 12, cost: 'free', priority: 'essential' },
+    { order: 2, skill: 'Marketing Automation', resource_name: 'HubSpot Marketing Automation Course', resource_url: 'https://academy.hubspot.com/courses/marketing-automation', resource_type: 'course', estimated_hours: 8, cost: 'free', priority: 'essential' },
+    { order: 3, skill: 'SEO/SEM', resource_name: 'Google Ads Certification', resource_url: 'https://skillshop.withgoogle.com/googleads', resource_type: 'certification', estimated_hours: 15, cost: 'free', priority: 'recommended' },
+    { order: 4, skill: 'Digital Marketing', resource_name: 'Meta Marketing Science Professional', resource_url: 'https://www.facebook.com/business/learn/certification', resource_type: 'certification', estimated_hours: 25, cost: '$150', priority: 'recommended' },
+    { order: 5, skill: 'A/B Testing', resource_name: 'CXL A/B Testing Mini-Course', resource_url: 'https://cxl.com/institute/online-course/ab-testing/', resource_type: 'tutorial', estimated_hours: 4, cost: 'free', priority: 'optional' },
+  ],
+  quick_wins: [
+    'Complete HubSpot Content Marketing Certification (free, ~12 hours)',
+    'Set up a basic A/B test on a personal project to demonstrate practical skills',
+    'Add your marketing automation workflow examples to your portfolio',
+  ],
+  summary: 'You have a solid foundation for this role with strong brand management and budget skills. The critical gaps are in content strategy (not present) and marketing automation (basic level). Investing 2-3 weeks in HubSpot certifications would significantly boost your readiness from 72% to an estimated 85%+.',
+}
+
+export const mockFollowUpEmailData: FollowUpEmailData = {
+  subject_line: 'Thank you for our conversation about the Marketing Manager role',
+  body: "Dear [Interviewer Name],\n\nThank you for taking the time to meet with me today about the Marketing Manager position at Brightwave Consumer Brands. I truly enjoyed learning more about your team's approach to data-driven brand marketing and your exciting growth plans for the coming year.\n\nOur discussion about integrating SEO/SEM strategy with broader brand campaigns particularly resonated with me. My experience leading a rebranding initiative at Crestline that drove a 40% increase in brand awareness and $3.2M in incremental revenue directly aligns with the challenges you described.\n\nI was also excited to hear about Brightwave's plans to expand into new market segments. My background in market research and cross-functional campaign execution positions me well to contribute to these initiatives from day one.\n\nPlease don't hesitate to reach out if you need any additional information. I look forward to hearing about next steps.\n\nBest regards,\nJordan Rivera",
+  key_points_referenced: [
+    'Data-driven brand marketing approach',
+    'SEO/SEM integration with brand campaigns',
+    'New market segment expansion plans',
+    'Cross-functional team collaboration',
+  ],
+  next_steps: 'Looking forward to hearing about the next steps in the interview process. I am available for any follow-up discussions at your convenience.',
+  alternative_shorter_version: "Thank you for our conversation today about the Marketing Manager role at Brightwave. I enjoyed discussing your team's approach to data-driven brand marketing and how my experience driving 40% brand awareness growth at Crestline aligns with your goals. I look forward to hearing about next steps.\n\nBest regards,\nJordan Rivera",
 }
 
 export const mockRoastData: RoastResult = {

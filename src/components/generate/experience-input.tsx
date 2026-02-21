@@ -8,6 +8,7 @@ import { ArrowLeft, Lock } from 'lucide-react'
 import { useGenerationStore } from '@/store/generation-store'
 import { useAppStore } from '@/store/app-store'
 import { EXPERIENCE_MAX_CHARS } from '@/lib/security/validation'
+import { VoiceInputButton } from '@/components/ui/voice-input-button'
 
 export function ExperienceInput() {
   const { experience, setExperience, contactInfo, setContactInfo, setStep } = useGenerationStore()
@@ -114,6 +115,12 @@ export function ExperienceInput() {
       </div>
 
       <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-medium text-gray-700">Experience</label>
+          <VoiceInputButton
+            onTranscript={(text) => setExperience(experience ? `${experience} ${text}` : text)}
+          />
+        </div>
         <Textarea
           placeholder={`Paste your resume or describe your experience here. Include:\n\n- Work history (company, title, dates, responsibilities)\n- Education (degree, school, graduation year)\n- Skills (professional skills, tools, certifications)\n- Certifications\n- Notable achievements`}
           value={experience}

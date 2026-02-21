@@ -19,7 +19,7 @@ import { LanguageSelector } from '@/components/generate/language-selector'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, FileText, Mail, Linkedin, MessageSquare, BookOpen, Award, Loader2, Sparkles } from 'lucide-react'
+import { ArrowLeft, FileText, Mail, Linkedin, MessageSquare, BookOpen, Award, Loader2, Sparkles, Reply } from 'lucide-react'
 import { DOCUMENT_TYPE_LABELS } from '@/lib/constants'
 import { EXPERIENCE_MAX_CHARS } from '@/lib/security/validation'
 import { detectBrowserLanguageCode } from '@/lib/i18n/currencies'
@@ -33,6 +33,7 @@ const docOptions: { type: DocumentType; icon: React.ElementType; description: st
   { type: 'cold_email', icon: MessageSquare, description: 'Concise email to hiring managers' },
   { type: 'interview_prep', icon: BookOpen, description: 'Questions, answers, and tips' },
   { type: 'certification_guide', icon: Award, description: 'Certifications roadmap for your target role' },
+  { type: 'follow_up_email', icon: Reply, description: 'Post-interview thank-you email' },
 ]
 
 const API_ROUTES: Record<string, string> = {
@@ -42,6 +43,7 @@ const API_ROUTES: Record<string, string> = {
   cold_email: '/api/ai/generate-cold-email',
   interview_prep: '/api/ai/generate-interview-prep',
   certification_guide: '/api/ai/generate-certification-guide',
+  follow_up_email: '/api/ai/generate-follow-up-email',
 }
 
 function GeneratePageInner() {
@@ -76,6 +78,7 @@ function GeneratePageInner() {
   const { profile, setProfile } = useAppStore()
   const { canGenerate } = useUsage(profile)
   const [generationError, setGenerationError] = useState<string | null>(null)
+  const [interviewNotes, setInterviewNotes] = useState('')
   const userIsAnnual = isAnnual(profile)
 
   // Load JD from database when ?jd_id= is present
@@ -152,6 +155,10 @@ function GeneratePageInner() {
             // Only send language if annual user selected non-English
             if (userIsAnnual && effectiveLanguage && effectiveLanguage !== 'en') {
               bodyPayload.language = effectiveLanguage
+            }
+            // Include interview notes for follow-up email
+            if (type === 'follow_up_email' && interviewNotes) {
+              bodyPayload.interviewNotes = interviewNotes
             }
 
             const res = await fetch(API_ROUTES[type], {
@@ -258,6 +265,28 @@ function GeneratePageInner() {
             Select All
           </Button>
 
+          {/* Interview notes for follow-up email */}
+          {selectedDocuments.includes('follow_up_email') && (
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-2">
+              <label htmlFor="interview-notes" className="block text-sm font-medium text-gray-700">
+                Interview Notes <span className="text-red-500">*</span>
+              </label>
+              <p className="text-xs text-gray-500">
+                Describe what was discussed, the interviewer&apos;s name, key topics, and anything you want to reference in your follow-up.
+              </p>
+              <textarea
+                id="interview-notes"
+                rows={4}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-brand/20 focus:border-brand"
+                placeholder="e.g., Spoke with Sarah Chen (VP Marketing) about their Q3 brand refresh initiative. Discussed my experience with rebranding at Crestline..."
+                value={interviewNotes}
+                onChange={(e) => setInterviewNotes(e.target.value)}
+                maxLength={5000}
+              />
+              <p className="text-xs text-gray-400 text-right">{interviewNotes.length}/5,000</p>
+            </div>
+          )}
+
           {/* Template, Font, and Size selectors (visible when resume selected) */}
           {selectedDocuments.includes('resume') && (
             <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
@@ -308,7 +337,7 @@ function GeneratePageInner() {
             </Button>
             <Button
               onClick={handleGenerate}
-              disabled={selectedDocuments.length === 0 || isGenerating || experience.length > EXPERIENCE_MAX_CHARS}
+              disabled={selectedDocuments.length === 0 || isGenerating || experience.length > EXPERIENCE_MAX_CHARS || (selectedDocuments.includes('follow_up_email') && interviewNotes.length < 10)}
             >
               {isGenerating ? (
                 <>

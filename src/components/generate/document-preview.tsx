@@ -17,6 +17,7 @@ import type {
   ColdEmailData,
   InterviewPrepData,
   CertificationGuideData,
+  FollowUpEmailData,
 } from '@/types/documents'
 import { ATSScoreDisplay } from './ats-score-display'
 import { PDFGenerator } from '@/components/pdf/pdf-generator'
@@ -241,6 +242,41 @@ function CertificationGuidePreview({ data }: { data: CertificationGuideData }) {
   )
 }
 
+function FollowUpEmailPreview({ data }: { data: FollowUpEmailData }) {
+  return (
+    <div className="space-y-4 text-sm">
+      <div>
+        <p className="text-xs text-gray-500 mb-1">Subject</p>
+        <p className="font-semibold text-gray-900">{data.subject_line}</p>
+      </div>
+      <div>
+        <p className="text-xs text-gray-500 mb-1">Email Body</p>
+        <p className="text-gray-700 whitespace-pre-wrap">{data.body}</p>
+      </div>
+      {data.key_points_referenced?.length > 0 && (
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Key Points Referenced</p>
+          <ul className="space-y-1">
+            {data.key_points_referenced.map((point, i) => (
+              <li key={i} className="text-gray-700 pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-brand text-sm">
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div>
+        <p className="text-xs text-gray-500 mb-1">Next Steps</p>
+        <p className="text-gray-700">{data.next_steps}</p>
+      </div>
+      <div className="border-t pt-4">
+        <p className="text-xs text-gray-500 mb-1">Shorter Alternative Version</p>
+        <p className="text-gray-700 whitespace-pre-wrap">{data.alternative_shorter_version}</p>
+      </div>
+    </div>
+  )
+}
+
 const FREE_WATERMARK_TEXT = '\n\n---\nGenerated with Resume Studio - Free Preview\nUpgrade to Pro to save and organize your documents.'
 
 function documentToText(type: DocumentType, content: Record<string, unknown>, isFree: boolean): string {
@@ -297,6 +333,9 @@ function documentToText(type: DocumentType, content: Record<string, unknown>, is
     if (d.industry_insights) {
       text += `## Industry Insights\n\n${d.industry_insights}\n`
     }
+  } else if (type === 'follow_up_email') {
+    const d = content as unknown as FollowUpEmailData
+    text = `Subject: ${d.subject_line}\n\n${d.body}\n\nKey Points Referenced:\n${d.key_points_referenced?.map(p => `- ${p}`).join('\n') || ''}\n\nNext Steps: ${d.next_steps}\n\n---\nShorter Alternative:\n${d.alternative_shorter_version}`
   } else {
     text = JSON.stringify(content, null, 2)
   }
@@ -595,6 +634,7 @@ export function DocumentPreview() {
                     {type === 'cold_email' && <ColdEmailPreview data={generatedDocuments[type] as unknown as ColdEmailData} />}
                     {type === 'interview_prep' && <InterviewPrepPreview data={generatedDocuments[type] as unknown as InterviewPrepData} />}
                     {type === 'certification_guide' && <CertificationGuidePreview data={generatedDocuments[type] as unknown as CertificationGuideData} />}
+                    {type === 'follow_up_email' && <FollowUpEmailPreview data={generatedDocuments[type] as unknown as FollowUpEmailData} />}
                   </ContentProtection>
                 )}
               </CardContent>

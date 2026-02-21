@@ -8,6 +8,7 @@ export type DocumentType =
   | 'interview_prep'
   | 'certification_guide'
   | 'country_resume'
+  | 'follow_up_email'
 
 export type JobStatus =
   | 'saved'

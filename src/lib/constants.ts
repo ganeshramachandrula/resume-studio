@@ -13,6 +13,7 @@ export const DOCUMENT_TYPES = [
   'interview_prep',
   'certification_guide',
   'country_resume',
+  'follow_up_email',
 ] as const
 
 export const DOCUMENT_TYPE_LABELS: Record<string, string> = {
@@ -23,6 +24,7 @@ export const DOCUMENT_TYPE_LABELS: Record<string, string> = {
   interview_prep: 'Interview Prep',
   certification_guide: 'Certification Guide',
   country_resume: 'Country Resume',
+  follow_up_email: 'Follow-Up Email',
 }
 
 export const JOB_STATUSES = [
