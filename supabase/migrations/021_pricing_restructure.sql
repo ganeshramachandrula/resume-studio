@@ -4,7 +4,10 @@
 -- to 3 plans (free/basic/pro) with generation limits on all.
 -- ============================================================
 
--- ── 1. Migrate existing users ────────────────────────────────
+-- ── 1. Drop old CHECK constraint first (before migrating data) ──
+ALTER TABLE profiles DROP CONSTRAINT IF EXISTS profiles_plan_check;
+
+-- ── 2. Migrate existing users ────────────────────────────────
 -- pro_monthly → basic, pro_annual → pro, team → pro
 UPDATE profiles SET plan = 'basic' WHERE plan = 'pro_monthly';
 UPDATE profiles SET plan = 'pro' WHERE plan = 'pro_annual';
@@ -13,8 +16,7 @@ UPDATE profiles SET plan = 'pro' WHERE plan = 'team';
 -- Clear team_id on all profiles (teams no longer used)
 UPDATE profiles SET team_id = NULL WHERE team_id IS NOT NULL;
 
--- ── 2. Update plan CHECK constraint ─────────────────────────
-ALTER TABLE profiles DROP CONSTRAINT IF EXISTS profiles_plan_check;
+-- ── 3. Add new CHECK constraint ──────────────────────────────
 ALTER TABLE profiles ADD CONSTRAINT profiles_plan_check
   CHECK (plan IN ('free', 'basic', 'pro'));
 
