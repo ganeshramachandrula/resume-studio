@@ -134,6 +134,22 @@ for name in BASIC PRO FREE ADMIN PRO2 CREDITS; do
   fi
 done
 
+# ── Reset usage counts so generation tests aren't blocked by prior runs ───
+
+SERVICE_KEY=$(grep SUPABASE_SERVICE_ROLE_KEY .env.local | cut -d= -f2)
+
+for uid in \
+  "00000000-0000-4000-a000-000000000001" \
+  "00000000-0000-4000-a000-000000000002" \
+  "00000000-0000-4000-a000-000000000005"; do
+  curl -s -X PATCH "$SUPABASE_URL/rest/v1/profiles?id=eq.$uid" \
+    -H "apikey: $ANON_KEY" \
+    -H "Authorization: Bearer $SERVICE_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{"usage_count":0,"saved_applications_count":0,"parse_jd_daily_count":0,"ats_score_daily_count":0,"job_search_daily_count":0}' > /dev/null
+done
+pass "Reset usage counts for test users"
+
 # ═════════════════════════════════════════════════════════════════════════════
 # SECTION 1: MARKETING PAGES
 # ═════════════════════════════════════════════════════════════════════════════
