@@ -23,8 +23,8 @@ export async function GET(request: Request) {
       .eq('id', user.id)
       .single()
 
-    if (profile?.plan !== 'pro_annual') {
-      return NextResponse.json({ error: 'Pro Annual required' }, { status: 403 })
+    if (profile?.plan !== 'pro') {
+      return NextResponse.json({ error: 'Pro plan required' }, { status: 403 })
     }
 
     const { data: conversations, error } = await supabase
@@ -61,8 +61,8 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    if (profile?.plan !== 'pro_annual') {
-      return NextResponse.json({ error: 'Pro Annual required' }, { status: 403 })
+    if (profile?.plan !== 'pro') {
+      return NextResponse.json({ error: 'Pro plan required' }, { status: 403 })
     }
 
     let body: { title?: string; context?: Record<string, unknown> } = {}

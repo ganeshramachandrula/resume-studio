@@ -7,11 +7,11 @@ import { ALL_TEMPLATES } from '@/lib/templates/all-templates'
 export function TemplateSelector({
   selected,
   onSelect,
-  isAnnual = false,
+  isPro = false,
 }: {
   selected: string
   onSelect: (template: string) => void
-  isAnnual?: boolean
+  isPro?: boolean
 }) {
   return (
     <div>
@@ -21,7 +21,7 @@ export function TemplateSelector({
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
         {ALL_TEMPLATES.map((template) => {
-          const locked = template.premium && !isAnnual
+          const locked = template.premium && !isPro
           return (
             <button
               key={template.id}
@@ -52,10 +52,10 @@ export function TemplateSelector({
           )
         })}
       </div>
-      {!isAnnual && (
+      {!isPro && (
         <p className="text-xs text-gray-400 mt-2">
           <Lock className="inline h-3 w-3 mr-1" />
-          Premium templates require Pro Annual plan
+          Premium templates require Pro plan
         </p>
       )}
     </div>

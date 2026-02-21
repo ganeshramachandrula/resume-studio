@@ -2,13 +2,12 @@ import { describe, it, expect } from 'vitest'
 import { PLANS, CREDIT_PACK } from '@/lib/stripe/config'
 
 describe('PLANS', () => {
-  it('has keys: free, pro_monthly, pro_annual, team', () => {
+  it('has keys: free, basic, pro', () => {
     const keys = Object.keys(PLANS)
     expect(keys).toContain('free')
-    expect(keys).toContain('pro_monthly')
-    expect(keys).toContain('pro_annual')
-    expect(keys).toContain('team')
-    expect(keys).toHaveLength(4)
+    expect(keys).toContain('basic')
+    expect(keys).toContain('pro')
+    expect(keys).toHaveLength(3)
   })
 
   it('free plan price is 0', () => {
@@ -16,9 +15,8 @@ describe('PLANS', () => {
   })
 
   it('all paid plans have a priceId field', () => {
-    expect(PLANS.pro_monthly).toHaveProperty('priceId')
-    expect(PLANS.pro_annual).toHaveProperty('priceId')
-    expect(PLANS.team).toHaveProperty('priceId')
+    expect(PLANS.basic).toHaveProperty('priceId')
+    expect(PLANS.pro).toHaveProperty('priceId')
   })
 })
 

@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     if (usageResult && !usageResult.allowed) {
       logSecurityEvent('usage_limit_hit', request, user.id, { route: 'skill-gap-analysis' })
       return NextResponse.json(
-        { error: 'Free plan limit reached. Upgrade to Pro for unlimited access.' },
+        { error: 'Plan limit reached. Upgrade for more generations.' },
         { status: 403 }
       )
     }

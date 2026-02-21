@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     if (usageResult && !usageResult.allowed) {
       logSecurityEvent('usage_limit_hit', request, user.id, { route: 'generate-cold-email' })
       return NextResponse.json(
-        { error: 'Free plan limit reached. Upgrade to Pro for unlimited documents.' },
+        { error: 'Plan limit reached. Upgrade for more generations.' },
         { status: 403 }
       )
     }
@@ -80,14 +80,14 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
-    const effectiveLanguage = (profile?.plan === 'pro_annual' || profile?.plan === 'team') && language ? language : undefined
+    const isPaid = profile?.plan === 'basic' || profile?.plan === 'pro'
+    const effectiveLanguage = profile?.plan === 'pro' && language ? language : undefined
 
     const coldEmail = isAIConfigured()
       ? await generateJSONWithClaude(GENERATE_COLD_EMAIL_SYSTEM, buildColdEmailPrompt(parsedJD, experience, contactInfo, effectiveLanguage))
       : mockColdEmailData
 
-    if (!isPro && usageResult?.reason !== 'credit_used') {
+    if (!isPaid && usageResult?.reason !== 'credit_used') {
       return NextResponse.json({ success: true, content: coldEmail, saved: false })
     }
 

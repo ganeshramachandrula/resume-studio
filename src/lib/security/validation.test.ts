@@ -350,48 +350,8 @@ describe('createCheckoutSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('accepts mode team', () => {
-    const result = createCheckoutSchema.safeParse({ priceId: 'price_1', mode: 'team' })
-    expect(result.success).toBe(true)
-  })
-
   it('rejects invalid mode', () => {
     const result = createCheckoutSchema.safeParse({ priceId: 'price_1', mode: 'invalid' })
-    expect(result.success).toBe(false)
-  })
-
-  it('accepts quantity of 5 (minimum for team)', () => {
-    const result = createCheckoutSchema.safeParse({
-      priceId: 'price_1',
-      mode: 'team',
-      quantity: 5,
-    })
-    expect(result.success).toBe(true)
-  })
-
-  it('rejects quantity below 5', () => {
-    const result = createCheckoutSchema.safeParse({
-      priceId: 'price_1',
-      mode: 'team',
-      quantity: 4,
-    })
-    expect(result.success).toBe(false)
-  })
-
-  it('rejects quantity above 100', () => {
-    const result = createCheckoutSchema.safeParse({
-      priceId: 'price_1',
-      mode: 'team',
-      quantity: 101,
-    })
-    expect(result.success).toBe(false)
-  })
-
-  it('rejects non-integer quantity', () => {
-    const result = createCheckoutSchema.safeParse({
-      priceId: 'price_1',
-      quantity: 5.5,
-    })
     expect(result.success).toBe(false)
   })
 })
@@ -460,7 +420,7 @@ describe('supportContactSchema', () => {
 
 describe('adminUserUpdateSchema', () => {
   it('accepts valid plan values', () => {
-    for (const plan of ['free', 'pro_monthly', 'pro_annual', 'team'] as const) {
+    for (const plan of ['free', 'basic', 'pro'] as const) {
       const result = adminUserUpdateSchema.safeParse({ plan })
       expect(result.success).toBe(true)
     }

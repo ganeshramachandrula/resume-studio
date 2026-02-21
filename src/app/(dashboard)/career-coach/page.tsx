@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAppStore } from '@/store/app-store'
-import { isAnnual } from '@/lib/plan-helpers'
+import { isPro } from '@/lib/plan-helpers'
 import { AnnualUpgradePrompt } from '@/components/ui/annual-upgrade-prompt'
 import { ChatMessage } from '@/components/career-coach/chat-message'
 import { ChatInput } from '@/components/career-coach/chat-input'
@@ -22,7 +22,7 @@ interface Conversation {
 
 export default function CareerCoachPage() {
   const { profile } = useAppStore()
-  const userIsAnnual = isAnnual(profile)
+  const userIsPro = isPro(profile)
 
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeConvId, setActiveConvId] = useState<string | null>(null)
@@ -41,9 +41,9 @@ export default function CareerCoachPage() {
 
   // Load conversations on mount
   useEffect(() => {
-    if (!userIsAnnual) return
+    if (!userIsPro) return
     loadConversations()
-  }, [userIsAnnual])
+  }, [userIsPro])
 
   const loadConversations = async () => {
     try {
@@ -169,7 +169,7 @@ export default function CareerCoachPage() {
     }
   }
 
-  if (!userIsAnnual) {
+  if (!userIsPro) {
     return (
       <div className="max-w-lg mx-auto py-12">
         <AnnualUpgradePrompt

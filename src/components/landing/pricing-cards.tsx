@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Zap, Users } from 'lucide-react'
+import { Check, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { detectLocalCurrency, formatLocalPrice } from '@/lib/i18n/currencies'
@@ -17,7 +17,7 @@ const plans = [
     features: [
       '2 documents per month',
       'Basic ATS score',
-      'PDF download',
+      'PDF download (watermarked)',
       '3 resume templates',
     ],
     cta: 'Start Free',
@@ -25,39 +25,38 @@ const plans = [
     popular: false,
   },
   {
-    name: 'Pro Monthly',
-    price: '$9.99',
-    usdAmount: 9.99,
+    name: 'Basic',
+    price: '$5.99',
+    usdAmount: 5.99,
     period: '/month',
     description: 'For active job seekers',
     features: [
-      'Unlimited documents',
-      'All templates',
-      'Full application package',
+      '10 documents/month',
+      'All 13 templates',
+      'No watermark',
+      'Save up to 10 applications',
       'Advanced ATS analysis',
       'Job tracker',
-      'Interview prep',
-      'No ads',
     ],
-    cta: 'Go Pro',
+    cta: 'Go Basic',
     href: '/signup',
     popular: false,
   },
   {
-    name: 'Pro Annual',
-    price: '$79',
-    usdAmount: 79,
-    period: '/year',
-    priceDetail: '$6.58/mo',
-    description: 'Save 34% vs monthly',
+    name: 'Pro',
+    price: '$10.99',
+    usdAmount: 10.99,
+    period: '/month',
+    description: 'For serious job seekers',
     features: [
-      'Everything in Pro',
-      'Priority generation',
-      'Career Coach',
+      '20 documents/month',
+      'All 13 templates',
+      'Premium fonts',
       'Multi-language support',
-      'Premium templates',
+      'Career Coach',
+      'No watermark',
     ],
-    cta: 'Go Pro Annual',
+    cta: 'Go Pro',
     href: '/signup',
     popular: true,
   },
@@ -107,7 +106,7 @@ export function PricingCards() {
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  Best Value
+                  Most Popular
                 </div>
               )}
 
@@ -119,10 +118,8 @@ export function PricingCards() {
               <div className="mb-6">
                 <span className="text-4xl font-bold text-white">{plan.price}</span>
                 <span className="text-gray-400 text-sm">{plan.period}</span>
-                {plan.priceDetail && (
-                  <p className="text-accent text-sm font-medium mt-1">
-                    That&apos;s just {plan.priceDetail}
-                  </p>
+                {plan.usdAmount > 0 && (
+                  <p className="text-gray-500 text-xs mt-1">+ applicable tax</p>
                 )}
                 {localCurrency && plan.usdAmount > 0 && (
                   <p className="text-gray-500 text-xs mt-1">
@@ -152,48 +149,6 @@ export function PricingCards() {
             </motion.div>
           ))}
         </div>
-
-        {/* Team Plan Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-5xl mx-auto mt-8"
-        >
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-start gap-4">
-              <div className="h-12 w-12 rounded-xl bg-brand/20 flex items-center justify-center shrink-0">
-                <Users className="h-6 w-6 text-brand-light" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-body)]">Team Plan</h3>
-                <p className="text-gray-400 text-sm mt-1 max-w-lg">
-                  Centralized billing for your team. $59/seat/year (min 5 seats). Each member gets all Pro Annual features including Career Coach, premium templates, and multi-language support.
-                </p>
-                <ul className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
-                  {['All Pro Annual features', 'Centralized billing', 'Team management', 'Seat-based pricing'].map((f) => (
-                    <li key={f} className="flex items-center gap-1.5 text-xs text-gray-400">
-                      <Check className="h-3 w-3 text-accent" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="text-right shrink-0">
-              <div className="mb-3">
-                <span className="text-3xl font-bold text-white">$59</span>
-                <span className="text-gray-400 text-sm">/seat/year</span>
-                {localCurrency && (
-                  <p className="text-gray-500 text-xs mt-1">{formatLocalPrice(59, localCurrency)}/seat/year</p>
-                )}
-              </div>
-              <Link href="/signup">
-                <Button variant="outline" size="lg">Get Team Plan</Button>
-              </Link>
-            </div>
-          </div>
-        </motion.div>
 
         {/* Credit Pack — subtle, below main pricing */}
         <motion.div

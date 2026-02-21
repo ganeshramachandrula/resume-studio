@@ -391,7 +391,7 @@ export function DocumentPreview() {
   const [isFixing, setIsFixing] = useState(false)
   const [fixApplied, setFixApplied] = useState(false)
 
-  const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
+  const isPro = profile?.plan === 'basic' || profile?.plan === 'pro'
   const hasCreditsRemaining = (profile?.credits ?? 0) > 0
   const isFree = !isPro && !hasCreditsRemaining
 

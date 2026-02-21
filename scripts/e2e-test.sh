@@ -112,20 +112,20 @@ pass "Supabase running"
 bold ""
 bold "=== ACQUIRING AUTH TOKENS ==="
 
-MONTHLY_COOKIE=$(get_cookie "test-monthly@example.com")
-ANNUAL_COOKIE=$(get_cookie "test-annual@example.com")
+BASIC_COOKIE=$(get_cookie "test-monthly@example.com")
+PRO_COOKIE=$(get_cookie "test-annual@example.com")
 FREE_COOKIE=$(get_cookie "e2e-test@example.com")
 ADMIN_COOKIE=$(get_cookie "prsd_srm@yahoo.com")
-TEAM_COOKIE=$(get_cookie "test-team@example.com")
+PRO2_COOKIE=$(get_cookie "test-team@example.com")
 CREDITS_COOKIE=$(get_cookie "test-credits@example.com")
 
-MONTHLY_TOKEN=$(get_token "test-monthly@example.com")
-ANNUAL_TOKEN=$(get_token "test-annual@example.com")
+BASIC_TOKEN=$(get_token "test-monthly@example.com")
+PRO_TOKEN=$(get_token "test-annual@example.com")
 FREE_TOKEN=$(get_token "e2e-test@example.com")
 ADMIN_TOKEN=$(get_token "prsd_srm@yahoo.com")
-TEAM_TOKEN=$(get_token "test-team@example.com")
+PRO2_TOKEN=$(get_token "test-team@example.com")
 
-for name in MONTHLY ANNUAL FREE ADMIN TEAM CREDITS; do
+for name in BASIC PRO FREE ADMIN PRO2 CREDITS; do
   cookie_var="${name}_COOKIE"
   if [[ "${!cookie_var}" == "ERROR" ]]; then
     fail "Login $name user"
@@ -200,7 +200,7 @@ done
 
 # Admin API denied for non-admin
 for route in "/api/admin/stats" "/api/admin/users" "/api/admin/messages"; do
-  status=$(http_status -X GET "$BASE_URL$route" -b "sb-127-auth-token=$MONTHLY_COOKIE")
+  status=$(http_status -X GET "$BASE_URL$route" -b "sb-127-auth-token=$BASIC_COOKIE")
   check_status "403" "$status" "Non-admin GET $route"
 done
 
@@ -215,13 +215,9 @@ for page in \
   "/dashboard" "/generate" "/country-resume" "/documents" \
   "/job-feed" "/job-tracker" "/job-sites" "/vault" \
   "/cost-of-living" "/settings" "/support" "/upgrade" "/career-coach"; do
-  status=$(http_status -b "sb-127-auth-token=$MONTHLY_COOKIE" "$BASE_URL$page")
-  check_status "200" "$status" "GET $page (monthly user)"
+  status=$(http_status -b "sb-127-auth-token=$BASIC_COOKIE" "$BASE_URL$page")
+  check_status "200" "$status" "GET $page (basic user)"
 done
-
-# Team page
-status=$(http_status -b "sb-127-auth-token=$TEAM_COOKIE" "$BASE_URL/team")
-check_status "200" "$status" "GET /team (team user)"
 
 # Admin pages
 for page in "/admin" "/admin/users" "/admin/analytics" "/admin/messages" "/admin/coach-usage"; do
@@ -249,7 +245,7 @@ bold "=== 4. AI GENERATION ROUTES ==="
 # Parse JD
 PARSE_RESULT=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/ai/parse-jd" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d '{"jobDescription": "Senior Software Engineer at Acme Corp, San Francisco, CA. 5+ years React, TypeScript, Node.js, PostgreSQL. AWS/GCP experience required. Remote-friendly. $150-180K + equity."}')
 PARSE_STATUS=$(echo "$PARSE_RESULT" | tail -1)
 PARSE_BODY=$(echo "$PARSE_RESULT" | sed '$d')
@@ -270,56 +266,56 @@ else
   # Generate Resume
   status=$(http_status -X POST "$BASE_URL/api/ai/generate-resume" \
     -H "Content-Type: application/json" \
-    -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+    -b "sb-127-auth-token=$BASIC_COOKIE" \
     -d "{\"parsedJD\":$PARSED_DATA,\"experience\":\"$EXPERIENCE\",\"jobDescriptionId\":\"$JD_ID\",\"contactInfo\":$CONTACT}")
   check_status "200" "$status" "POST /api/ai/generate-resume"
 
   # Generate Cover Letter
   status=$(http_status -X POST "$BASE_URL/api/ai/generate-cover-letter" \
     -H "Content-Type: application/json" \
-    -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+    -b "sb-127-auth-token=$BASIC_COOKIE" \
     -d "{\"parsedJD\":$PARSED_DATA,\"experience\":\"$EXPERIENCE\",\"jobDescriptionId\":\"$JD_ID\",\"contactInfo\":$CONTACT}")
   check_status "200" "$status" "POST /api/ai/generate-cover-letter"
 
   # Generate LinkedIn Summary
   status=$(http_status -X POST "$BASE_URL/api/ai/generate-linkedin" \
     -H "Content-Type: application/json" \
-    -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+    -b "sb-127-auth-token=$BASIC_COOKIE" \
     -d "{\"parsedJD\":$PARSED_DATA,\"experience\":\"$EXPERIENCE\",\"jobDescriptionId\":\"$JD_ID\"}")
   check_status "200" "$status" "POST /api/ai/generate-linkedin"
 
   # Generate Cold Email
   status=$(http_status -X POST "$BASE_URL/api/ai/generate-cold-email" \
     -H "Content-Type: application/json" \
-    -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+    -b "sb-127-auth-token=$BASIC_COOKIE" \
     -d "{\"parsedJD\":$PARSED_DATA,\"experience\":\"$EXPERIENCE\",\"jobDescriptionId\":\"$JD_ID\",\"contactInfo\":$CONTACT}")
   check_status "200" "$status" "POST /api/ai/generate-cold-email"
 
   # Generate Interview Prep
   status=$(http_status -X POST "$BASE_URL/api/ai/generate-interview-prep" \
     -H "Content-Type: application/json" \
-    -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+    -b "sb-127-auth-token=$BASIC_COOKIE" \
     -d "{\"parsedJD\":$PARSED_DATA,\"experience\":\"$EXPERIENCE\",\"jobDescriptionId\":\"$JD_ID\"}")
   check_status "200" "$status" "POST /api/ai/generate-interview-prep"
 
   # Generate Certification Guide
   status=$(http_status -X POST "$BASE_URL/api/ai/generate-certification-guide" \
     -H "Content-Type: application/json" \
-    -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+    -b "sb-127-auth-token=$BASIC_COOKIE" \
     -d "{\"parsedJD\":$PARSED_DATA,\"experience\":\"$EXPERIENCE\",\"jobDescriptionId\":\"$JD_ID\"}")
   check_status "200" "$status" "POST /api/ai/generate-certification-guide"
 
-  # Generate Country Resume (annual user)
+  # Generate Country Resume (pro user)
   status=$(http_status -X POST "$BASE_URL/api/ai/generate-country-resume" \
     -H "Content-Type: application/json" \
-    -b "sb-127-auth-token=$ANNUAL_COOKIE" \
+    -b "sb-127-auth-token=$PRO_COOKIE" \
     -d "{\"parsedJD\":$PARSED_DATA,\"experience\":\"$EXPERIENCE\",\"jobDescriptionId\":\"$JD_ID\",\"countryCode\":\"US\",\"contactInfo\":$CONTACT}")
-  check_status "200" "$status" "POST /api/ai/generate-country-resume (annual, US)"
+  check_status "200" "$status" "POST /api/ai/generate-country-resume (pro, US)"
 
   # ATS Score
   status=$(http_status -X POST "$BASE_URL/api/ai/ats-score" \
     -H "Content-Type: application/json" \
-    -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+    -b "sb-127-auth-token=$BASIC_COOKIE" \
     -d "{\"resumeJSON\":{\"header\":{\"name\":\"Test\"},\"summary\":\"Engineer\",\"experience\":[],\"skills\":{\"core\":[\"React\"]}},\"parsedJD\":$PARSED_DATA}")
   check_status "200" "$status" "POST /api/ai/ats-score"
 fi
@@ -345,12 +341,12 @@ check_status "400" "$status" "POST /api/ai/roast-resume (short input → 400)"
 bold ""
 bold "=== 5. CAREER COACH ==="
 
-# Annual user (allowed)
+# Pro user (allowed)
 status=$(http_status -X POST "$BASE_URL/api/ai/career-coach" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$ANNUAL_COOKIE" \
+  -b "sb-127-auth-token=$PRO_COOKIE" \
   -d '{"message":"What skills should I learn for full-stack development?"}')
-check_status "200" "$status" "POST /api/ai/career-coach (annual user)"
+check_status "200" "$status" "POST /api/ai/career-coach (pro user)"
 
 # Free user (denied)
 status=$(http_status -X POST "$BASE_URL/api/ai/career-coach" \
@@ -361,7 +357,7 @@ check_status "403" "$status" "POST /api/ai/career-coach (free user — denied)"
 
 # List conversations
 status=$(http_status -X GET "$BASE_URL/api/ai/career-coach/conversations" \
-  -b "sb-127-auth-token=$ANNUAL_COOKIE")
+  -b "sb-127-auth-token=$PRO_COOKIE")
 check_status "200" "$status" "GET /api/ai/career-coach/conversations"
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -374,7 +370,7 @@ bold "=== 6. JOB FEED ==="
 # Search
 JF_RESULT=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/jobs/search" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d '{"query":"software engineer","location":"remote","country":"US"}')
 JF_STATUS=$(echo "$JF_RESULT" | tail -1)
 JF_BODY=$(echo "$JF_RESULT" | sed '$d')
@@ -389,13 +385,13 @@ fi
 
 # Preferences GET
 status=$(http_status -X GET "$BASE_URL/api/jobs/preferences" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE")
+  -b "sb-127-auth-token=$BASIC_COOKIE")
 check_status "200" "$status" "GET /api/jobs/preferences"
 
 # Preferences PUT
 status=$(http_status -X PUT "$BASE_URL/api/jobs/preferences" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d '{"roles":["Software Engineer"],"skills":["React"],"locations":["Remote"],"remote_only":false,"country":"US"}')
 check_status "200" "$status" "PUT /api/jobs/preferences"
 
@@ -410,37 +406,21 @@ bold "=== 7. STRIPE ==="
 status=$(http_status -X POST "$BASE_URL/api/stripe/create-checkout" \
   -H "Content-Type: application/json" \
   -b "sb-127-auth-token=$FREE_COOKIE" \
-  -d '{"plan":"pro_monthly"}')
-check_status "200" "$status" "POST /api/stripe/create-checkout (free → pro_monthly)"
+  -d '{"plan":"basic"}')
+check_status "200" "$status" "POST /api/stripe/create-checkout (free → basic)"
 
 # Create portal session
 status=$(http_status -X POST "$BASE_URL/api/stripe/create-portal" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE")
-check_status "200" "$status" "POST /api/stripe/create-portal (monthly user)"
+  -b "sb-127-auth-token=$BASIC_COOKIE")
+check_status "200" "$status" "POST /api/stripe/create-portal (basic user)"
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SECTION 8: TEAM ROUTES
-# ═════════════════════════════════════════════════════════════════════════════
-
-bold ""
-bold "=== 8. TEAM ==="
-
-status=$(http_status -X GET "$BASE_URL/api/team" -b "sb-127-auth-token=$TEAM_COOKIE")
-check_status "200" "$status" "GET /api/team (team user)"
-
-status=$(http_status -X GET "$BASE_URL/api/team/members" -b "sb-127-auth-token=$TEAM_COOKIE")
-check_status "200" "$status" "GET /api/team/members"
-
-status=$(http_status -X GET "$BASE_URL/api/team" -b "sb-127-auth-token=$MONTHLY_COOKIE")
-check_status "403" "$status" "GET /api/team (non-team — denied)"
-
-# ═════════════════════════════════════════════════════════════════════════════
-# SECTION 9: ADMIN API
+# SECTION 8: ADMIN API
 # ═════════════════════════════════════════════════════════════════════════════
 
 bold ""
-bold "=== 9. ADMIN API ==="
+bold "=== 8. ADMIN API ==="
 
 for route in "/api/admin/stats" "/api/admin/users" "/api/admin/analytics" "/api/admin/messages" "/api/admin/coach-usage"; do
   status=$(http_status -X GET "$BASE_URL$route" -b "sb-127-auth-token=$ADMIN_COOKIE")
@@ -448,37 +428,37 @@ for route in "/api/admin/stats" "/api/admin/users" "/api/admin/analytics" "/api/
 done
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SECTION 10: DEVICE SESSIONS, EXTENSION, MISC
+# SECTION 9: DEVICE SESSIONS, EXTENSION, MISC
 # ═════════════════════════════════════════════════════════════════════════════
 
 bold ""
-bold "=== 10. DEVICE SESSIONS, EXTENSION & MISC ==="
+bold "=== 9. DEVICE SESSIONS, EXTENSION & MISC ==="
 
 # Device register
 status=$(http_status -X POST "$BASE_URL/api/device-session/register" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d '{"deviceId":"e2e0000000000000000000000000000000000000000000000000000000000001","deviceLabel":"E2E Test"}')
 check_status "200" "$status" "POST /api/device-session/register"
 
 # Device heartbeat
 status=$(http_status -X POST "$BASE_URL/api/device-session/heartbeat" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d '{"deviceId":"e2e0000000000000000000000000000000000000000000000000000000000001"}')
 check_status "200" "$status" "POST /api/device-session/heartbeat"
 
 # Extension submit JD (Bearer auth)
 status=$(http_status -X POST "$BASE_URL/api/extension/submit-jd" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MONTHLY_TOKEN" \
+  -H "Authorization: Bearer $BASIC_TOKEN" \
   -d '{"raw_text":"Frontend Developer at StartupX. We need a skilled frontend developer with 3+ years of experience in React, TypeScript, and modern CSS frameworks for our SaaS product.","source_url":"https://example.com/job/e2e","source_site":"E2E Test"}')
 check_status "200" "$status" "POST /api/extension/submit-jd (Bearer)"
 
 # Support contact
 status=$(http_status -X POST "$BASE_URL/api/support/contact" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d '{"name":"E2E Test","email":"test-monthly@example.com","category":"general","subject":"E2E Automated Test","message":"This is an automated E2E test message. Please ignore."}')
 check_status "200" "$status" "POST /api/support/contact"
 
@@ -495,29 +475,29 @@ else
 fi
 
 # Referral
-status=$(http_status -X GET "$BASE_URL/api/referral" -b "sb-127-auth-token=$MONTHLY_COOKIE")
+status=$(http_status -X GET "$BASE_URL/api/referral" -b "sb-127-auth-token=$BASIC_COOKIE")
 check_status "200" "$status" "GET /api/referral"
 
 # Document delete (non-existent ID — should return 200 with deleted_count:0)
 status=$(http_status -X DELETE "$BASE_URL/api/documents/delete-application" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d '{"jobDescriptionId":"00000000-0000-0000-0000-000000000000"}')
 check_status "200" "$status" "DELETE /api/documents/delete-application"
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SECTION 11: VAULT CRUD (via Supabase REST)
+# SECTION 10: VAULT CRUD (via Supabase REST)
 # ═════════════════════════════════════════════════════════════════════════════
 
 bold ""
-bold "=== 11. VAULT CRUD ==="
+bold "=== 10. VAULT CRUD ==="
 
 USER_ID="00000000-0000-4000-a000-000000000001"
 
 # Create certificate
 CERT=$(curl -s -X POST "$SUPABASE_URL/rest/v1/vault_certificates" \
   -H "apikey: $ANON_KEY" \
-  -H "Authorization: Bearer $MONTHLY_TOKEN" \
+  -H "Authorization: Bearer $BASIC_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Prefer: return=representation" \
   -d "{\"user_id\":\"$USER_ID\",\"name\":\"E2E Cert\",\"issuer\":\"E2E\",\"issue_date\":\"2025-01-01\"}")
@@ -527,7 +507,7 @@ if [ -n "$CERT_ID" ]; then pass "Vault: create certificate"; else fail "Vault: c
 # Create skill
 SKILL=$(curl -s -X POST "$SUPABASE_URL/rest/v1/vault_skills" \
   -H "apikey: $ANON_KEY" \
-  -H "Authorization: Bearer $MONTHLY_TOKEN" \
+  -H "Authorization: Bearer $BASIC_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Prefer: return=representation" \
   -d "{\"user_id\":\"$USER_ID\",\"name\":\"E2E Skill\",\"category\":\"Test\",\"proficiency\":\"expert\"}")
@@ -537,7 +517,7 @@ if [ -n "$SKILL_ID" ]; then pass "Vault: create skill"; else fail "Vault: create
 # Create work sample
 WS=$(curl -s -X POST "$SUPABASE_URL/rest/v1/vault_work_samples" \
   -H "apikey: $ANON_KEY" \
-  -H "Authorization: Bearer $MONTHLY_TOKEN" \
+  -H "Authorization: Bearer $BASIC_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Prefer: return=representation" \
   -d "{\"user_id\":\"$USER_ID\",\"title\":\"E2E Sample\",\"type\":\"portfolio\",\"url\":\"https://example.com\"}")
@@ -547,7 +527,7 @@ if [ -n "$WS_ID" ]; then pass "Vault: create work sample"; else fail "Vault: cre
 # Create reference
 REF=$(curl -s -X POST "$SUPABASE_URL/rest/v1/vault_references" \
   -H "apikey: $ANON_KEY" \
-  -H "Authorization: Bearer $MONTHLY_TOKEN" \
+  -H "Authorization: Bearer $BASIC_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Prefer: return=representation" \
   -d "{\"user_id\":\"$USER_ID\",\"name\":\"E2E Ref\",\"title\":\"Engineering Manager\",\"relationship\":\"manager\",\"company\":\"TestCo\",\"email\":\"ref@test.com\"}")
@@ -566,29 +546,29 @@ else
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SECTION 12: SECURITY EDGE CASES
+# SECTION 11: SECURITY EDGE CASES
 # ═════════════════════════════════════════════════════════════════════════════
 
 bold ""
-bold "=== 12. SECURITY ==="
+bold "=== 11. SECURITY ==="
 
 # Invalid JSON
 status=$(http_status -X POST "$BASE_URL/api/ai/generate-resume" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d 'NOT JSON')
 check_status "400" "$status" "Invalid JSON body → 400"
 
 # Missing content-type
 status=$(http_status -X POST "$BASE_URL/api/ai/generate-resume" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d '{"test":true}')
 check_status "400" "$status" "Missing Content-Type → 400"
 
 # SQL injection in search (should not error)
 status=$(http_status -X POST "$BASE_URL/api/jobs/search" \
   -H "Content-Type: application/json" \
-  -b "sb-127-auth-token=$MONTHLY_COOKIE" \
+  -b "sb-127-auth-token=$BASIC_COOKIE" \
   -d '{"query":"engineer\" OR 1=1 --","location":"remote","country":"US"}')
 check_status "200" "$status" "SQL injection in search → handled (200)"
 
@@ -620,11 +600,11 @@ if [ -n "$JD_ID" ] && [ "$JD_ID" != "" ]; then
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SECTION 13: VERIFY PROFILES
+# SECTION 12: VERIFY PROFILES
 # ═════════════════════════════════════════════════════════════════════════════
 
 bold ""
-bold "=== 13. VERIFY USER PROFILES ==="
+bold "=== 12. VERIFY USER PROFILES ==="
 
 verify_profile() {
   local email=$1 expected_plan=$2 expected_role=$3
@@ -648,9 +628,9 @@ verify_profile() {
   fi
 }
 
-verify_profile "test-monthly@example.com" "pro_monthly" "user"
-verify_profile "test-annual@example.com"  "pro_annual"  "user"
-verify_profile "test-team@example.com"    "team"        "user"
+verify_profile "test-monthly@example.com" "basic"       "user"
+verify_profile "test-annual@example.com"  "pro"         "user"
+verify_profile "test-team@example.com"    "pro"         "user"
 verify_profile "test-credits@example.com" "free"        "user"
 verify_profile "e2e-test@example.com"     "free"        "user"
 verify_profile "prsd_srm@yahoo.com"       "free"        "admin"
@@ -664,27 +644,27 @@ bold "=== CLEANING UP E2E TEST DATA ==="
 
 # Delete test documents
 curl -s -X DELETE "$SUPABASE_URL/rest/v1/documents?user_id=eq.$USER_ID" \
-  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $MONTHLY_TOKEN" > /dev/null
+  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $BASIC_TOKEN" > /dev/null
 
 curl -s -X DELETE "$SUPABASE_URL/rest/v1/documents?user_id=eq.00000000-0000-4000-a000-000000000002" \
-  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANNUAL_TOKEN" > /dev/null
+  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $PRO_TOKEN" > /dev/null
 
 curl -s -X DELETE "$SUPABASE_URL/rest/v1/documents?user_id=eq.00000000-0000-4000-a000-000000000005" \
   -H "apikey: $ANON_KEY" -H "Authorization: Bearer $FREE_TOKEN" > /dev/null
 
 # Delete test JDs
 curl -s -X DELETE "$SUPABASE_URL/rest/v1/job_descriptions?user_id=eq.$USER_ID" \
-  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $MONTHLY_TOKEN" > /dev/null
+  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $BASIC_TOKEN" > /dev/null
 
 # Delete test vault items
 [ -n "$CERT_ID" ] && curl -s -X DELETE "$SUPABASE_URL/rest/v1/vault_certificates?id=eq.$CERT_ID" \
-  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $MONTHLY_TOKEN" > /dev/null
+  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $BASIC_TOKEN" > /dev/null
 [ -n "$SKILL_ID" ] && curl -s -X DELETE "$SUPABASE_URL/rest/v1/vault_skills?id=eq.$SKILL_ID" \
-  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $MONTHLY_TOKEN" > /dev/null
+  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $BASIC_TOKEN" > /dev/null
 [ -n "$WS_ID" ] && curl -s -X DELETE "$SUPABASE_URL/rest/v1/vault_work_samples?id=eq.$WS_ID" \
-  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $MONTHLY_TOKEN" > /dev/null
+  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $BASIC_TOKEN" > /dev/null
 [ -n "$REF_ID" ] && curl -s -X DELETE "$SUPABASE_URL/rest/v1/vault_references?id=eq.$REF_ID" \
-  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $MONTHLY_TOKEN" > /dev/null
+  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $BASIC_TOKEN" > /dev/null
 
 # Delete test support messages
 curl -s -X DELETE "$SUPABASE_URL/rest/v1/support_messages?subject=like.*E2E*" \
@@ -692,11 +672,11 @@ curl -s -X DELETE "$SUPABASE_URL/rest/v1/support_messages?subject=like.*E2E*" \
 
 # Delete test device sessions
 curl -s -X DELETE "$SUPABASE_URL/rest/v1/device_sessions?device_id=eq.e2e0000000000000000000000000000000000000000000000000000000000001" \
-  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $MONTHLY_TOKEN" > /dev/null
+  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $BASIC_TOKEN" > /dev/null
 
 # Delete test coach conversations
 curl -s -X DELETE "$SUPABASE_URL/rest/v1/coach_conversations?user_id=eq.00000000-0000-4000-a000-000000000002" \
-  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANNUAL_TOKEN" > /dev/null
+  -H "apikey: $ANON_KEY" -H "Authorization: Bearer $PRO_TOKEN" > /dev/null
 
 pass "Test data cleaned up"
 

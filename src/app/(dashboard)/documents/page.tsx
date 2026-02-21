@@ -55,7 +55,7 @@ function groupByJD(documents: DocumentWithJD[]): ApplicationBundle[] {
 
 export default function DocumentsPage() {
   const { profile, setProfile } = useAppStore()
-  const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
+  const isPro = profile?.plan === 'basic' || profile?.plan === 'pro'
   const [bundles, setBundles] = useState<ApplicationBundle[]>([])
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)

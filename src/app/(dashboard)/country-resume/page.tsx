@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useAppStore } from '@/store/app-store'
 import { createClient } from '@/lib/supabase/client'
 import { useUsage } from '@/lib/hooks/use-usage'
-import { isAnnual } from '@/lib/plan-helpers'
+import { isPro } from '@/lib/plan-helpers'
 import { COUNTRIES } from '@/lib/job-feed/countries'
 import { getCountryFormat, type CountryResumeFormat } from '@/lib/resume-formats'
 import type { Profile, VaultCertificate, VaultSkill } from '@/types/database'
@@ -48,7 +48,7 @@ function CountryResumeInner() {
   const searchParams = useSearchParams()
   const { profile, setProfile } = useAppStore()
   const { canGenerate } = useUsage(profile)
-  const userIsAnnual = isAnnual(profile)
+  const userIsPro = isPro(profile)
 
   // Step state
   const [step, setStep] = useState<Step>('country_job')
@@ -149,14 +149,14 @@ function CountryResumeInner() {
     if (countryCode) {
       const fmt = getCountryFormat(countryCode)
       setCountryFormat(fmt || null)
-      if (fmt && userIsAnnual) {
+      if (fmt && userIsPro) {
         setLanguage(fmt.norms.language)
       }
     } else {
       setCountryFormat(null)
       setLanguage('')
     }
-  }, [countryCode, userIsAnnual])
+  }, [countryCode, userIsPro])
 
   const handleParseJD = async () => {
     if (jobDescription.length < 50) {
@@ -218,7 +218,7 @@ function CountryResumeInner() {
       }
 
       // Language (annual/team only)
-      if (userIsAnnual && language && language !== 'English') {
+      if (userIsPro && language && language !== 'English') {
         bodyPayload.language = language
       }
 
@@ -529,7 +529,7 @@ function CountryResumeInner() {
       )}
 
       {/* Language selector (annual/team only) */}
-      {userIsAnnual && countryFormat && (
+      {userIsPro && countryFormat && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Output Language</label>
           <input

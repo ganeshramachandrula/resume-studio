@@ -76,9 +76,8 @@ export const createCheckoutSchema = z.object({
     .min(1, 'Price ID is required')
     .max(100, 'Invalid price ID')
     .optional(),
-  plan: z.enum(['pro_monthly', 'pro_annual', 'team', 'credits']).optional(),
-  mode: z.enum(['subscription', 'payment', 'team']).optional().default('subscription'),
-  quantity: z.number().int().min(5).max(100).optional(),
+  plan: z.enum(['basic', 'pro', 'credits']).optional(),
+  mode: z.enum(['subscription', 'payment']).optional().default('subscription'),
 })
 
 export const supportContactSchema = z.object({
@@ -96,7 +95,7 @@ export const supportContactSchema = z.object({
 })
 
 export const adminUserUpdateSchema = z.object({
-  plan: z.enum(['free', 'pro_monthly', 'pro_annual', 'team']).optional(),
+  plan: z.enum(['free', 'basic', 'pro']).optional(),
   usage_count: z.number().int().min(0).optional(),
   credits: z.number().int().min(0).optional(),
   role: z.enum(['user', 'admin']).optional(),

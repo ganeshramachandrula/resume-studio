@@ -8,13 +8,13 @@ import { AArrowUp } from 'lucide-react'
 export function FontSizeSelector({
   selected,
   onSelect,
-  isAnnual = false,
+  isPro = false,
 }: {
   selected: FontSizeKey
   onSelect: (size: FontSizeKey) => void
-  isAnnual?: boolean
+  isPro?: boolean
 }) {
-  if (!isAnnual) return null
+  if (!isPro) return null
 
   return (
     <div>

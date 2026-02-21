@@ -94,7 +94,7 @@ vi.mock('@/lib/security/device-session', () => ({
   registerDeviceSession: vi.fn().mockResolvedValue({ success: true, kicked: false }),
   isSessionValid: vi.fn().mockResolvedValue(false),
   heartbeatSession: vi.fn().mockResolvedValue(undefined),
-  DEVICE_LIMITS: { free: 1, pro_monthly: 2, pro_annual: 3, team: 3 },
+  DEVICE_LIMITS: { free: 1, basic: 2, pro: 3 },
 }))
 
 // Admin module
@@ -381,35 +381,6 @@ describe('API Route Smoke Tests - Module Exports', () => {
     it('api/support/contact exports POST', async () => {
       const mod = await import('@/app/api/support/contact/route')
       expect(typeof mod.POST).toBe('function')
-    })
-  })
-
-  // ── Team Routes ──
-
-  describe('Team Routes', () => {
-    it('api/team exports GET', async () => {
-      const mod = await import('@/app/api/team/route')
-      expect(typeof mod.GET).toBe('function')
-    })
-
-    it('api/team exports PUT', async () => {
-      const mod = await import('@/app/api/team/route')
-      expect(typeof mod.PUT).toBe('function')
-    })
-
-    it('api/team/members exports GET', async () => {
-      const mod = await import('@/app/api/team/members/route')
-      expect(typeof mod.GET).toBe('function')
-    })
-
-    it('api/team/members exports POST', async () => {
-      const mod = await import('@/app/api/team/members/route')
-      expect(typeof mod.POST).toBe('function')
-    })
-
-    it('api/team/members/[id] exports DELETE', async () => {
-      const mod = await import('@/app/api/team/members/[id]/route')
-      expect(typeof mod.DELETE).toBe('function')
     })
   })
 

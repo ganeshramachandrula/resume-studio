@@ -6,13 +6,13 @@ import { Type } from 'lucide-react'
 export function FontSelector({
   selected,
   onSelect,
-  isAnnual = false,
+  isPro = false,
 }: {
   selected: string
   onSelect: (fontId: string) => void
-  isAnnual?: boolean
+  isPro?: boolean
 }) {
-  if (!isAnnual) return null
+  if (!isPro) return null
 
   return (
     <div>

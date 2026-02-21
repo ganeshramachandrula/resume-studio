@@ -6,7 +6,7 @@ import { useGenerationStore } from '@/store/generation-store'
 import { useAppStore } from '@/store/app-store'
 import { createClient } from '@/lib/supabase/client'
 import { useUsage } from '@/lib/hooks/use-usage'
-import { isAnnual } from '@/lib/plan-helpers'
+import { isPro } from '@/lib/plan-helpers'
 import type { Profile } from '@/types/database'
 import { GenerationStepper } from '@/components/generate/generation-stepper'
 import { JDInput } from '@/components/generate/jd-input'
@@ -79,7 +79,7 @@ function GeneratePageInner() {
   const { canGenerate } = useUsage(profile)
   const [generationError, setGenerationError] = useState<string | null>(null)
   const [interviewNotes, setInterviewNotes] = useState('')
-  const userIsAnnual = isAnnual(profile)
+  const userIsPro = isPro(profile)
 
   // Load JD from database when ?jd_id= is present
   useEffect(() => {
@@ -109,13 +109,13 @@ function GeneratePageInner() {
 
   // Auto-detect browser language and pre-select for annual users
   useEffect(() => {
-    if (userIsAnnual && language === 'en') {
+    if (userIsPro && language === 'en') {
       const browserLang = detectBrowserLanguageCode()
       if (browserLang !== 'en' && PRESET_LANGUAGES.some((l) => l.code === browserLang)) {
         setLanguage(browserLang)
       }
     }
-  }, [userIsAnnual, language, setLanguage])
+  }, [userIsPro, language, setLanguage])
 
   const refreshProfile = useCallback(async () => {
     const supabase = createClient()
@@ -153,7 +153,7 @@ function GeneratePageInner() {
               contactInfo,
             }
             // Only send language if annual user selected non-English
-            if (userIsAnnual && effectiveLanguage && effectiveLanguage !== 'en') {
+            if (userIsPro && effectiveLanguage && effectiveLanguage !== 'en') {
               bodyPayload.language = effectiveLanguage
             }
             // Include interview notes for follow-up email
@@ -293,30 +293,30 @@ function GeneratePageInner() {
               <TemplateSelector
                 selected={selectedTemplate}
                 onSelect={setSelectedTemplate}
-                isAnnual={userIsAnnual}
+                isPro={userIsPro}
               />
               <div className="grid grid-cols-2 gap-4">
                 <FontSelector
                   selected={selectedFont}
                   onSelect={setSelectedFont}
-                  isAnnual={userIsAnnual}
+                  isPro={userIsPro}
                 />
                 <FontSizeSelector
                   selected={selectedFontSize}
                   onSelect={setSelectedFontSize}
-                  isAnnual={userIsAnnual}
+                  isPro={userIsPro}
                 />
               </div>
             </div>
           )}
 
-          {/* Language selector (Pro Annual only) */}
+          {/* Language selector (Pro only) */}
           <LanguageSelector
             selected={language}
             onSelect={setLanguage}
             customLanguage={customLanguage}
             onCustomChange={setCustomLanguage}
-            isAnnual={userIsAnnual}
+            isPro={userIsPro}
           />
 
           {experience.length > EXPERIENCE_MAX_CHARS && (

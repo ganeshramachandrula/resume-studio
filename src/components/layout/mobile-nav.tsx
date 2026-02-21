@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 
 export function MobileNav() {
   const { profile, setSidebarOpen } = useAppStore()
-  const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
+  const isPro = profile?.plan === 'basic' || profile?.plan === 'pro'
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-gray-200 lg:hidden">

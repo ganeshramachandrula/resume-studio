@@ -11,8 +11,8 @@ import { ATS_SCORE_DAILY_FREE, ATS_SCORE_DAILY_PRO, ATS_SCORE_DAILY_MAX } from '
 import type { Plan } from '@/types/database'
 
 function getATSScoreLimit(plan: Plan): number {
-  if (plan === 'pro_annual' || plan === 'team') return ATS_SCORE_DAILY_MAX
-  if (plan === 'pro_monthly') return ATS_SCORE_DAILY_PRO
+  if (plan === 'pro') return ATS_SCORE_DAILY_MAX
+  if (plan === 'basic') return ATS_SCORE_DAILY_PRO
   return ATS_SCORE_DAILY_FREE
 }
 

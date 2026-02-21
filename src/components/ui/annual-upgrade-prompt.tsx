@@ -23,10 +23,10 @@ export function AnnualUpgradePrompt({
         <Link href="/upgrade">
           <Button className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white">
             <Crown className="h-4 w-4" />
-            Upgrade to Pro Annual
+            Upgrade to Pro
           </Button>
         </Link>
-        <p className="text-xs text-gray-500 mt-2">$79/year — save 34% vs monthly</p>
+        <p className="text-xs text-gray-500 mt-2">$10.99/month + tax</p>
       </CardContent>
     </Card>
   )

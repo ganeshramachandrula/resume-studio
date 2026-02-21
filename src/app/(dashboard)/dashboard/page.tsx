@@ -61,7 +61,7 @@ function groupRecentApplications(docs: DocumentWithJD[]): RecentApplication[] {
 
 export default function DashboardPage() {
   const { profile } = useAppStore()
-  const { usageCount, remaining, isPro } = useUsage(profile)
+  const { usageCount, limit, remaining, isPaid } = useUsage(profile)
   const [recentApps, setRecentApps] = useState<RecentApplication[]>([])
   const [recentJobApps, setRecentJobApps] = useState<JobApplication[]>([])
   const [vaultCounts, setVaultCounts] = useState({ certs: 0, skills: 0, samples: 0, refs: 0 })
@@ -119,30 +119,22 @@ export default function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium text-gray-500 font-[family-name:var(--font-body)]">
-              {isPro ? 'Saved Applications' : 'Usage This Month'}
+              Usage This Month
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isPro ? (
-              <>
-                <div className="flex items-baseline gap-1 mb-2">
-                  <span className="text-2xl font-bold text-gray-900">{savedCount}</span>
-                  <span className="text-gray-500 text-sm">/ {MAX_APPLICATIONS_PRO} applications</span>
-                </div>
-                <Progress value={(savedCount / MAX_APPLICATIONS_PRO) * 100} />
-                <p className="text-xs text-gray-500 mt-2">
-                  {MAX_APPLICATIONS_PRO - savedCount} remaining
+            <div className="flex items-baseline gap-1 mb-2">
+              <span className="text-2xl font-bold text-gray-900">{usageCount}</span>
+              <span className="text-gray-500 text-sm">/ {limit} documents</span>
+            </div>
+            <Progress value={(usageCount / limit) * 100} />
+            <p className="text-xs text-gray-500 mt-2">{remaining} remaining</p>
+            {isPaid && (
+              <div className="mt-2">
+                <p className="text-xs text-gray-400">
+                  Saved: {savedCount} / {MAX_APPLICATIONS_PRO} applications
                 </p>
-              </>
-            ) : (
-              <>
-                <div className="flex items-baseline gap-1 mb-2">
-                  <span className="text-2xl font-bold text-gray-900">{usageCount}</span>
-                  <span className="text-gray-500 text-sm">/ 2 documents</span>
-                </div>
-                <Progress value={(usageCount / 2) * 100} />
-                <p className="text-xs text-gray-500 mt-2">{remaining} remaining</p>
-              </>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -318,13 +310,13 @@ export default function DashboardPage() {
       </Card>
 
       {/* Upgrade CTA */}
-      {!isPro && (
+      {!isPaid && (
         <Card className="bg-gradient-to-r from-brand to-brand-dark text-white border-0">
           <CardContent className="flex items-center justify-between p-6">
             <div>
-              <h3 className="text-lg font-semibold mb-1 font-[family-name:var(--font-body)]">Upgrade to Pro</h3>
+              <h3 className="text-lg font-semibold mb-1 font-[family-name:var(--font-body)]">Upgrade Your Plan</h3>
               <p className="text-white/80 text-sm">
-                Save up to 10 applications, unlimited documents, all templates, and more.
+                Get more generations, all templates, and premium features.
               </p>
             </div>
             <Link href="/upgrade">

@@ -4,13 +4,13 @@ import { useMemo } from 'react'
 import type { Profile } from '@/types/database'
 
 export function useSubscription(profile: Profile | null) {
-  const isPro = useMemo(() => {
+  const isPaid = useMemo(() => {
     if (!profile) return false
-    return profile.plan === 'pro_monthly' || profile.plan === 'pro_annual' || profile.plan === 'team'
+    return profile.plan === 'basic' || profile.plan === 'pro'
   }, [profile])
 
-  const isTeam = profile?.plan === 'team'
+  const isPro = profile?.plan === 'pro'
   const plan = profile?.plan ?? 'free'
 
-  return { isPro, isTeam, plan }
+  return { isPaid, isPro, plan }
 }

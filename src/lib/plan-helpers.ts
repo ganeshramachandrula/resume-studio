@@ -1,13 +1,13 @@
 import type { Profile } from '@/types/database'
 
-/** User is on any Pro plan (monthly, annual, or team) */
+/** User is on the Pro plan (top tier — career coach, multi-language, premium fonts) */
 export function isPro(profile: Profile | null): boolean {
-  return profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
+  return profile?.plan === 'pro'
 }
 
-/** User is on Pro Annual or Team plan (both get annual-exclusive features) */
-export function isAnnual(profile: Profile | null): boolean {
-  return profile?.plan === 'pro_annual' || profile?.plan === 'team'
+/** User is on any paid plan (Basic or Pro) */
+export function isPaid(profile: Profile | null): boolean {
+  return profile?.plan === 'basic' || profile?.plan === 'pro'
 }
 
 /** User has purchasable credits remaining */
@@ -15,7 +15,7 @@ export function hasCredits(profile: Profile | null): boolean {
   return (profile?.credits ?? 0) > 0
 }
 
-/** User can save documents (pro/team user, or free user with credits) */
+/** User can save documents (paid user, or free user with credits) */
 export function canSave(profile: Profile | null): boolean {
-  return isPro(profile) || hasCredits(profile)
+  return isPaid(profile) || hasCredits(profile)
 }

@@ -14,7 +14,6 @@ import {
   GraduationCap,
   Lock,
   X,
-  Users,
   Search,
   Globe,
   LogOut,
@@ -58,9 +57,8 @@ export function Sidebar() {
     router.push('/')
     router.refresh()
   }
-  const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
-  const userIsAnnual = profile?.plan === 'pro_annual' || profile?.plan === 'team'
-  const isTeam = profile?.plan === 'team'
+  const isPaid = profile?.plan === 'basic' || profile?.plan === 'pro'
+  const userIsPro = profile?.plan === 'pro'
   const isAdmin = profile?.role === 'admin'
 
   return (
@@ -115,7 +113,7 @@ export function Sidebar() {
             )
           })}
 
-          {/* Career Coach (Annual/Team exclusive) */}
+          {/* Career Coach (Pro exclusive) */}
           <Link
             href="/career-coach"
             onClick={() => setSidebarOpen(false)}
@@ -128,7 +126,7 @@ export function Sidebar() {
           >
             <GraduationCap className="h-5 w-5" />
             Career Coach
-            {!userIsAnnual && <Lock className="h-3 w-3 text-gray-400 ml-auto" />}
+            {!userIsPro && <Lock className="h-3 w-3 text-gray-400 ml-auto" />}
           </Link>
 
           {/* Credential Vault */}
@@ -176,23 +174,6 @@ export function Sidebar() {
             Cost of Living
           </Link>
 
-          {/* Team management (Team plan only) */}
-          {isTeam && (
-            <Link
-              href="/team"
-              onClick={() => setSidebarOpen(false)}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
-                pathname === '/team'
-                  ? 'bg-brand/10 text-brand'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-              )}
-            >
-              <Users className="h-5 w-5" />
-              Team
-            </Link>
-          )}
-
           {isAdmin && (
             <>
               <div className="h-px bg-gray-200 my-2" />
@@ -213,16 +194,12 @@ export function Sidebar() {
           )}
         </nav>
 
-        {isPro ? (
+        {isPaid ? (
           <div className="p-4 m-3 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20">
             <div className="flex items-center gap-2 mb-1">
               <Crown className="h-4 w-4 text-accent" />
               <span className="text-sm font-semibold text-gray-900">
-                {profile?.plan === 'team'
-                  ? 'Team Plan'
-                  : profile?.plan === 'pro_annual'
-                    ? 'Pro Annual'
-                    : 'Pro Monthly'}
+                {profile?.plan === 'pro' ? 'Pro' : 'Basic'}
               </span>
             </div>
             {profile?.subscription_period_end && (
@@ -235,10 +212,10 @@ export function Sidebar() {
           <div className="p-4 m-3 rounded-xl bg-gradient-to-br from-brand to-brand-dark text-white">
             <div className="flex items-center gap-2 mb-2">
               <Crown className="h-4 w-4" />
-              <span className="text-sm font-semibold">Upgrade to Pro</span>
+              <span className="text-sm font-semibold">Upgrade Your Plan</span>
             </div>
             <p className="text-xs text-white/80 mb-3">
-              Unlimited documents, all templates, and more.
+              More generations, all templates, and more.
             </p>
             <Link href="/upgrade">
               <Button size="sm" className="w-full bg-white text-brand hover:bg-white/90">

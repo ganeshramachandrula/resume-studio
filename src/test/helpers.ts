@@ -11,7 +11,6 @@ export function createProfile(overrides: Partial<Profile> = {}): Profile {
     usage_count: 0,
     usage_reset_at: new Date().toISOString(),
     credits: 0,
-    team_id: null,
     stripe_customer_id: null,
     stripe_subscription_id: null,
     subscription_period_start: null,

@@ -15,8 +15,8 @@ import {
 import type { Plan } from '@/types/database'
 
 function getJobSearchLimit(plan: Plan): number {
-  if (plan === 'pro_annual' || plan === 'team') return JOB_SEARCH_DAILY_MAX
-  if (plan === 'pro_monthly') return JOB_SEARCH_DAILY_PRO
+  if (plan === 'pro') return JOB_SEARCH_DAILY_MAX
+  if (plan === 'basic') return JOB_SEARCH_DAILY_PRO
   return JOB_SEARCH_DAILY_FREE
 }
 

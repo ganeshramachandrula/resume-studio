@@ -77,13 +77,13 @@ export const ATS_SCORE_DAILY_FREE = 1
 export const ATS_SCORE_DAILY_PRO = 10
 export const ATS_SCORE_DAILY_MAX = 20
 
+// Generation limits per plan
+export const BASIC_DOCS_PER_MONTH = 10
+export const PRO_DOCS_PER_MONTH = 20
+
 // Credit Pack
 export const CREDIT_PACK_SIZE = 3
 export const CREDIT_PACK_PRICE = 2.99
-
-// Team Plan
-export const TEAM_MIN_SEATS = 5
-export const TEAM_PRICE_PER_SEAT = 59
 
 // Daily usage limits per plan (job-search)
 export const JOB_SEARCH_DAILY_FREE = 5

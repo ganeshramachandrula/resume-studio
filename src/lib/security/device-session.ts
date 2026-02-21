@@ -5,9 +5,8 @@ import type { Plan } from '@/types/database'
 /** Maximum concurrent devices per plan */
 export const DEVICE_LIMITS: Record<Plan, number> = {
   free: 1,
-  pro_monthly: 2,
-  pro_annual: 3,
-  team: 3,
+  basic: 2,
+  pro: 3,
 }
 
 interface RegisterResult {

@@ -40,7 +40,7 @@ export async function GET(request: Request) {
       query = query.or(`email.ilike.%${search}%,full_name.ilike.%${search}%`)
     }
 
-    if (plan && ['free', 'pro_monthly', 'pro_annual'].includes(plan)) {
+    if (plan && ['free', 'basic', 'pro'].includes(plan)) {
       query = query.eq('plan', plan)
     }
 

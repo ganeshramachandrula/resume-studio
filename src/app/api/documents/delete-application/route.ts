@@ -43,10 +43,10 @@ export async function DELETE(request: Request) {
       .eq('id', user.id)
       .single()
 
-    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual'
-    if (!isPro) {
+    const isPaid = profile?.plan === 'basic' || profile?.plan === 'pro'
+    if (!isPaid) {
       return NextResponse.json(
-        { error: 'This feature is available for Pro users only.' },
+        { error: 'This feature is available for paid plan users only.' },
         { status: 403 }
       )
     }

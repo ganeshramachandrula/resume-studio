@@ -11,8 +11,8 @@ import { PARSE_JD_DAILY_FREE, PARSE_JD_DAILY_PRO, PARSE_JD_DAILY_MAX } from '@/l
 import type { Plan } from '@/types/database'
 
 function getParseJDLimit(plan: Plan): number {
-  if (plan === 'pro_annual' || plan === 'team') return PARSE_JD_DAILY_MAX
-  if (plan === 'pro_monthly') return PARSE_JD_DAILY_PRO
+  if (plan === 'pro') return PARSE_JD_DAILY_MAX
+  if (plan === 'basic') return PARSE_JD_DAILY_PRO
   return PARSE_JD_DAILY_FREE
 }
 

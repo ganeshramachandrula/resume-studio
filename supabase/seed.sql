@@ -109,29 +109,28 @@ BEGIN
   --    (profiles were auto-created by the on_auth_user_created trigger)
   -- ══════════════════════════════════════════════════════════════════════════
 
-  -- Pro Monthly
+  -- Basic (was Pro Monthly)
   UPDATE profiles SET
-    plan = 'pro_monthly',
+    plan = 'basic',
     stripe_customer_id = 'cus_U0O1XhgGlHSnKP',
     subscription_period_start = NOW(),
     subscription_period_end = NOW() + INTERVAL '1 month'
   WHERE id = uid_monthly;
 
-  -- Pro Annual
+  -- Pro (was Pro Annual)
   UPDATE profiles SET
-    plan = 'pro_annual',
+    plan = 'pro',
     stripe_customer_id = 'cus_U0OJoX238g1Lt6',
     subscription_period_start = NOW(),
-    subscription_period_end = NOW() + INTERVAL '1 year'
+    subscription_period_end = NOW() + INTERVAL '1 month'
   WHERE id = uid_annual;
 
-  -- Team
+  -- Pro (was Team)
   UPDATE profiles SET
-    plan = 'team',
+    plan = 'pro',
     stripe_customer_id = 'cus_U0OJImN4APLQaf',
-    team_id = v_team_id,
     subscription_period_start = NOW(),
-    subscription_period_end = NOW() + INTERVAL '1 year'
+    subscription_period_end = NOW() + INTERVAL '1 month'
   WHERE id = uid_team;
 
   -- Credits user

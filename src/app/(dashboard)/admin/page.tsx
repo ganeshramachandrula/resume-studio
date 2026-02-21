@@ -178,14 +178,11 @@ export default function AdminDashboardPage() {
           <CardTitle className="text-base font-[family-name:var(--font-body)]">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          <Link href="/admin/users?plan=pro_monthly">
-            <Button variant="outline" size="sm">View Pro Monthly Users</Button>
+          <Link href="/admin/users?plan=basic">
+            <Button variant="outline" size="sm">View Basic Users</Button>
           </Link>
-          <Link href="/admin/users?plan=pro_annual">
-            <Button variant="outline" size="sm">View Pro Annual Users</Button>
-          </Link>
-          <Link href="/admin/users?plan=team">
-            <Button variant="outline" size="sm">View Team Users</Button>
+          <Link href="/admin/users?plan=pro">
+            <Button variant="outline" size="sm">View Pro Users</Button>
           </Link>
           <Link href="/admin/messages?status=new">
             <Button variant="outline" size="sm">View New Messages</Button>

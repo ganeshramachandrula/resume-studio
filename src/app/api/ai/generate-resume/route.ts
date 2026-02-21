@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     if (usageResult && !usageResult.allowed) {
       logSecurityEvent('usage_limit_hit', request, user.id, { route: 'generate-resume' })
       return NextResponse.json(
-        { error: 'Free plan limit reached. Upgrade to Pro for unlimited documents.' },
+        { error: 'Plan limit reached. Upgrade for more generations.' },
         { status: 403 }
       )
     }
@@ -80,10 +80,10 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    const isPro = profile?.plan === 'pro_monthly' || profile?.plan === 'pro_annual' || profile?.plan === 'team'
+    const isPaid = profile?.plan === 'basic' || profile?.plan === 'pro'
 
     // Language gating: only annual/team users can use non-English
-    const effectiveLanguage = (profile?.plan === 'pro_annual' || profile?.plan === 'team') && language ? language : undefined
+    const effectiveLanguage = profile?.plan === 'pro' && language ? language : undefined
 
     const resume = isAIConfigured()
       ? await generateJSONWithClaude(GENERATE_RESUME_SYSTEM, buildGenerateResumePrompt(parsedJD, experience, contactInfo, effectiveLanguage))
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
       if (contactInfo.linkedin) header.linkedin = contactInfo.linkedin
     }
 
-    if (!isPro && usageResult?.reason !== 'credit_used') {
+    if (!isPaid && usageResult?.reason !== 'credit_used') {
       // Free user without credits: return content for preview only, no DB save
       return NextResponse.json({ success: true, content: resume, saved: false })
     }

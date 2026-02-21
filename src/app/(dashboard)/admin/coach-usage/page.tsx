@@ -173,13 +173,13 @@ export default function CoachUsagePage() {
                       <td className="p-3 hidden md:table-cell text-gray-600">{user.full_name || '—'}</td>
                       <td className="p-3">
                         <Badge className={
-                          user.plan === 'pro_annual'
+                          user.plan === 'pro'
                             ? 'bg-amber-100 text-amber-700 border-amber-200'
-                            : user.plan === 'pro_monthly'
+                            : user.plan === 'basic'
                               ? 'bg-blue-100 text-blue-700 border-blue-200'
                               : 'bg-gray-100 text-gray-600'
                         }>
-                          {user.plan === 'pro_annual' ? 'Annual' : user.plan === 'pro_monthly' ? 'Monthly' : 'Free'}
+                          {user.plan === 'pro' ? 'Pro' : user.plan === 'basic' ? 'Basic' : 'Free'}
                         </Badge>
                       </td>
                       <td className="p-3">

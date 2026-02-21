@@ -181,26 +181,6 @@ describe('POST /api/stripe/create-checkout', () => {
     })
   })
 
-  it('returns team URL for team plan in mock mode', async () => {
-    setMockUser(VERIFIED_USER)
-    // Make the team insert return a team object via thenable proxy
-    mockClient.from.mockImplementation(() => {
-      return new Proxy(mockClient, {
-        get(target: Record<string, unknown>, prop: string) {
-          if (prop === 'then') return (resolve: (v: unknown) => void) => resolve({ data: { id: 'team-1' }, error: null })
-          return target[prop]
-        },
-      })
-    })
-
-    const req = makeRequest({ priceId: 'price_team', mode: 'team', quantity: 5 })
-    const res = await POST(req)
-    expect(res.status).toBe(200)
-    const json = await res.json()
-    expect(json.url).toContain('/team')
-    expect(json.url).toContain('checkout=success')
-  })
-
   it('returns 429 when rate limited', async () => {
     setMockUser(VERIFIED_USER)
     const ip = randomIP()
@@ -219,9 +199,9 @@ describe('POST /api/stripe/create-checkout', () => {
     expect(json.error).toContain('Too many requests')
   })
 
-  it('assigns pro_monthly plan when priceId is not mock_annual in mock mode', async () => {
+  it('assigns basic plan in mock mode for non-pro priceId', async () => {
     setMockUser(VERIFIED_USER)
-    const req = makeRequest({ priceId: 'price_monthly' })
+    const req = makeRequest({ priceId: 'price_basic' })
     const res = await POST(req)
     expect(res.status).toBe(200)
     const json = await res.json()

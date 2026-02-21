@@ -8,19 +8,19 @@ export function LanguageSelector({
   onSelect,
   customLanguage,
   onCustomChange,
-  isAnnual = false,
+  isPro = false,
 }: {
   selected: string
   onSelect: (lang: string) => void
   customLanguage: string
   onCustomChange: (lang: string) => void
-  isAnnual?: boolean
+  isPro?: boolean
 }) {
-  if (!isAnnual) {
+  if (!isPro) {
     return (
       <div className="flex items-center gap-2 text-xs text-gray-400">
         <Lock className="h-3 w-3" />
-        <span>Multi-language generation requires Pro Annual plan</span>
+        <span>Multi-language generation requires Pro plan</span>
       </div>
     )
   }

@@ -38,6 +38,18 @@ function markEventProcessed(eventId: string) {
   processedEvents.add(eventId)
 }
 
+/** Map a Stripe price ID to a plan name, including legacy price IDs */
+function priceIdToPlan(priceId: string): 'basic' | 'pro' | 'free' {
+  // Current price IDs
+  if (priceId === process.env.STRIPE_BASIC_MONTHLY_PRICE_ID) return 'basic'
+  if (priceId === process.env.STRIPE_PRO_MONTHLY_PRICE_ID) return 'pro'
+  // Legacy price IDs for existing subscribers
+  if (priceId === process.env.STRIPE_LEGACY_PRO_MONTHLY_PRICE_ID) return 'basic'
+  if (priceId === process.env.STRIPE_LEGACY_PRO_ANNUAL_PRICE_ID) return 'pro'
+  if (priceId === process.env.STRIPE_LEGACY_TEAM_PRICE_ID) return 'pro'
+  return 'free'
+}
+
 export async function POST(request: Request) {
   try {
     // Rate limit by IP
@@ -94,56 +106,13 @@ export async function POST(request: Request) {
           break
         }
 
-        // Team plan: create team + set plan
-        if (metadataType === 'team') {
-          const userId = session.metadata?.supabase_user_id
-          const seatCount = parseInt(session.metadata?.seat_count || '5', 10)
-          if (userId && session.subscription) {
-            const subscription = await stripe.subscriptions.retrieve(
-              session.subscription as string
-            )
-            const { data: team } = await supabase
-              .from('teams')
-              .insert({
-                name: 'My Team',
-                admin_user_id: userId,
-                stripe_customer_id: session.customer as string,
-                stripe_subscription_id: subscription.id,
-                seat_count: seatCount,
-              })
-              .select()
-              .single()
-
-            if (team) {
-              await supabase
-                .from('profiles')
-                .update({
-                  plan: 'team',
-                  team_id: team.id,
-                  stripe_subscription_id: subscription.id,
-                  stripe_customer_id: session.customer as string,
-                  subscription_period_start: new Date(subscription.items.data[0].current_period_start * 1000).toISOString(),
-                  subscription_period_end: new Date(subscription.items.data[0].current_period_end * 1000).toISOString(),
-                })
-                .eq('id', userId)
-            }
-          }
-          break
-        }
-
-        // Regular subscription (pro monthly/annual)
+        // Regular subscription (basic/pro)
         if (!session.subscription) break
         const subscription = await stripe.subscriptions.retrieve(
           session.subscription as string
         )
         const priceId = subscription.items.data[0].price.id
-
-        const plan =
-          priceId === process.env.STRIPE_PRO_MONTHLY_PRICE_ID
-            ? 'pro_monthly'
-            : priceId === process.env.STRIPE_PRO_ANNUAL_PRICE_ID
-              ? 'pro_annual'
-              : 'free'
+        const plan = priceIdToPlan(priceId)
 
         await supabase
           .from('profiles')
@@ -162,24 +131,7 @@ export async function POST(request: Request) {
       case 'customer.subscription.updated': {
         const subscription = event.data.object
         const priceId = subscription.items.data[0].price.id
-
-        // Check if this is a team subscription
-        if (priceId === process.env.STRIPE_TEAM_PRICE_ID) {
-          const newQuantity = subscription.items.data[0].quantity || 5
-          // Update seat count on teams table
-          await supabase
-            .from('teams')
-            .update({ seat_count: newQuantity })
-            .eq('stripe_subscription_id', subscription.id)
-          break
-        }
-
-        const plan =
-          priceId === process.env.STRIPE_PRO_MONTHLY_PRICE_ID
-            ? 'pro_monthly'
-            : priceId === process.env.STRIPE_PRO_ANNUAL_PRICE_ID
-              ? 'pro_annual'
-              : 'free'
+        const plan = priceIdToPlan(priceId)
 
         await supabase
           .from('profiles')
@@ -195,28 +147,6 @@ export async function POST(request: Request) {
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object
-        const priceId = subscription.items.data[0].price.id
-
-        // Team subscription cancelled: downgrade all members + delete team
-        if (priceId === process.env.STRIPE_TEAM_PRICE_ID) {
-          const { data: team } = await supabase
-            .from('teams')
-            .select('id')
-            .eq('stripe_subscription_id', subscription.id)
-            .single()
-
-          if (team) {
-            // Downgrade all team members to free
-            await supabase
-              .from('profiles')
-              .update({ plan: 'free', team_id: null, stripe_subscription_id: null })
-              .eq('team_id', team.id)
-
-            // Delete the team
-            await supabase.from('teams').delete().eq('id', team.id)
-          }
-          break
-        }
 
         await supabase
           .from('profiles')

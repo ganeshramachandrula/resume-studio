@@ -39,8 +39,8 @@ export async function GET(_request: Request) {
       creditTotalRes,
     ] = await Promise.all([
       admin.from('profiles').select('id', { count: 'exact', head: true }),
-      admin.from('profiles').select('id', { count: 'exact', head: true }).in('plan', ['pro_monthly', 'pro_annual', 'team']),
-      admin.from('profiles').select('id', { count: 'exact', head: true }).eq('plan', 'team'),
+      admin.from('profiles').select('id', { count: 'exact', head: true }).in('plan', ['basic', 'pro']),
+      admin.from('profiles').select('id', { count: 'exact', head: true }).eq('plan', 'pro'),
       admin.from('profiles').select('id', { count: 'exact', head: true }).eq('is_disabled', true),
       admin.from('documents').select('id', { count: 'exact', head: true }),
       admin.from('support_messages').select('id', { count: 'exact', head: true }).eq('status', 'new'),

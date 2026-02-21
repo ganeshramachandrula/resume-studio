@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isPro, isAnnual, hasCredits, canSave } from '@/lib/plan-helpers'
+import { isPro, isPaid, hasCredits, canSave } from '@/lib/plan-helpers'
 import { createProfile } from '@/test/helpers'
 
 // ── isPro ────────────────────────────────────────────────────
@@ -9,16 +9,12 @@ describe('isPro', () => {
     expect(isPro(createProfile({ plan: 'free' }))).toBe(false)
   })
 
-  it('returns true for pro_monthly plan', () => {
-    expect(isPro(createProfile({ plan: 'pro_monthly' }))).toBe(true)
+  it('returns false for basic plan', () => {
+    expect(isPro(createProfile({ plan: 'basic' }))).toBe(false)
   })
 
-  it('returns true for pro_annual plan', () => {
-    expect(isPro(createProfile({ plan: 'pro_annual' }))).toBe(true)
-  })
-
-  it('returns true for team plan', () => {
-    expect(isPro(createProfile({ plan: 'team' }))).toBe(true)
+  it('returns true for pro plan', () => {
+    expect(isPro(createProfile({ plan: 'pro' }))).toBe(true)
   })
 
   it('returns false for null profile', () => {
@@ -26,27 +22,23 @@ describe('isPro', () => {
   })
 })
 
-// ── isAnnual ─────────────────────────────────────────────────
+// ── isPaid ────────────────────────────────────────────────────
 
-describe('isAnnual', () => {
+describe('isPaid', () => {
   it('returns false for free plan', () => {
-    expect(isAnnual(createProfile({ plan: 'free' }))).toBe(false)
+    expect(isPaid(createProfile({ plan: 'free' }))).toBe(false)
   })
 
-  it('returns false for pro_monthly plan', () => {
-    expect(isAnnual(createProfile({ plan: 'pro_monthly' }))).toBe(false)
+  it('returns true for basic plan', () => {
+    expect(isPaid(createProfile({ plan: 'basic' }))).toBe(true)
   })
 
-  it('returns true for pro_annual plan', () => {
-    expect(isAnnual(createProfile({ plan: 'pro_annual' }))).toBe(true)
-  })
-
-  it('returns true for team plan', () => {
-    expect(isAnnual(createProfile({ plan: 'team' }))).toBe(true)
+  it('returns true for pro plan', () => {
+    expect(isPaid(createProfile({ plan: 'pro' }))).toBe(true)
   })
 
   it('returns false for null profile', () => {
-    expect(isAnnual(null)).toBe(false)
+    expect(isPaid(null)).toBe(false)
   })
 })
 
@@ -77,16 +69,12 @@ describe('canSave', () => {
     expect(canSave(createProfile({ plan: 'free', credits: 1 }))).toBe(true)
   })
 
-  it('returns true for pro_monthly user', () => {
-    expect(canSave(createProfile({ plan: 'pro_monthly' }))).toBe(true)
+  it('returns true for basic user', () => {
+    expect(canSave(createProfile({ plan: 'basic' }))).toBe(true)
   })
 
-  it('returns true for pro_annual user', () => {
-    expect(canSave(createProfile({ plan: 'pro_annual' }))).toBe(true)
-  })
-
-  it('returns true for team user', () => {
-    expect(canSave(createProfile({ plan: 'team' }))).toBe(true)
+  it('returns true for pro user', () => {
+    expect(canSave(createProfile({ plan: 'pro' }))).toBe(true)
   })
 
   it('returns false for null profile', () => {

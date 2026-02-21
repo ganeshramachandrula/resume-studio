@@ -1,62 +1,45 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Crown, Loader2, Zap, Users } from 'lucide-react'
+import { Check, Crown, Loader2, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAppStore } from '@/store/app-store'
 
 const plans = [
   {
-    key: 'pro_monthly',
-    name: 'Pro Monthly',
-    price: '$9.99',
+    key: 'basic',
+    name: 'Basic',
+    price: '$5.99',
     period: '/month',
     description: 'For active job seekers',
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? undefined : undefined, // resolved server-side
     mode: 'subscription',
     features: [
-      'Unlimited documents',
-      'All templates',
-      'Full application package',
+      '10 documents/month',
+      'All 13 templates',
+      'No watermark',
+      'Save up to 10 applications',
       'Advanced ATS analysis',
       'Job tracker',
-      'Interview prep',
-      'No ads',
     ],
     popular: false,
   },
   {
-    key: 'pro_annual',
-    name: 'Pro Annual',
-    price: '$79',
-    period: '/year',
-    priceDetail: '$6.58/mo — save 34%',
-    description: 'Best value for serious job seekers',
+    key: 'pro',
+    name: 'Pro',
+    price: '$10.99',
+    period: '/month',
+    description: 'For serious job seekers',
     mode: 'subscription',
     features: [
-      'Everything in Pro',
-      'Priority generation',
-      'Career Coach',
+      '20 documents/month',
+      'All 13 templates',
+      'Premium fonts',
       'Multi-language support',
-      'Premium templates',
+      'Career Coach',
+      'No watermark',
     ],
     popular: true,
-  },
-  {
-    key: 'team',
-    name: 'Team Plan',
-    price: '$59',
-    period: '/seat/year',
-    description: 'For teams (min 5 seats)',
-    mode: 'team',
-    features: [
-      'Everything in Pro Annual',
-      'Centralized billing',
-      'Team management',
-      'Seat-based pricing',
-    ],
-    popular: false,
   },
 ]
 
@@ -65,18 +48,14 @@ export default function UpgradePage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const handleCheckout = async (planKey: string, mode: string, quantity?: number) => {
+  const handleCheckout = async (planKey: string, mode: string) => {
     setLoadingPlan(planKey)
     setError(null)
     try {
       const res = await fetch('/api/stripe/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan: planKey,
-          mode,
-          ...(quantity ? { quantity } : {}),
-        }),
+        body: JSON.stringify({ plan: planKey, mode }),
       })
       const data = await res.json()
       if (data.url) {
@@ -90,16 +69,16 @@ export default function UpgradePage() {
     setLoadingPlan(null)
   }
 
-  const isPro = profile?.plan && profile.plan !== 'free'
+  const isPaid = profile?.plan && profile.plan !== 'free'
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-display text-gray-900">Upgrade Your Plan</h1>
         <p className="text-gray-500 mt-1">
-          {isPro
-            ? `You're currently on the ${profile?.plan === 'pro_annual' ? 'Pro Annual' : profile?.plan === 'pro_monthly' ? 'Pro Monthly' : profile?.plan === 'team' ? 'Team' : ''} plan.`
-            : 'Choose a plan to unlock all features.'}
+          {isPaid
+            ? `You're currently on the ${profile?.plan === 'pro' ? 'Pro' : 'Basic'} plan.`
+            : 'Choose a plan to unlock more features.'}
         </p>
       </div>
 
@@ -109,7 +88,7 @@ export default function UpgradePage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {plans.map((plan) => (
           <Card
             key={plan.key}
@@ -119,7 +98,7 @@ export default function UpgradePage() {
           >
             {plan.popular && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-xs font-semibold px-3 py-1 rounded-full">
-                Best Value
+                Most Popular
               </div>
             )}
             <CardContent className="p-6 space-y-4">
@@ -131,9 +110,7 @@ export default function UpgradePage() {
               <div>
                 <span className="text-3xl font-bold text-gray-900">{plan.price}</span>
                 <span className="text-gray-500 text-sm">{plan.period}</span>
-                {plan.priceDetail && (
-                  <p className="text-accent text-sm font-medium mt-1">{plan.priceDetail}</p>
-                )}
+                <p className="text-xs text-gray-400 mt-1">+ applicable tax</p>
               </div>
 
               <ul className="space-y-2">
@@ -149,12 +126,10 @@ export default function UpgradePage() {
                 className="w-full"
                 variant={plan.popular ? 'accent' : 'default'}
                 disabled={loadingPlan === plan.key || profile?.plan === plan.key}
-                onClick={() => handleCheckout(plan.key, plan.mode, plan.key === 'team' ? 5 : undefined)}
+                onClick={() => handleCheckout(plan.key, plan.mode)}
               >
                 {loadingPlan === plan.key ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
-                ) : plan.key === 'team' ? (
-                  <Users className="h-4 w-4" />
                 ) : (
                   <Crown className="h-4 w-4" />
                 )}

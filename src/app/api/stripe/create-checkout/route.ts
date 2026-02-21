@@ -49,13 +49,12 @@ export async function POST(request: Request) {
       return body
     }
 
-    const { priceId: rawPriceId, plan, mode = 'subscription', quantity } = body
+    const { priceId: rawPriceId, plan, mode = 'subscription' } = body
 
     // Resolve plan name to price ID if plan was provided instead of priceId
     const PLAN_PRICE_MAP: Record<string, string | undefined> = {
-      pro_monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
-      pro_annual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
-      team: process.env.STRIPE_TEAM_PRICE_ID,
+      basic: process.env.STRIPE_BASIC_MONTHLY_PRICE_ID,
+      pro: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
       credits: process.env.STRIPE_CREDIT_PACK_PRICE_ID,
     }
     const priceId = rawPriceId || (plan ? PLAN_PRICE_MAP[plan] : undefined)
@@ -71,37 +70,19 @@ export async function POST(request: Request) {
         logSecurityEvent('checkout_initiated', request, user.id, { mode: 'mock', type: 'credit_pack' })
         return NextResponse.json({ url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=credits` })
       }
-      if (mode === 'team') {
-        // Mock team creation
-        const seats = quantity || 5
-        const { data: team } = await supabase
-          .from('teams')
-          .insert({ name: 'My Team', admin_user_id: user.id, seat_count: seats })
-          .select()
-          .single()
-        if (team) {
-          await supabase
-            .from('profiles')
-            .update({ plan: 'team', team_id: team.id, stripe_customer_id: 'mock_cus_' + user.id.slice(0, 8) })
-            .eq('id', user.id)
-        }
-        logSecurityEvent('checkout_initiated', request, user.id, { mode: 'mock', type: 'team', seats })
-        return NextResponse.json({ url: `${process.env.NEXT_PUBLIC_APP_URL}/team?checkout=success` })
-      }
-      const plan = priceId === 'mock_annual' ? 'pro_annual' : 'pro_monthly'
+      const mockPlan = priceId === process.env.STRIPE_PRO_MONTHLY_PRICE_ID ? 'pro' : 'basic'
       await supabase
         .from('profiles')
-        .update({ plan, stripe_customer_id: 'mock_cus_' + user.id.slice(0, 8) })
+        .update({ plan: mockPlan, stripe_customer_id: 'mock_cus_' + user.id.slice(0, 8) })
         .eq('id', user.id)
-      logSecurityEvent('checkout_initiated', request, user.id, { mode: 'mock', plan })
+      logSecurityEvent('checkout_initiated', request, user.id, { mode: 'mock', plan: mockPlan })
       return NextResponse.json({ url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success` })
     }
 
     // Verify priceId matches an allowed price
     const allowedPrices = [
+      process.env.STRIPE_BASIC_MONTHLY_PRICE_ID,
       process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
-      process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
-      process.env.STRIPE_TEAM_PRICE_ID,
       process.env.STRIPE_CREDIT_PACK_PRICE_ID,
     ].filter(Boolean)
 
@@ -151,24 +132,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ url: session.url })
     }
 
-    // Team plan: subscription with seat quantity
-    if (mode === 'team') {
-      const seats = quantity || 5
-      const session = await stripe.checkout.sessions.create({
-        customer: customerId,
-        line_items: [{ price: priceId, quantity: seats }],
-        mode: 'subscription',
-        // automatic_tax: { enabled: true },
-        // customer_update: { address: 'auto' },
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/team?checkout=success`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?checkout=cancelled`,
-        metadata: { supabase_user_id: user.id, type: 'team', seat_count: String(seats) },
-      })
-      logSecurityEvent('checkout_initiated', request, user.id, { mode: 'live', type: 'team', seats })
-      return NextResponse.json({ url: session.url })
-    }
-
-    // Regular subscription (pro monthly/annual)
+    // Regular subscription (basic/pro)
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
