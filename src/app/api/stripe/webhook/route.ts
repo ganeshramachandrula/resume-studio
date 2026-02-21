@@ -22,20 +22,23 @@ function getAdminClient() {
   )
 }
 
-// Idempotency: track processed event IDs to prevent duplicate processing.
-// In production, use DB-backed deduplication instead of in-memory.
-const processedEvents = new Set<string>()
-const MAX_PROCESSED_EVENTS = 10_000
+/** Check if a webhook event was already processed (DB-backed dedup) */
+async function isEventProcessed(eventId: string): Promise<boolean> {
+  const supabase = getAdminClient()
+  const { data } = await supabase
+    .from('processed_webhook_events')
+    .select('event_id')
+    .eq('event_id', eventId)
+    .limit(1)
+  return !!data?.length
+}
 
-function markEventProcessed(eventId: string) {
-  if (processedEvents.size >= MAX_PROCESSED_EVENTS) {
-    // Clear oldest half to prevent unbounded growth
-    const entries = Array.from(processedEvents)
-    for (let i = 0; i < entries.length / 2; i++) {
-      processedEvents.delete(entries[i])
-    }
-  }
-  processedEvents.add(eventId)
+/** Mark a webhook event as processed (DB-backed dedup) */
+async function markEventProcessed(eventId: string): Promise<void> {
+  const supabase = getAdminClient()
+  await supabase
+    .from('processed_webhook_events')
+    .upsert({ event_id: eventId }, { onConflict: 'event_id' })
 }
 
 /** Map a Stripe price ID to a plan name, including legacy price IDs */
@@ -80,8 +83,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 })
     }
 
-    // Idempotency check
-    if (processedEvents.has(event.id)) {
+    // Idempotency check (DB-backed, persists across serverless instances)
+    if (await isEventProcessed(event.id)) {
       return NextResponse.json({ received: true, duplicate: true })
     }
 

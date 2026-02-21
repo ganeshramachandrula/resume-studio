@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import { isValidRedirect } from '@/lib/security/sanitize'
 import { logSecurityEvent } from '@/lib/security/audit-log'
@@ -31,6 +32,22 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
       logSecurityEvent('login_success', request, data.user?.id)
+      // Reset failed login attempts on successful OAuth login
+      if (data.user?.id) {
+        try {
+          const serviceSupabase = createServerClient(
+            (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\s+/g, ''),
+            (process.env.SUPABASE_SERVICE_ROLE_KEY || '').replace(/\s+/g, ''),
+            { cookies: { getAll() { return [] }, setAll() {} } }
+          )
+          await serviceSupabase
+            .from('profiles')
+            .update({ failed_login_attempts: 0, locked_until: null })
+            .eq('id', data.user.id)
+        } catch {
+          // Don't fail the OAuth flow
+        }
+      }
       return NextResponse.redirect(`${origin}${redirectPath}`)
     }
     logSecurityEvent('login_failed', request, undefined, { error: 'code_exchange_failed' })

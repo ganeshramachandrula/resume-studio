@@ -9,7 +9,7 @@ import { checkRateLimitDistributed, getClientIP, EXTENSION_RATE_LIMIT } from '@/
 import { logSecurityEvent } from '@/lib/security/audit-log'
 
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': process.env.EXTENSION_CORS_ORIGIN || '*',
+  'Access-Control-Allow-Origin': process.env.EXTENSION_CORS_ORIGIN || 'https://resume-studio.io',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }

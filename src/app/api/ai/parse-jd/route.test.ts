@@ -255,15 +255,14 @@ describe('POST /api/ai/parse-jd', () => {
     expect(res.status).toBe(400)
   })
 
-  it('continues when daily gate RPC returns an error (fail open)', async () => {
+  it('returns 503 when daily gate RPC returns an error (fail closed)', async () => {
     setMockUser(VERIFIED_USER)
     mockClient.rpc.mockResolvedValue({ data: null, error: { message: 'DB is down' } })
 
     const req = makeRequest({ jobDescription: VALID_JD })
     const res = await POST(req)
-    // Should NOT return 403 -- the route fails open on DB errors
-    expect(res.status).toBe(200)
+    expect(res.status).toBe(503)
     const json = await res.json()
-    expect(json.success).toBe(true)
+    expect(json.error).toContain('temporarily unavailable')
   })
 })

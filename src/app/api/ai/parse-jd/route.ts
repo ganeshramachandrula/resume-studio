@@ -70,7 +70,10 @@ export async function POST(request: Request) {
 
     if (gateError) {
       console.error('[parse-jd] Daily gate RPC error:', gateError.message)
-      // Fail open — don't block legitimate users on DB errors
+      return NextResponse.json(
+        { error: 'Service temporarily unavailable. Please try again.' },
+        { status: 503 }
+      )
     } else if (gateResult && !gateResult.allowed) {
       logSecurityEvent('usage_limit_hit', request, user.id, {
         route: 'parse-jd',

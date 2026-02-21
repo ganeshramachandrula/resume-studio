@@ -80,6 +80,10 @@ export async function POST(request: Request) {
 
     if (gateError) {
       console.error('[job-search] Daily gate RPC error:', gateError.message)
+      return NextResponse.json(
+        { error: 'Service temporarily unavailable. Please try again.' },
+        { status: 503 }
+      )
     } else if (gateResult && !gateResult.allowed) {
       logSecurityEvent('usage_limit_hit', request, user.id, {
         route: 'job-search',

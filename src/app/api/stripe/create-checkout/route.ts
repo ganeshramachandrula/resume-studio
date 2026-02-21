@@ -86,7 +86,11 @@ export async function POST(request: Request) {
       process.env.STRIPE_CREDIT_PACK_PRICE_ID,
     ].filter(Boolean)
 
-    if (allowedPrices.length > 0 && !allowedPrices.includes(priceId)) {
+    if (allowedPrices.length === 0) {
+      return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 })
+    }
+
+    if (!allowedPrices.includes(priceId)) {
       logSecurityEvent('validation_error', request, user.id, {
         route: 'create-checkout',
         reason: 'invalid_price_id',
