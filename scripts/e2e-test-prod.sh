@@ -88,6 +88,43 @@ for anchor in "/#features" "/#pricing" "/#how-it-works"; do
   fi
 done
 
+# Roast My Resume visibility (navbar + hero + banner)
+if echo "$LANDING" | grep -qi "Roast My Resume"; then
+  pass "Landing page contains 'Roast My Resume' text"
+else
+  fail "Landing page missing 'Roast My Resume' text"
+fi
+
+if echo "$LANDING" | grep -q 'href="/roast"'; then
+  pass "Landing page has /roast link"
+else
+  fail "Landing page missing /roast link"
+fi
+
+if echo "$LANDING" | grep -qi "FREE"; then
+  pass "Landing page has FREE badge"
+else
+  fail "Landing page missing FREE badge"
+fi
+
+if echo "$LANDING" | grep -qi "Not ready to sign up"; then
+  pass "Roast banner: 'Not ready to sign up?' text present"
+else
+  fail "Roast banner: 'Not ready to sign up?' text missing"
+fi
+
+if echo "$LANDING" | grep -qi "brutally honest"; then
+  pass "Roast banner: 'brutally honest' text present"
+else
+  fail "Roast banner: 'brutally honest' text missing"
+fi
+
+if echo "$LANDING" | grep -qi "roast your resume free"; then
+  pass "Hero: 'roast your resume free' link present"
+else
+  fail "Hero: 'roast your resume free' link missing"
+fi
+
 # Verify legal page content
 PRIVACY=$(curl -s --max-time 15 "$BASE_URL/privacy")
 for term in "Frisco, Texas" "TDPSA" "CCPA" "GDPR" "privacy@resume-studio.io" "Data Breach"; do
