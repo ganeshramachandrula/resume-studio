@@ -6,6 +6,7 @@ import { HowItWorks } from '@/components/landing/how-it-works'
 import { ATSPreview } from '@/components/landing/ats-preview'
 import { Testimonials } from '@/components/landing/testimonials'
 import { PricingCards } from '@/components/landing/pricing-cards'
+import { RoastBanner } from '@/components/landing/roast-banner'
 import { FAQ } from '@/components/landing/faq'
 import { FinalCTA } from '@/components/landing/final-cta'
 import { JsonLd } from '@/components/landing/json-ld'
@@ -16,6 +17,7 @@ export default function LandingPage() {
       <JsonLd />
       <Hero />
       <Features />
+      <RoastBanner />
       <HowItWorks />
       <ATSPreview />
       <Testimonials />

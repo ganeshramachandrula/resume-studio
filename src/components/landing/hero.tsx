@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Star } from 'lucide-react'
+import { ArrowRight, Flame, Sparkles, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export function Hero() {
@@ -83,6 +83,22 @@ export function Hero() {
         >
           2 free documents per month. No credit card required.
         </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="mt-3"
+        >
+          <Link
+            href="/roast"
+            className="inline-flex items-center gap-1.5 text-sm text-orange-400 hover:text-orange-300 transition-colors"
+          >
+            <Flame className="h-4 w-4" />
+            Or roast your resume free — no signup needed
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </motion.div>
       </div>
     </section>
   )

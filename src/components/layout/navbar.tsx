@@ -2,13 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { FileText, Menu, X } from 'lucide-react'
+import { FileText, Flame, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const navLinks = [
   { href: '/#features', label: 'Features' },
   { href: '/#how-it-works', label: 'How It Works' },
-  { href: '/roast', label: 'Roast My Resume' },
   { href: '/#pricing', label: 'Pricing' },
   { href: '/blog', label: 'Blog' },
 ]
@@ -37,6 +36,18 @@ export function Navbar() {
                 {link.label}
               </a>
             ))}
+            <Link
+              href="/roast"
+              className="inline-flex items-center gap-1.5 transition-all hover:drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]"
+            >
+              <Flame className="h-4 w-4 text-orange-400" />
+              <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent text-sm font-medium">
+                Roast My Resume
+              </span>
+              <span className="bg-orange-500/20 text-orange-400 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full">
+                FREE
+              </span>
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -75,6 +86,19 @@ export function Navbar() {
                 {link.label}
               </a>
             ))}
+            <Link
+              href="/roast"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 py-2"
+            >
+              <Flame className="h-4 w-4 text-orange-400" />
+              <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent text-sm font-medium">
+                Roast My Resume
+              </span>
+              <span className="bg-orange-500/20 text-orange-400 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full">
+                FREE
+              </span>
+            </Link>
             <div className="pt-3 border-t border-white/10 space-y-3">
               <Link href="/login" onClick={() => setMobileOpen(false)}>
                 <Button variant="ghost" className="w-full text-gray-300 hover:text-white hover:bg-white/10">
