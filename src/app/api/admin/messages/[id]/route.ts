@@ -5,6 +5,7 @@ import { safeErrorResponse } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, adminMessageUpdateSchema } from '@/lib/security/validation'
 import { checkRateLimit, rateLimitResponse, ADMIN_RATE_LIMIT } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
+import { sendAdminReplyNotification } from '@/lib/email'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -45,6 +46,18 @@ export async function PATCH(request: Request, context: RouteContext) {
       messageId: id,
       changes: body,
     })
+
+    // Send email notification to user when admin adds notes
+    if (body.admin_notes && data?.email) {
+      await sendAdminReplyNotification({
+        caseNumber: data.case_number,
+        name: data.name,
+        email: data.email,
+        subject: data.subject,
+        adminNotes: body.admin_notes,
+        status: data.status,
+      })
+    }
 
     return NextResponse.json({ success: true, message: data })
   } catch (error) {
