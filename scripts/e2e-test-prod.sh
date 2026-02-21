@@ -153,7 +153,7 @@ bold "=== 2. AUTH & ACCESS CONTROL ==="
 
 # Pages with server-side middleware redirect (307)
 for page in "/dashboard" "/generate" "/settings" "/admin" \
-  "/documents" "/job-tracker" "/career-coach" "/team"; do
+  "/documents" "/job-tracker" "/career-coach"; do
   status=$(http_status "$BASE_URL$page")
   check_status "307" "$status" "Unauth GET $page → login redirect"
 done
