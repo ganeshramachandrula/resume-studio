@@ -29,7 +29,8 @@ interface NavItem {
   name: string
   href: string
   icon: React.ComponentType<{ className?: string }>
-  badge?: string
+  iconColor: string
+  iconBg: string
 }
 
 interface NavSection {
@@ -41,33 +42,33 @@ const sections: NavSection[] = [
   {
     label: '',
     items: [
-      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-      { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, iconColor: 'text-blue-600', iconBg: 'bg-blue-100' },
+      { name: 'Analytics', href: '/analytics', icon: BarChart3, iconColor: 'text-violet-600', iconBg: 'bg-violet-100' },
     ],
   },
   {
     label: 'Create',
     items: [
-      { name: 'Generate', href: '/generate', icon: Sparkles },
-      { name: 'Country Resume', href: '/country-resume', icon: MapPin },
-      { name: 'Applications', href: '/documents', icon: FileText },
+      { name: 'Generate', href: '/generate', icon: Sparkles, iconColor: 'text-amber-500', iconBg: 'bg-amber-100' },
+      { name: 'Country Resume', href: '/country-resume', icon: MapPin, iconColor: 'text-rose-500', iconBg: 'bg-rose-100' },
+      { name: 'Applications', href: '/documents', icon: FileText, iconColor: 'text-sky-600', iconBg: 'bg-sky-100' },
     ],
   },
   {
     label: 'Jobs',
     items: [
-      { name: 'Job Feed', href: '/job-feed', icon: Search },
-      { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase },
-      { name: 'Job Sites', href: '/job-sites', icon: Globe },
-      { name: 'Market Insights', href: '/market-insights', icon: TrendingUp },
+      { name: 'Job Feed', href: '/job-feed', icon: Search, iconColor: 'text-emerald-600', iconBg: 'bg-emerald-100' },
+      { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase, iconColor: 'text-orange-500', iconBg: 'bg-orange-100' },
+      { name: 'Job Sites', href: '/job-sites', icon: Globe, iconColor: 'text-teal-600', iconBg: 'bg-teal-100' },
+      { name: 'Market Insights', href: '/market-insights', icon: TrendingUp, iconColor: 'text-indigo-600', iconBg: 'bg-indigo-100' },
     ],
   },
   {
     label: 'Tools',
     items: [
-      { name: 'Credential Vault', href: '/vault', icon: Award },
-      { name: 'Skill Gap', href: '/skill-gap', icon: Target },
-      { name: 'Cost of Living', href: '/cost-of-living', icon: DollarSign },
+      { name: 'Credential Vault', href: '/vault', icon: Award, iconColor: 'text-yellow-600', iconBg: 'bg-yellow-100' },
+      { name: 'Skill Gap', href: '/skill-gap', icon: Target, iconColor: 'text-pink-600', iconBg: 'bg-pink-100' },
+      { name: 'Cost of Living', href: '/cost-of-living', icon: DollarSign, iconColor: 'text-green-600', iconBg: 'bg-green-100' },
     ],
   },
 ]
@@ -132,11 +133,13 @@ export function Sidebar() {
                     className={cn(
                       'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
                       isActive
-                        ? 'bg-brand/10 text-brand'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        ? 'bg-gray-100 text-gray-900'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     )}
                   >
-                    <item.icon className="h-4.5 w-4.5" />
+                    <div className={cn('h-7 w-7 rounded-lg flex items-center justify-center shrink-0', item.iconBg)}>
+                      <item.icon className={cn('h-4 w-4', item.iconColor)} />
+                    </div>
                     {item.name}
                   </Link>
                 )
@@ -151,11 +154,13 @@ export function Sidebar() {
             className={cn(
               'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
               pathname === '/career-coach'
-                ? 'bg-brand/10 text-brand'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                ? 'bg-gray-100 text-gray-900'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
             )}
           >
-            <GraduationCap className="h-4.5 w-4.5" />
+            <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0 bg-purple-100">
+              <GraduationCap className="h-4 w-4 text-purple-600" />
+            </div>
             Career Coach
             {!userIsPro && <Lock className="h-3 w-3 text-gray-400 ml-auto" />}
           </Link>
@@ -170,11 +175,13 @@ export function Sidebar() {
                 className={cn(
                   'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
                   pathname.startsWith('/admin')
-                    ? 'bg-brand/10 text-brand'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 )}
               >
-                <Shield className="h-4.5 w-4.5" />
+                <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0 bg-red-100">
+                  <Shield className="h-4 w-4 text-red-600" />
+                </div>
                 Admin
               </Link>
             </div>
