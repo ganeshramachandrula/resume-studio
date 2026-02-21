@@ -1,14 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
   Sparkles,
   FileText,
   Briefcase,
-  Settings,
   Crown,
   Shield,
   GraduationCap,
@@ -16,8 +14,6 @@ import {
   X,
   Search,
   Globe,
-  LogOut,
-  LifeBuoy,
   Award,
   DollarSign,
   MapPin,
@@ -28,37 +24,60 @@ import {
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useAppStore } from '@/store/app-store'
-import { createClient } from '@/lib/supabase/client'
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Generate', href: '/generate', icon: Sparkles },
-  { name: 'Country Resume', href: '/country-resume', icon: MapPin },
-  { name: 'Applications', href: '/documents', icon: FileText },
-  { name: 'Job Feed', href: '/job-feed', icon: Search },
-  { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase },
-  { name: 'Job Sites', href: '/job-sites', icon: Globe },
-  { name: 'Market Insights', href: '/market-insights', icon: TrendingUp },
-  { name: 'Settings', href: '/settings', icon: Settings },
-  { name: 'Support', href: '/support', icon: LifeBuoy },
+interface NavItem {
+  name: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  badge?: string
+}
+
+interface NavSection {
+  label: string
+  items: NavItem[]
+}
+
+const sections: NavSection[] = [
+  {
+    label: '',
+    items: [
+      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+    ],
+  },
+  {
+    label: 'Create',
+    items: [
+      { name: 'Generate', href: '/generate', icon: Sparkles },
+      { name: 'Country Resume', href: '/country-resume', icon: MapPin },
+      { name: 'Applications', href: '/documents', icon: FileText },
+    ],
+  },
+  {
+    label: 'Jobs',
+    items: [
+      { name: 'Job Feed', href: '/job-feed', icon: Search },
+      { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase },
+      { name: 'Job Sites', href: '/job-sites', icon: Globe },
+      { name: 'Market Insights', href: '/market-insights', icon: TrendingUp },
+    ],
+  },
+  {
+    label: 'Tools',
+    items: [
+      { name: 'Credential Vault', href: '/vault', icon: Award },
+      { name: 'Skill Gap', href: '/skill-gap', icon: Target },
+      { name: 'Cost of Living', href: '/cost-of-living', icon: DollarSign },
+    ],
+  },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
-  const router = useRouter()
   const { profile, sidebarOpen, setSidebarOpen } = useAppStore()
-  const [signingOut, setSigningOut] = useState(false)
 
-  const handleSignOut = async () => {
-    setSigningOut(true)
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/')
-    router.refresh()
-  }
-  const isPaid = profile?.plan === 'basic' || profile?.plan === 'pro'
   const userIsPro = profile?.plan === 'pro'
+  const isPaid = profile?.plan === 'basic' || profile?.plan === 'pro'
   const isAdmin = profile?.role === 'admin'
 
   return (
@@ -73,10 +92,11 @@ export function Sidebar() {
 
       <aside
         className={cn(
-          'fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-200 lg:translate-x-0 lg:static lg:z-0',
+          'fixed top-0 left-0 z-50 h-full w-60 bg-white border-r border-gray-200 flex flex-col transition-transform duration-200 lg:translate-x-0 lg:static lg:z-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
+        {/* Logo */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-brand flex items-center justify-center">
@@ -92,108 +112,76 @@ export function Sidebar() {
           </button>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-brand/10 text-brand'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                {item.name}
-              </Link>
-            )
-          })}
+        {/* Navigation sections */}
+        <nav className="flex-1 overflow-y-auto px-3 py-2">
+          {sections.map((section) => (
+            <div key={section.label || 'top'} className="mb-1">
+              {section.label && (
+                <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                  {section.label}
+                </p>
+              )}
+              {section.items.map((item) => {
+                const isActive =
+                  pathname === item.href || pathname.startsWith(item.href + '/')
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
+                      isActive
+                        ? 'bg-brand/10 text-brand'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    )}
+                  >
+                    <item.icon className="h-4.5 w-4.5" />
+                    {item.name}
+                  </Link>
+                )
+              })}
+            </div>
+          ))}
 
-          {/* Career Coach (Pro exclusive) */}
+          {/* Career Coach (Pro exclusive) — under Tools */}
           <Link
             href="/career-coach"
             onClick={() => setSidebarOpen(false)}
             className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+              'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
               pathname === '/career-coach'
                 ? 'bg-brand/10 text-brand'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
             )}
           >
-            <GraduationCap className="h-5 w-5" />
+            <GraduationCap className="h-4.5 w-4.5" />
             Career Coach
             {!userIsPro && <Lock className="h-3 w-3 text-gray-400 ml-auto" />}
           </Link>
 
-          {/* Credential Vault */}
-          <Link
-            href="/vault"
-            onClick={() => setSidebarOpen(false)}
-            className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
-              pathname === '/vault'
-                ? 'bg-brand/10 text-brand'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-            )}
-          >
-            <Award className="h-5 w-5" />
-            Credential Vault
-          </Link>
-
-          {/* Skill Gap Analysis */}
-          <Link
-            href="/skill-gap"
-            onClick={() => setSidebarOpen(false)}
-            className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
-              pathname === '/skill-gap'
-                ? 'bg-brand/10 text-brand'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-            )}
-          >
-            <Target className="h-5 w-5" />
-            Skill Gap
-          </Link>
-
-          {/* Cost of Living */}
-          <Link
-            href="/cost-of-living"
-            onClick={() => setSidebarOpen(false)}
-            className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
-              pathname === '/cost-of-living'
-                ? 'bg-brand/10 text-brand'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-            )}
-          >
-            <DollarSign className="h-5 w-5" />
-            Cost of Living
-          </Link>
-
+          {/* Admin section */}
           {isAdmin && (
-            <>
-              <div className="h-px bg-gray-200 my-2" />
+            <div className="mt-1">
+              <div className="h-px bg-gray-200 my-2 mx-3" />
               <Link
                 href="/admin"
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+                  'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
                   pathname.startsWith('/admin')
                     ? 'bg-brand/10 text-brand'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
-                <Shield className="h-5 w-5" />
+                <Shield className="h-4.5 w-4.5" />
                 Admin
               </Link>
-            </>
+            </div>
           )}
         </nav>
 
+        {/* Upgrade / Plan badge */}
         {isPaid ? (
           <div className="p-4 m-3 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20">
             <div className="flex items-center gap-2 mb-1">
@@ -204,7 +192,12 @@ export function Sidebar() {
             </div>
             {profile?.subscription_period_end && (
               <p className="text-xs text-gray-500 mt-1">
-                Renews {new Date(profile.subscription_period_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                Renews{' '}
+                {new Date(profile.subscription_period_end).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
               </p>
             )}
           </div>
@@ -224,17 +217,6 @@ export function Sidebar() {
             </Link>
           </div>
         )}
-
-        <div className="px-3 pb-4">
-          <button
-            onClick={handleSignOut}
-            disabled={signingOut}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-          >
-            <LogOut className="h-5 w-5" />
-            {signingOut ? 'Signing out...' : 'Sign Out'}
-          </button>
-        </div>
       </aside>
     </>
   )
