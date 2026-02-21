@@ -42,6 +42,7 @@ describe('app-store', () => {
       ats_score_reset_at: '2026-01-01',
       job_search_daily_count: 0,
       job_search_reset_at: '2026-01-01',
+      password_changed_at: '2026-01-01T00:00:00Z',
       created_at: '2026-01-01T00:00:00Z',
       updated_at: '2026-01-01T00:00:00Z',
     }

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FileText, Loader2 } from 'lucide-react'
 import { isDisposableEmail, normalizeEmail } from '@/lib/security/disposable-emails'
+import { validatePassword } from '@/lib/security/password'
 import { getDeviceFingerprint } from '@/lib/security/fingerprint'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 
@@ -55,8 +56,9 @@ function SignupForm() {
     setLoading(true)
     setError(null)
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+    const pwValidation = validatePassword(password)
+    if (!pwValidation.valid) {
+      setError(pwValidation.errors[0])
       setLoading(false)
       return
     }
@@ -271,11 +273,11 @@ function SignupForm() {
             <Input
               id="password"
               type="password"
-              placeholder="At least 6 characters"
+              placeholder="Min 12 chars, mixed case, digit, special"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={6}
+              minLength={12}
             />
           </div>
           {TURNSTILE_SITE_KEY && (

@@ -7,7 +7,7 @@ import { z } from 'zod'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email').max(300),
-  password: z.string().min(6, 'Password too short').max(200),
+  password: z.string().min(12, 'Password must be at least 12 characters').max(200),
 })
 
 const CORS_HEADERS = {
