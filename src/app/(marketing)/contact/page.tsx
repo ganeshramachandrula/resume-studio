@@ -18,6 +18,7 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [caseNumber, setCaseNumber] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -38,6 +39,7 @@ export default function ContactPage() {
         return
       }
 
+      setCaseNumber(data.case_number || '')
       setSuccess(true)
     } catch {
       setError('Something went wrong. Please try again.')
@@ -54,8 +56,14 @@ export default function ContactPage() {
             <CheckCircle className="h-8 w-8 text-accent" />
           </div>
           <h1 className="text-3xl font-display text-white mb-4">Message Sent</h1>
+          {caseNumber && (
+            <p className="text-lg font-mono font-semibold text-brand mb-2">
+              {caseNumber}
+            </p>
+          )}
           <p className="text-gray-400">
             Thank you for reaching out. We&apos;ll review your message and get back to you soon.
+            {caseNumber && <> Your case number is <span className="font-mono font-medium text-white">{caseNumber}</span>.</>}
           </p>
         </div>
       </section>

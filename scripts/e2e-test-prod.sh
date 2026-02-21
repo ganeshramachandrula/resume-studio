@@ -127,7 +127,7 @@ fi
 
 # Verify legal page content
 PRIVACY=$(curl -s --max-time 15 "$BASE_URL/privacy")
-for term in "Frisco, Texas" "TDPSA" "CCPA" "GDPR" "privacy@resume-studio.io" "Data Breach"; do
+for term in "Frisco, Texas" "TDPSA" "CCPA" "GDPR" "support@resume-studio.io" "Data Breach"; do
   if echo "$PRIVACY" | grep -qi "$term"; then
     pass "Privacy: contains '$term'"
   else

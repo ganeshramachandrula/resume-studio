@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // ── Hoisted mock variables (accessible in vi.mock factories) ────────
 
-const { mockClient, mockServiceInsert, mockServiceClient } = vi.hoisted(() => {
+const { mockClient, mockServiceInsert, mockServiceSelect, mockServiceSingle, mockServiceClient } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- vitest mock requires dynamic typing
   const mockClient: any = {
     auth: {
@@ -31,14 +31,16 @@ const { mockClient, mockServiceInsert, mockServiceClient } = vi.hoisted(() => {
     })
   })
 
-  const mockServiceInsert = vi.fn().mockResolvedValue({ data: { id: '1' }, error: null })
+  const mockServiceSingle = vi.fn().mockResolvedValue({ data: { case_number: 'RS-0001' }, error: null })
+  const mockServiceSelect = vi.fn().mockReturnValue({ single: mockServiceSingle })
+  const mockServiceInsert = vi.fn().mockReturnValue({ select: mockServiceSelect })
   const mockServiceClient = {
     from: vi.fn(() => ({
       insert: mockServiceInsert,
     })),
   }
 
-  return { mockClient, mockServiceInsert, mockServiceClient }
+  return { mockClient, mockServiceInsert, mockServiceSelect, mockServiceSingle, mockServiceClient }
 })
 
 // ── Module mocks ────────────────────────────────────────────────────
@@ -87,7 +89,9 @@ describe('POST /api/support/contact', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     __clearRateLimitStore()
-    mockServiceInsert.mockResolvedValue({ data: { id: '1' }, error: null })
+    mockServiceSingle.mockResolvedValue({ data: { case_number: 'RS-0001' }, error: null })
+    mockServiceSelect.mockReturnValue({ single: mockServiceSingle })
+    mockServiceInsert.mockReturnValue({ select: mockServiceSelect })
     mockServiceClient.from.mockImplementation(() => ({
       insert: mockServiceInsert,
     }))

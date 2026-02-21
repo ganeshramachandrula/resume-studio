@@ -273,8 +273,8 @@ export default function PrivacyPolicyPage() {
             </ul>
             <p className="mt-3">
               To exercise any of these rights, please contact us at{' '}
-              <a href="mailto:privacy@resume-studio.io" className="text-brand hover:underline">
-                privacy@resume-studio.io
+              <a href="mailto:support@resume-studio.io" className="text-brand hover:underline">
+                support@resume-studio.io
               </a>
               . We will respond to your request within 45 days. If we need additional time, we will
               notify you of the extension (up to an additional 45 days) and the reason. We will not
@@ -300,8 +300,8 @@ export default function PrivacyPolicyPage() {
             </ul>
             <p className="mt-3">
               To exercise any of these rights, contact us at{' '}
-              <a href="mailto:privacy@resume-studio.io" className="text-brand hover:underline">
-                privacy@resume-studio.io
+              <a href="mailto:support@resume-studio.io" className="text-brand hover:underline">
+                support@resume-studio.io
               </a>
               .
             </p>
@@ -338,8 +338,8 @@ export default function PrivacyPolicyPage() {
               cross-context behavioral advertising. Because we do not engage in these practices, there
               is no need to opt out. However, if you wish to confirm this or have concerns, please
               contact us at{' '}
-              <a href="mailto:privacy@resume-studio.io" className="text-brand hover:underline">
-                privacy@resume-studio.io
+              <a href="mailto:support@resume-studio.io" className="text-brand hover:underline">
+                support@resume-studio.io
               </a>
               .
             </p>
@@ -391,8 +391,8 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className="list-none space-y-1 text-gray-400">
               <li><strong className="text-gray-300">Email:</strong>{' '}
-                <a href="mailto:privacy@resume-studio.io" className="text-brand hover:underline">
-                  privacy@resume-studio.io
+                <a href="mailto:support@resume-studio.io" className="text-brand hover:underline">
+                  support@resume-studio.io
                 </a>
               </li>
               <li><strong className="text-gray-300">Contact Form:</strong>{' '}

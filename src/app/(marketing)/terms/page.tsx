@@ -349,8 +349,8 @@ export default function TermsOfServicePage() {
               Before filing any formal legal action, you agree to first attempt to resolve any dispute,
               claim, or controversy arising out of or relating to these Terms or the Service
               (&quot;Dispute&quot;) informally by contacting us at{' '}
-              <a href="mailto:legal@resume-studio.io" className="text-brand hover:underline">
-                legal@resume-studio.io
+              <a href="mailto:support@resume-studio.io" className="text-brand hover:underline">
+                support@resume-studio.io
               </a>
               . We will attempt to resolve the Dispute informally within 60 days. If the Dispute is not
               resolved within 60 days, either party may proceed to binding arbitration as described below.
@@ -511,8 +511,8 @@ export default function TermsOfServicePage() {
             </p>
             <ul className="list-none space-y-1 text-gray-400">
               <li><strong className="text-gray-300">Email:</strong>{' '}
-                <a href="mailto:legal@resume-studio.io" className="text-brand hover:underline">
-                  legal@resume-studio.io
+                <a href="mailto:support@resume-studio.io" className="text-brand hover:underline">
+                  support@resume-studio.io
                 </a>
               </li>
               <li><strong className="text-gray-300">Support:</strong>{' '}

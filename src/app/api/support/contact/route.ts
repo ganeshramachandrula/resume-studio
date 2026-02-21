@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     }
 
     const admin = getServiceClient()
-    const { error } = await admin
+    const { data, error } = await admin
       .from('support_messages')
       .insert({
         name: body.name || null,
@@ -41,15 +41,18 @@ export async function POST(request: Request) {
         category: body.category,
         user_id: userId,
       })
+      .select('case_number')
+      .single()
 
     if (error) throw error
 
     logSecurityEvent('support_message_sent', request, userId ?? undefined, {
       email: body.email,
       category: body.category,
+      case_number: data?.case_number,
     })
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true, case_number: data?.case_number })
   } catch (error) {
     return safeErrorResponse(error, 'support-contact')
   }
