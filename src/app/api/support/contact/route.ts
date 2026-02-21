@@ -53,9 +53,9 @@ export async function POST(request: Request) {
       case_number: data?.case_number,
     })
 
-    // Send email notifications (fire-and-forget — don't block the response)
+    // Send email notifications (must await — Vercel kills process after response)
     if (data?.case_number) {
-      void sendSupportNotification({
+      await sendSupportNotification({
         caseNumber: data.case_number,
         name: body.name || null,
         email: body.email,
