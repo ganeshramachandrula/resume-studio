@@ -5,6 +5,7 @@ import { safeErrorResponse } from '@/lib/security/sanitize'
 import { validateBody, isValidationError, supportContactSchema } from '@/lib/security/validation'
 import { checkRateLimitDistributed, getClientIP, rateLimitResponse, SUPPORT_RATE_LIMIT } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/audit-log'
+import { sendSupportNotification } from '@/lib/email'
 
 export async function POST(request: Request) {
   try {
@@ -51,6 +52,18 @@ export async function POST(request: Request) {
       category: body.category,
       case_number: data?.case_number,
     })
+
+    // Send email notifications (fire-and-forget — don't block the response)
+    if (data?.case_number) {
+      void sendSupportNotification({
+        caseNumber: data.case_number,
+        name: body.name || null,
+        email: body.email,
+        subject: body.subject,
+        message: body.message,
+        category: body.category,
+      })
+    }
 
     return NextResponse.json({ success: true, case_number: data?.case_number })
   } catch (error) {
