@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     color: '#6B7280',
     marginBottom: 10,
+    minPresenceAhead: 50,
   },
   summary: {
     fontSize: 10,
@@ -77,6 +78,7 @@ const styles = StyleSheet.create({
   },
   expBlock: {
     marginBottom: 12,
+    minPresenceAhead: 30,
   },
   skillsText: {
     fontSize: 9,
@@ -85,6 +87,7 @@ const styles = StyleSheet.create({
   },
   eduBlock: {
     marginBottom: 6,
+    minPresenceAhead: 20,
   },
   eduName: {
     fontSize: 10,

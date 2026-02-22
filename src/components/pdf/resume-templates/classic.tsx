@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: '#D1D5DB',
     paddingBottom: 3,
+    minPresenceAhead: 50,
   },
   summary: {
     fontSize: 10,
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
   },
   expBlock: {
     marginBottom: 10,
+    minPresenceAhead: 30,
   },
   skillRow: {
     flexDirection: 'row',
@@ -103,6 +105,7 @@ const styles = StyleSheet.create({
   },
   eduBlock: {
     marginBottom: 6,
+    minPresenceAhead: 20,
   },
   eduName: {
     fontSize: 10,

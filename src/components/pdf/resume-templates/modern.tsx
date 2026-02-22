@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#DBEAFE',
     paddingBottom: 4,
+    minPresenceAhead: 50,
   },
   summary: {
     fontSize: 9,
@@ -118,6 +119,7 @@ const styles = StyleSheet.create({
   },
   expBlock: {
     marginBottom: 10,
+    minPresenceAhead: 30,
   },
 })
 

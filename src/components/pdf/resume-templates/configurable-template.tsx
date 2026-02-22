@@ -58,7 +58,7 @@ export function ConfigurableTemplate({ data, config, fontOverride, fontSizeOverr
     contactItem: { fontSize: s(st.smallSize, sz), color: st.headerCentered ? c.headerText : c.bodySecondary, opacity: 0.8 },
     // Sidebar (for two-column layouts)
     sidebar: { width: sp.sidebarWidth, backgroundColor: c.sidebarBg, padding: sp.pagePadding, color: c.sidebarText },
-    sidebarSectionTitle: { fontSize: s(st.sectionTitleSize, sz), fontFamily: headingBoldFont, color: c.sidebarAccent, marginBottom: 6, marginTop: sp.sectionGap, textTransform: st.sectionTitleUppercase ? ('uppercase' as const) : ('none' as const), letterSpacing: st.sectionTitleUppercase ? 1 : 0 },
+    sidebarSectionTitle: { fontSize: s(st.sectionTitleSize, sz), fontFamily: headingBoldFont, color: c.sidebarAccent, marginBottom: 6, marginTop: sp.sectionGap, textTransform: st.sectionTitleUppercase ? ('uppercase' as const) : ('none' as const), letterSpacing: st.sectionTitleUppercase ? 1 : 0, minPresenceAhead: 40 },
     sidebarItem: { fontSize: s(st.bodySize * 0.9, sz), marginBottom: 3, color: c.sidebarText },
     sidebarSmall: { fontSize: s(st.smallSize, sz), color: c.sidebarText, opacity: 0.8, marginBottom: 2 },
     // Main
@@ -71,10 +71,11 @@ export function ConfigurableTemplate({ data, config, fontOverride, fontSizeOverr
       marginTop: sp.sectionGap,
       textTransform: st.sectionTitleUppercase ? ('uppercase' as const) : ('none' as const),
       letterSpacing: st.sectionTitleUppercase ? 1 : 0,
+      minPresenceAhead: 50,
       ...(st.sectionTitleBorder ? { borderBottomWidth: 1, borderBottomColor: c.divider, paddingBottom: 3 } : {}),
     },
     summary: { fontSize: s(st.bodySize, sz), lineHeight: 1.5, color: c.bodyText },
-    expBlock: { marginBottom: sp.itemGap },
+    expBlock: { marginBottom: sp.itemGap, minPresenceAhead: 30 },
     expHeader: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, marginBottom: 2 },
     expTitle: { fontSize: s(st.bodySize, sz), fontFamily: bodyBoldFont, color: c.bodyText },
     expDate: { fontSize: s(st.smallSize, sz), color: c.bodySecondary },
