@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Loader2, Sparkles, CheckCircle2, RotateCcw } from 'lucide-react'
 import { useGenerationStore } from '@/store/generation-store'
 import type { ParsedJD } from '@/types/documents'
 
@@ -52,45 +52,24 @@ export function JDInput() {
 
   const parsed = parsedJD as ParsedJD | null
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-display text-gray-900 mb-2">
-          Paste the Job Description
-        </h2>
-        <p className="text-gray-500">
-          Copy and paste the full job posting. We&apos;ll extract key requirements and keywords.
-        </p>
-      </div>
+  const handleChangeJD = () => {
+    setParsedJD(null, null)
+    setJobDescription('')
+  }
 
-      <Textarea
-        placeholder="Paste the full job description here..."
-        value={jobDescription}
-        onChange={(e) => setJobDescription(e.target.value)}
-        className="min-h-[250px]"
-      />
-
-      {error && (
-        <div className="bg-red-50 text-red-700 text-sm p-3 rounded-xl border border-red-200">
-          {error}
+  // If already parsed, show the parsed summary with option to change
+  if (parsed) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-display text-gray-900 mb-2">
+            Paste the Job Description
+          </h2>
+          <p className="text-gray-500">
+            Copy and paste the full job posting. We&apos;ll extract key requirements and keywords.
+          </p>
         </div>
-      )}
 
-      <Button onClick={handleParse} disabled={loading || jobDescription.length < 50}>
-        {loading ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Parsing...
-          </>
-        ) : (
-          <>
-            <Sparkles className="h-4 w-4" />
-            Parse Job Description
-          </>
-        )}
-      </Button>
-
-      {parsed && (
         <Card className="border-accent/30 bg-accent/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-[family-name:var(--font-body)]">
@@ -142,12 +121,58 @@ export function JDInput() {
               </div>
             </div>
 
-            <Button onClick={() => setStep('experience_input')} className="w-full">
-              Continue to Experience
-            </Button>
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={handleChangeJD} className="flex-1">
+                <RotateCcw className="h-4 w-4" />
+                Change Job Description
+              </Button>
+              <Button onClick={() => setStep('experience_input')} className="flex-1">
+                Continue to Experience
+              </Button>
+            </div>
           </CardContent>
         </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-display text-gray-900 mb-2">
+          Paste the Job Description
+        </h2>
+        <p className="text-gray-500">
+          Copy and paste the full job posting. We&apos;ll extract key requirements and keywords.
+        </p>
+      </div>
+
+      <Textarea
+        placeholder="Paste the full job description here..."
+        value={jobDescription}
+        onChange={(e) => setJobDescription(e.target.value)}
+        className="min-h-[250px]"
+      />
+
+      {error && (
+        <div className="bg-red-50 text-red-700 text-sm p-3 rounded-xl border border-red-200">
+          {error}
+        </div>
       )}
+
+      <Button onClick={handleParse} disabled={loading || jobDescription.length < 50}>
+        {loading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Parsing...
+          </>
+        ) : (
+          <>
+            <Sparkles className="h-4 w-4" />
+            Parse Job Description
+          </>
+        )}
+      </Button>
     </div>
   )
 }

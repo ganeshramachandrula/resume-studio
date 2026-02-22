@@ -35,7 +35,7 @@ interface GenerationStore {
 
   setStep: (step: GenerationStep) => void
   setJobDescription: (jd: string) => void
-  setParsedJD: (parsed: Record<string, unknown>, id: string) => void
+  setParsedJD: (parsed: Record<string, unknown> | null, id: string | null) => void
   setExperience: (exp: string) => void
   setExperienceId: (id: string) => void
   setContactInfo: (info: Partial<ContactInfo>) => void
@@ -76,7 +76,7 @@ export const useGenerationStore = create<GenerationStore>((set) => ({
 
   setStep: (step) => set({ step }),
   setJobDescription: (jobDescription) => set({ jobDescription }),
-  setParsedJD: (parsedJD, jobDescriptionId) => set({ parsedJD, jobDescriptionId }),
+  setParsedJD: (parsedJD, jobDescriptionId) => set({ parsedJD: parsedJD ?? null, jobDescriptionId: jobDescriptionId ?? null }),
   setExperience: (experience) => set({ experience }),
   setExperienceId: (experienceId) => set({ experienceId }),
   setContactInfo: (info) =>
