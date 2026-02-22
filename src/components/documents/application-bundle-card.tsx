@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ChevronDown, ChevronUp, Trash2, FileText, Copy, Download, Check, Pencil } from 'lucide-react'
+import { ChevronDown, ChevronUp, Trash2, FileText, Copy, Download, Check, Pencil, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { DOCUMENT_TYPE_LABELS } from '@/lib/constants'
 import type { Document, DocumentType } from '@/types/database'
@@ -13,7 +13,14 @@ import type {
   LinkedInData,
   ColdEmailData,
   InterviewPrepData,
+  ResumeData,
 } from '@/types/documents'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
 
 interface ApplicationBundle {
   jobDescriptionId: string
@@ -74,21 +81,57 @@ function DocCopyButton({ doc }: { doc: Document }) {
   )
 }
 
+function downloadBlob(blob: Blob, fileName: string) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 function DocDownloadButton({ doc }: { doc: Document }) {
-  const handleDownload = () => {
+  const [loading, setLoading] = useState(false)
+  const fileBase = doc.title.replace(/\s+/g, '_').toLowerCase()
+
+  const handleText = () => {
     const text = documentToText(doc.type, doc.content)
-    const blob = new Blob([text], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${doc.title.replace(/\s+/g, '_').toLowerCase()}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadBlob(new Blob([text], { type: 'text/plain' }), `${fileBase}.txt`)
   }
+
+  const handleDocx = async () => {
+    setLoading(true)
+    try {
+      if (doc.type === 'resume') {
+        const { resumeToDocxBlob } = await import('@/lib/docx')
+        const blob = await resumeToDocxBlob(doc.content as unknown as ResumeData, false)
+        downloadBlob(blob, `${fileBase}.docx`)
+      } else {
+        const { documentToDocxBlob } = await import('@/lib/docx')
+        const blob = await documentToDocxBlob(doc.type, doc.content, false)
+        downloadBlob(blob, `${fileBase}.docx`)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={handleDownload} title="Download text">
-      <Download className="h-4 w-4 text-gray-500" />
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="icon" variant="ghost" className="h-8 w-8" title="Download" disabled={loading}>
+          {loading ? <Loader2 className="h-4 w-4 animate-spin text-gray-500" /> : <Download className="h-4 w-4 text-gray-500" />}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={handleText}>
+          <Download className="h-4 w-4" /> Plain Text (.txt)
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDocx}>
+          <FileText className="h-4 w-4" /> Word Document (.docx)
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 

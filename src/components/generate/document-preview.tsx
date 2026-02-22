@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { ArrowLeft, Download, Copy, Check, Loader2, Info, HelpCircle, Pencil, Eye, Wrench } from 'lucide-react'
+import { ArrowLeft, Download, Copy, Check, Loader2, Info, HelpCircle, Pencil, Eye, Wrench, ChevronDown, FileText } from 'lucide-react'
 import { useGenerationStore } from '@/store/generation-store'
 import { useAppStore } from '@/store/app-store'
 import { DOCUMENT_TYPE_LABELS } from '@/lib/constants'
@@ -24,6 +24,12 @@ import { PDFGenerator } from '@/components/pdf/pdf-generator'
 import { ResumeEditor } from './resume-editor'
 import { ContentProtection } from '@/components/ui/content-protection'
 import { ShareButton } from './share-button'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
 
 function ResumePreview({ data }: { data: ResumeData }) {
   return (
@@ -363,26 +369,78 @@ function CopyButton({ type, content, isFree }: { type: DocumentType; content: Re
   )
 }
 
-function DownloadTextButton({ type, content, isFree }: { type: DocumentType; content: Record<string, unknown>; isFree: boolean }) {
-  const handleDownload = () => {
-    const text = documentToText(type, content, isFree)
-    const blob = new Blob([text], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${DOCUMENT_TYPE_LABELS[type].replace(/\s+/g, '_').toLowerCase()}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
+function downloadBlob(blob: Blob, fileName: string) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+function DownloadDocxResumeButton({ data, isFree, nameBase }: { data: ResumeData; isFree: boolean; nameBase: string }) {
+  const [loading, setLoading] = useState(false)
+  const handleDownload = async () => {
+    setLoading(true)
+    try {
+      const { resumeToDocxBlob } = await import('@/lib/docx')
+      const blob = await resumeToDocxBlob(data, isFree)
+      downloadBlob(blob, `${nameBase}_Resume.docx`)
+    } finally {
+      setLoading(false)
+    }
   }
   return (
-    <Button size="sm" variant="outline" onClick={handleDownload}>
-      <Download className="h-4 w-4" /> Download
+    <Button size="sm" variant="outline" onClick={handleDownload} disabled={loading}>
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
+      Download DOCX
     </Button>
   )
 }
 
+function DownloadDropdown({ type, content, isFree, nameBase }: { type: DocumentType; content: Record<string, unknown>; isFree: boolean; nameBase: string }) {
+  const [loading, setLoading] = useState(false)
+  const fileBase = `${nameBase}_${DOCUMENT_TYPE_LABELS[type].replace(/\s+/g, '_')}`
+
+  const handleText = () => {
+    const text = documentToText(type, content, isFree)
+    downloadBlob(new Blob([text], { type: 'text/plain' }), `${fileBase}.txt`)
+  }
+
+  const handleDocx = async () => {
+    setLoading(true)
+    try {
+      const { documentToDocxBlob } = await import('@/lib/docx')
+      const blob = await documentToDocxBlob(type, content, isFree)
+      downloadBlob(blob, `${fileBase}.docx`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="sm" variant="outline" disabled={loading}>
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+          Download
+          <ChevronDown className="h-3 w-3 ml-1" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={handleText}>
+          <Download className="h-4 w-4" /> Plain Text (.txt)
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDocx}>
+          <FileText className="h-4 w-4" /> Word Document (.docx)
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 export function DocumentPreview() {
-  const { generatedDocuments, parsedJD, setStep, isGenerating, error, setGeneratedDocument, selectedTemplate, selectedFont, selectedFontSize } = useGenerationStore()
+  const { generatedDocuments, parsedJD, contactInfo, setStep, isGenerating, error, setGeneratedDocument, selectedTemplate, selectedFont, selectedFontSize } = useGenerationStore()
   const { profile } = useAppStore()
   const [atsLoading, setAtsLoading] = useState(false)
   const [atsScore, setAtsScore] = useState<Record<string, unknown> | null>(null)
@@ -390,6 +448,9 @@ export function DocumentPreview() {
   const [editMode, setEditMode] = useState(false)
   const [isFixing, setIsFixing] = useState(false)
   const [fixApplied, setFixApplied] = useState(false)
+
+  // Build filename base from user's name: "John_Doe"
+  const fileNameBase = contactInfo.name.trim().split(/\s+/).join('_') || 'Document'
 
   const isPro = profile?.plan === 'basic' || profile?.plan === 'pro'
   const hasCreditsRemaining = (profile?.credits ?? 0) > 0
@@ -598,16 +659,23 @@ export function DocumentPreview() {
                     </Button>
                   )}
                   {type === 'resume' && !editMode ? (
-                    <PDFGenerator
-                      data={generatedDocuments[type] as unknown as ResumeData}
-                      template={selectedTemplate}
-                      fontOverride={selectedFont}
-                      fontSizeOverride={selectedFontSize}
-                      fileName={`resume_${parsedJD?.company_name || 'document'}.pdf`.replace(/\s+/g, '_').toLowerCase()}
-                      showWatermark={isFree}
-                    />
+                    <>
+                      <PDFGenerator
+                        data={generatedDocuments[type] as unknown as ResumeData}
+                        template={selectedTemplate}
+                        fontOverride={selectedFont}
+                        fontSizeOverride={selectedFontSize}
+                        fileName={`${fileNameBase}_Resume.pdf`}
+                        showWatermark={isFree}
+                      />
+                      <DownloadDocxResumeButton
+                        data={generatedDocuments[type] as unknown as ResumeData}
+                        isFree={isFree}
+                        nameBase={fileNameBase}
+                      />
+                    </>
                   ) : type !== 'resume' ? (
-                    <DownloadTextButton type={type} content={generatedDocuments[type]} isFree={isFree} />
+                    <DownloadDropdown type={type} content={generatedDocuments[type]} isFree={isFree} nameBase={fileNameBase} />
                   ) : null}
                   {!editMode && (
                     <CopyButton type={type} content={generatedDocuments[type]} isFree={isFree} />
