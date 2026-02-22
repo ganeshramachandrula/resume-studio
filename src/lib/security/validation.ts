@@ -101,6 +101,8 @@ export const adminUserUpdateSchema = z.object({
   role: z.enum(['user', 'admin']).optional(),
   is_disabled: z.boolean().optional(),
   saved_applications_count: z.number().int().min(0).optional(),
+  signup_ip: z.null().optional(),
+  signup_device_id: z.null().optional(),
 })
 
 export const adminMessageUpdateSchema = z.object({

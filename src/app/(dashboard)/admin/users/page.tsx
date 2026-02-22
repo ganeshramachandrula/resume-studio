@@ -14,7 +14,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Search, ChevronLeft, ChevronRight, ShieldAlert, Shield } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, ShieldAlert, Shield, KeyRound, Fingerprint, Copy, Check } from 'lucide-react'
 import type { Profile } from '@/types/database'
 
 interface UsersResponse {
@@ -46,6 +46,8 @@ function AdminUsersContent() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
+  const [resetLink, setResetLink] = useState<string | null>(null)
+  const [resetLinkCopied, setResetLinkCopied] = useState(false)
 
   const fetchUsers = useCallback(async () => {
     setLoading(true)
@@ -71,6 +73,51 @@ function AdminUsersContent() {
     setSelected(user)
     setDialogOpen(true)
     setDeleteConfirm(false)
+    setResetLink(null)
+    setResetLinkCopied(false)
+  }
+
+  async function resetPassword() {
+    if (!selected) return
+    setActionLoading(true)
+    setResetLink(null)
+    try {
+      const res = await fetch(`/api/admin/users/${selected.id}/reset-password`, {
+        method: 'POST',
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setResetLink(data.resetLink || null)
+      }
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  async function clearSignupRestrictions() {
+    if (!selected) return
+    setActionLoading(true)
+    try {
+      const res = await fetch(`/api/admin/users/${selected.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signup_ip: null, signup_device_id: null }),
+      })
+      if (res.ok) {
+        const { user } = await res.json()
+        setSelected(user)
+        fetchUsers()
+      }
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  function copyResetLink() {
+    if (!resetLink) return
+    navigator.clipboard.writeText(resetLink)
+    setResetLinkCopied(true)
+    setTimeout(() => setResetLinkCopied(false), 2000)
   }
 
   async function updateUser(updates: Record<string, unknown>) {
@@ -323,11 +370,50 @@ function AdminUsersContent() {
                     variant="outline"
                     size="sm"
                     disabled={actionLoading}
+                    onClick={resetPassword}
+                  >
+                    <KeyRound className="h-3.5 w-3.5 mr-1" />
+                    Reset Password
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={actionLoading}
+                    onClick={clearSignupRestrictions}
+                  >
+                    <Fingerprint className="h-3.5 w-3.5 mr-1" />
+                    Clear Signup Restrictions
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={actionLoading}
                     onClick={() => updateUser({ is_disabled: !selected.is_disabled })}
                   >
                     {selected.is_disabled ? 'Enable' : 'Disable'} Account
                   </Button>
                 </div>
+
+                {/* Password reset link */}
+                {resetLink && (
+                  <div className="p-3 bg-green-50 border border-green-200 rounded-lg space-y-2">
+                    <p className="text-sm font-medium text-green-800">Password reset link generated</p>
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 text-xs bg-white p-2 rounded border border-green-200 break-all select-all">
+                        {resetLink}
+                      </code>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={copyResetLink}
+                        className="shrink-0"
+                      >
+                        {resetLinkCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-green-600">Share this link with the user. It expires in 24 hours.</p>
+                  </div>
+                )}
               </div>
 
               <DialogFooter className="flex-col sm:flex-row gap-2">

@@ -1,16 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles, Star, Check, ChevronDown, FileText, Target, Zap, Layout, Briefcase, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { detectLocalCurrency, formatLocalPrice } from '@/lib/i18n/currencies'
 import type { LandingTranslation } from '@/lib/i18n/translations'
 
 const featureIcons = [FileText, Target, Zap, Layout, Briefcase, BookOpen]
 
 export function TranslatedLanding({ t }: { t: LandingTranslation }) {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [localCurrency, setLocalCurrency] = useState<ReturnType<typeof detectLocalCurrency>>(null)
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only API on mount
+  useEffect(() => { setLocalCurrency(detectLocalCurrency()) }, [])
 
   return (
     <>
@@ -109,25 +114,36 @@ export function TranslatedLanding({ t }: { t: LandingTranslation }) {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display text-white mb-4">{t.pricing.title}</h2>
             <p className="text-gray-400 text-lg">{t.pricing.subtitle}</p>
+            {localCurrency && (
+              <p className="text-gray-500 text-sm mt-2">
+                Prices shown in USD. Approximate {localCurrency.code} equivalents shown below.
+              </p>
+            )}
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {[t.pricing.free, t.pricing.proMonthly, t.pricing.proAnnual].map((plan, i) => {
-              const prices = ['$0', '$9.99', '$79']
-              const periods = ['/month', '/month', '/year']
+            {[t.pricing.free, t.pricing.basic, t.pricing.pro].map((plan, i) => {
+              const prices = ['$0', '$5.99', '$10.99']
+              const usdAmounts = [0, 5.99, 10.99]
               const isPopular = i === 2
-              const priceDetail = i === 2 ? t.pricing.proAnnual.priceDetail : null
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className={`relative rounded-2xl p-6 ${isPopular ? 'bg-gradient-to-b from-brand/20 to-accent/10 border-2 border-accent/40' : 'bg-white/5 border border-white/10'}`}>
-                  {isPopular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-xs font-semibold px-3 py-1 rounded-full">Best Value</div>}
+                  {isPopular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-xs font-semibold px-3 py-1 rounded-full">Most Popular</div>}
                   <div className="mb-6">
                     <h3 className="text-lg font-semibold text-white mb-1 font-[family-name:var(--font-body)]">{plan.name}</h3>
                     <p className="text-gray-400 text-sm">{plan.description}</p>
                   </div>
                   <div className="mb-6">
                     <span className="text-4xl font-bold text-white">{prices[i]}</span>
-                    <span className="text-gray-400 text-sm">{periods[i]}</span>
-                    {priceDetail && <p className="text-accent text-sm font-medium mt-1">{priceDetail}</p>}
+                    <span className="text-gray-400 text-sm">/month</span>
+                    {usdAmounts[i] > 0 && (
+                      <p className="text-gray-500 text-xs mt-1">+ applicable tax</p>
+                    )}
+                    {localCurrency && usdAmounts[i] > 0 && (
+                      <p className="text-gray-500 text-xs mt-1">
+                        {formatLocalPrice(usdAmounts[i], localCurrency)}/month
+                      </p>
+                    )}
                   </div>
                   <ul className="space-y-3 mb-8">
                     {plan.features.map((f, j) => (
@@ -144,6 +160,23 @@ export function TranslatedLanding({ t }: { t: LandingTranslation }) {
               )
             })}
           </div>
+
+          {/* Credit Pack */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-5xl mx-auto mt-6"
+          >
+            <div className="flex items-center justify-between rounded-xl bg-white/5 border border-white/10 p-4">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <Zap className="h-4 w-4 text-accent" />
+                </div>
+                <p className="text-gray-400 text-xs sm:text-sm">{t.pricing.creditPack}</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 

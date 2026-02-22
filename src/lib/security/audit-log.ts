@@ -30,6 +30,8 @@ export type SecurityEventType =
   | 'account_lockout_triggered'
   | 'password_changed'
   | 'password_change_failed'
+  | 'admin_password_reset'
+  | 'admin_signup_restrictions_cleared'
 
 /**
  * Returns a Supabase admin client (service role) for writing security events.

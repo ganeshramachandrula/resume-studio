@@ -74,6 +74,7 @@ const ALLOWED_REDIRECT_PATHS = [
   '/career-coach',
   '/team',
   '/job-feed/preferences',
+  '/change-password',
 ]
 
 export function isValidRedirect(path: string): boolean {

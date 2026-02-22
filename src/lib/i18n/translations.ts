@@ -24,8 +24,9 @@ export interface LandingTranslation {
     title: string
     subtitle: string
     free: { name: string; description: string; cta: string; features: string[] }
-    proMonthly: { name: string; description: string; cta: string; features: string[] }
-    proAnnual: { name: string; description: string; cta: string; priceDetail: string; features: string[] }
+    basic: { name: string; description: string; cta: string; features: string[] }
+    pro: { name: string; description: string; cta: string; features: string[] }
+    creditPack: string
   }
   faq: {
     title: string
@@ -125,37 +126,37 @@ export const translations: Record<string, LandingTranslation> = {
         features: [
           '2 documentos al mes',
           'Puntuacion ATS basica',
-          'Descarga en PDF',
+          'Descarga en PDF (con marca de agua)',
           '3 plantillas de curriculum',
         ],
       },
-      proMonthly: {
-        name: 'Pro Mensual',
+      basic: {
+        name: 'Basic',
         description: 'Para quienes buscan empleo activamente',
-        cta: 'Suscribirse',
+        cta: 'Elegir Basic',
         features: [
-          'Documentos ilimitados',
-          'Todas las plantillas',
-          'Paquete completo de solicitud',
+          '10 documentos al mes',
+          'Las 13 plantillas',
+          'Sin marca de agua',
+          'Guardar hasta 10 postulaciones',
           'Analisis ATS avanzado',
           'Seguimiento de postulaciones',
-          'Preparacion para entrevistas',
-          'Sin anuncios',
         ],
       },
-      proAnnual: {
-        name: 'Pro Anual',
-        description: 'Ahorra un 34% frente al plan mensual',
-        cta: 'Suscribirse',
-        priceDetail: 'Solo $6.58/mes',
+      pro: {
+        name: 'Pro',
+        description: 'Para quienes buscan empleo en serio',
+        cta: 'Elegir Pro',
         features: [
-          'Todo lo incluido en Pro',
-          'Generacion prioritaria',
-          'Coach de carrera',
+          '20 documentos al mes',
+          'Las 13 plantillas',
+          'Fuentes premium',
           'Soporte multiidioma',
-          'Plantillas premium',
+          'Coach de carrera',
+          'Sin marca de agua',
         ],
       },
+      creditPack: '3 generaciones de documentos por $2.99 — sin marca de agua, guardados en tu cuenta. Los creditos nunca caducan.',
     },
     faq: {
       title: 'Preguntas frecuentes',
@@ -179,12 +180,12 @@ export const translations: Record<string, LandingTranslation> = {
         {
           question: 'Puedo usar Resume Studio en mi idioma?',
           answer:
-            'Los usuarios de Pro Anual y del plan Team pueden generar documentos en 11 idiomas, incluidos espanol, frances, aleman, portugues, chino, japones, coreano, hindi, arabe e italiano, ademas de cualquier idioma personalizado.',
+            'Los usuarios del plan Pro pueden generar documentos en 11 idiomas, incluidos espanol, frances, aleman, portugues, chino, japones, coreano, hindi, arabe e italiano, ademas de cualquier idioma personalizado.',
         },
         {
           question: 'Que pasa despues de mis 2 documentos gratis?',
           answer:
-            'Puedes esperar al mes siguiente para obtener 2 documentos gratis mas, comprar un paquete de creditos (3 generaciones por $2.99, sin caducidad) o pasarte a Pro con documentos ilimitados desde $6.58/mes con facturacion anual.',
+            'Puedes esperar al mes siguiente para obtener 2 documentos gratis mas, comprar un paquete de creditos (3 generaciones por $2.99, sin caducidad), o pasarte a Basic ($5.99/mes) o Pro ($10.99/mes).',
         },
         {
           question: 'Puedo cancelar mi suscripcion en cualquier momento?',
@@ -286,37 +287,37 @@ export const translations: Record<string, LandingTranslation> = {
         features: [
           '2 documents par mois',
           'Score ATS de base',
-          'Telechargement PDF',
+          'Telechargement PDF (avec filigrane)',
           '3 modeles de CV',
         ],
       },
-      proMonthly: {
-        name: 'Pro Mensuel',
+      basic: {
+        name: 'Basic',
         description: 'Pour les chercheurs d\'emploi actifs',
-        cta: 'S\'abonner',
+        cta: 'Choisir Basic',
         features: [
-          'Documents illimites',
-          'Tous les modeles',
-          'Dossier de candidature complet',
+          '10 documents par mois',
+          'Les 13 modeles',
+          'Sans filigrane',
+          'Sauvegarder 10 candidatures',
           'Analyse ATS avancee',
           'Suivi des candidatures',
-          'Preparation aux entretiens',
-          'Sans publicite',
         ],
       },
-      proAnnual: {
-        name: 'Pro Annuel',
-        description: 'Economisez 34 % par rapport au mensuel',
-        cta: 'S\'abonner',
-        priceDetail: 'Soit seulement 6,58 $/mois',
+      pro: {
+        name: 'Pro',
+        description: 'Pour les chercheurs d\'emploi serieux',
+        cta: 'Choisir Pro',
         features: [
-          'Tout ce qui est inclus dans Pro',
-          'Generation prioritaire',
-          'Coach de carriere',
+          '20 documents par mois',
+          'Les 13 modeles',
+          'Polices premium',
           'Support multilingue',
-          'Modeles premium',
+          'Coach de carriere',
+          'Sans filigrane',
         ],
       },
+      creditPack: '3 generations de documents pour 2,99 $ — sans filigrane, enregistrees sur votre compte. Les credits n\'expirent jamais.',
     },
     faq: {
       title: 'Questions frequentes',
@@ -340,12 +341,12 @@ export const translations: Record<string, LandingTranslation> = {
         {
           question: 'Puis-je utiliser Resume Studio dans ma langue ?',
           answer:
-            'Les utilisateurs Pro Annuel et Team peuvent generer des documents dans 11 langues, dont l\'espagnol, le francais, l\'allemand, le portugais, le chinois, le japonais, le coreen, le hindi, l\'arabe et l\'italien, ainsi que toute langue personnalisee.',
+            'Les utilisateurs du plan Pro peuvent generer des documents dans 11 langues, dont l\'espagnol, le francais, l\'allemand, le portugais, le chinois, le japonais, le coreen, le hindi, l\'arabe et l\'italien, ainsi que toute langue personnalisee.',
         },
         {
           question: 'Que se passe-t-il apres mes 2 documents gratuits ?',
           answer:
-            'Vous pouvez attendre le mois suivant pour obtenir 2 nouveaux documents gratuits, acheter un lot de credits (3 generations pour 2,99 $, sans date d\'expiration) ou passer a Pro pour des documents illimites a partir de 6,58 $/mois en facturation annuelle.',
+            'Vous pouvez attendre le mois suivant pour obtenir 2 nouveaux documents gratuits, acheter un lot de credits (3 generations pour 2,99 $, sans date d\'expiration), ou passer a Basic (5,99 $/mois) ou Pro (10,99 $/mois).',
         },
         {
           question: 'Puis-je annuler mon abonnement a tout moment ?',
@@ -447,37 +448,37 @@ export const translations: Record<string, LandingTranslation> = {
         features: [
           '2 Dokumente pro Monat',
           'Einfacher ATS-Score',
-          'PDF-Download',
+          'PDF-Download (mit Wasserzeichen)',
           '3 Lebenslaufvorlagen',
         ],
       },
-      proMonthly: {
-        name: 'Pro Monatlich',
+      basic: {
+        name: 'Basic',
         description: 'Fuer aktive Jobsuchende',
-        cta: 'Jetzt abonnieren',
+        cta: 'Basic waehlen',
         features: [
-          'Unbegrenzte Dokumente',
-          'Alle Vorlagen',
-          'Komplettes Bewerbungspaket',
+          '10 Dokumente pro Monat',
+          'Alle 13 Vorlagen',
+          'Ohne Wasserzeichen',
+          'Bis zu 10 Bewerbungen speichern',
           'Erweiterte ATS-Analyse',
           'Bewerbungstracker',
-          'Interview-Vorbereitung',
-          'Keine Werbung',
         ],
       },
-      proAnnual: {
-        name: 'Pro Jaehrlich',
-        description: '34 % gegenueber dem Monatstarif sparen',
-        cta: 'Jetzt abonnieren',
-        priceDetail: 'Nur $6,58/Monat',
+      pro: {
+        name: 'Pro',
+        description: 'Fuer engagierte Jobsuchende',
+        cta: 'Pro waehlen',
         features: [
-          'Alles aus Pro inklusive',
-          'Priorisierte Generierung',
-          'Karriere-Coach',
+          '20 Dokumente pro Monat',
+          'Alle 13 Vorlagen',
+          'Premium-Schriftarten',
           'Mehrsprachige Unterstuetzung',
-          'Premium-Vorlagen',
+          'Karriere-Coach',
+          'Ohne Wasserzeichen',
         ],
       },
+      creditPack: '3 Dokumentgenerierungen fuer $2,99 — ohne Wasserzeichen, in Ihrem Konto gespeichert. Credits verfallen nie.',
     },
     faq: {
       title: 'Haeufig gestellte Fragen',
@@ -501,12 +502,12 @@ export const translations: Record<string, LandingTranslation> = {
         {
           question: 'Kann ich Resume Studio in meiner Sprache nutzen?',
           answer:
-            'Nutzer von Pro Jaehrlich und Team koennen Dokumente in 11 Sprachen generieren, darunter Spanisch, Franzoesisch, Deutsch, Portugiesisch, Chinesisch, Japanisch, Koreanisch, Hindi, Arabisch und Italienisch -- plus jede benutzerdefinierte Sprache.',
+            'Nutzer des Pro-Plans koennen Dokumente in 11 Sprachen generieren, darunter Spanisch, Franzoesisch, Deutsch, Portugiesisch, Chinesisch, Japanisch, Koreanisch, Hindi, Arabisch und Italienisch -- plus jede benutzerdefinierte Sprache.',
         },
         {
           question: 'Was passiert nach meinen 2 kostenlosen Dokumenten?',
           answer:
-            'Sie koennen bis zum naechsten Monat warten und erneut 2 kostenlose Dokumente erhalten, ein Kreditpaket kaufen (3 Generierungen fuer $2,99, unbegrenzt gueltig) oder auf Pro upgraden fuer unbegrenzte Dokumente ab $6,58/Monat bei jaehrlicher Abrechnung.',
+            'Sie koennen bis zum naechsten Monat warten und erneut 2 kostenlose Dokumente erhalten, ein Kreditpaket kaufen (3 Generierungen fuer $2,99, unbegrenzt gueltig) oder auf Basic ($5,99/Monat) oder Pro ($10,99/Monat) upgraden.',
         },
         {
           question: 'Kann ich mein Abonnement jederzeit kuendigen?',
@@ -608,37 +609,37 @@ export const translations: Record<string, LandingTranslation> = {
         features: [
           '2 documentos por mes',
           'Pontuacao ATS basica',
-          'Download em PDF',
+          'Download em PDF (com marca d\'agua)',
           '3 modelos de curriculo',
         ],
       },
-      proMonthly: {
-        name: 'Pro Mensal',
+      basic: {
+        name: 'Basic',
         description: 'Para quem esta em busca ativa de emprego',
-        cta: 'Assinar',
+        cta: 'Escolher Basic',
         features: [
-          'Documentos ilimitados',
-          'Todos os modelos',
-          'Pacote completo de candidatura',
+          '10 documentos por mes',
+          'Todos os 13 modelos',
+          'Sem marca d\'agua',
+          'Salvar ate 10 candidaturas',
           'Analise ATS avancada',
           'Acompanhamento de candidaturas',
-          'Preparacao para entrevistas',
-          'Sem anuncios',
         ],
       },
-      proAnnual: {
-        name: 'Pro Anual',
-        description: 'Economize 34% em relacao ao mensal',
-        cta: 'Assinar',
-        priceDetail: 'Apenas $6,58/mes',
+      pro: {
+        name: 'Pro',
+        description: 'Para quem leva a busca de emprego a serio',
+        cta: 'Escolher Pro',
         features: [
-          'Tudo o que esta no Pro',
-          'Geracao prioritaria',
-          'Coach de carreira',
+          '20 documentos por mes',
+          'Todos os 13 modelos',
+          'Fontes premium',
           'Suporte multilinguaje',
-          'Modelos premium',
+          'Coach de carreira',
+          'Sem marca d\'agua',
         ],
       },
+      creditPack: '3 geracoes de documentos por $2,99 — sem marca d\'agua, salvas na sua conta. Os creditos nunca expiram.',
     },
     faq: {
       title: 'Perguntas frequentes',
@@ -662,12 +663,12 @@ export const translations: Record<string, LandingTranslation> = {
         {
           question: 'Posso usar o Resume Studio no meu idioma?',
           answer:
-            'Usuarios Pro Anual e Team podem gerar documentos em 11 idiomas, incluindo espanhol, frances, alemao, portugues, chines, japones, coreano, hindi, arabe e italiano, alem de qualquer idioma personalizado.',
+            'Usuarios do plano Pro podem gerar documentos em 11 idiomas, incluindo espanhol, frances, alemao, portugues, chines, japones, coreano, hindi, arabe e italiano, alem de qualquer idioma personalizado.',
         },
         {
           question: 'O que acontece depois dos meus 2 documentos gratis?',
           answer:
-            'Voce pode esperar ate o proximo mes para receber mais 2 documentos gratis, comprar um pacote de creditos (3 geracoes por $2,99, sem validade) ou fazer upgrade para o Pro com documentos ilimitados a partir de $6,58/mes na cobranca anual.',
+            'Voce pode esperar ate o proximo mes para receber mais 2 documentos gratis, comprar um pacote de creditos (3 geracoes por $2,99, sem validade), ou fazer upgrade para Basic ($5,99/mes) ou Pro ($10,99/mes).',
         },
         {
           question: 'Posso cancelar minha assinatura a qualquer momento?',
@@ -769,37 +770,37 @@ export const translations: Record<string, LandingTranslation> = {
         features: [
           'Har mahine 2 documents',
           'Basic ATS score',
-          'PDF download',
+          'PDF download (watermark ke saath)',
           '3 resume templates',
         ],
       },
-      proMonthly: {
-        name: 'Pro Monthly',
+      basic: {
+        name: 'Basic',
         description: 'Active job seekers ke liye',
-        cta: 'Subscribe karein',
+        cta: 'Basic chunein',
         features: [
-          'Unlimited documents',
-          'Sabhi templates',
-          'Poora application package',
+          'Har mahine 10 documents',
+          'Sabhi 13 templates',
+          'Bina watermark',
+          '10 applications save karein',
           'Advanced ATS analysis',
           'Job tracker',
-          'Interview prep',
-          'Koi ads nahi',
         ],
       },
-      proAnnual: {
-        name: 'Pro Annual',
-        description: 'Monthly se 34% bachayein',
-        cta: 'Subscribe karein',
-        priceDetail: 'Sirf $6.58/mahina',
+      pro: {
+        name: 'Pro',
+        description: 'Serious job seekers ke liye',
+        cta: 'Pro chunein',
         features: [
-          'Pro ki sabhi suvidhaayein',
-          'Priority generation',
-          'Career Coach',
+          'Har mahine 20 documents',
+          'Sabhi 13 templates',
+          'Premium fonts',
           'Multi-language support',
-          'Premium templates',
+          'Career Coach',
+          'Bina watermark',
         ],
       },
+      creditPack: '3 document generations sirf $2.99 mein — bina watermark, aapke account mein save. Credits kabhi expire nahi hote.',
     },
     faq: {
       title: 'Aksar Poochhe Jaane Waale Sawaal',
@@ -823,12 +824,12 @@ export const translations: Record<string, LandingTranslation> = {
         {
           question: 'Kya main Resume Studio apni bhaasha mein use kar sakta/sakti hoon?',
           answer:
-            'Pro Annual aur Team plan ke users 11 bhaashaon mein documents generate kar sakte hain -- Spanish, French, German, Portuguese, Chinese, Japanese, Korean, Hindi, Arabic, aur Italian -- saath hi koi bhi custom bhaasha.',
+            'Pro plan ke users 11 bhaashaon mein documents generate kar sakte hain -- Spanish, French, German, Portuguese, Chinese, Japanese, Korean, Hindi, Arabic, aur Italian -- saath hi koi bhi custom bhaasha.',
         },
         {
           question: 'Mere 2 muft documents ke baad kya hoga?',
           answer:
-            'Aap agle mahine ka intezaar kar sakte hain 2 aur muft documents ke liye, credit pack kharid sakte hain (3 generations sirf $2.99 mein, kabhi expire nahi hote), ya Pro mein upgrade kar sakte hain unlimited documents ke liye -- annual billing par sirf $6.58/mahina se shuru.',
+            'Aap agle mahine ka intezaar kar sakte hain 2 aur muft documents ke liye, credit pack kharid sakte hain (3 generations sirf $2.99 mein, kabhi expire nahi hote), ya Basic ($5.99/mahina) ya Pro ($10.99/mahina) mein upgrade kar sakte hain.',
         },
         {
           question: 'Kya main apna subscription kabhi bhi cancel kar sakta/sakti hoon?',
