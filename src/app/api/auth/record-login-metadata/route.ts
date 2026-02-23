@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       )
       await serviceSupabase
         .from('profiles')
-        .update({ failed_login_attempts: 0, locked_until: null })
+        .update({ failed_login_attempts: 0, locked_until: null, last_login_at: new Date().toISOString() })
         .eq('id', user.id)
     } catch {
       // Don't fail the login flow

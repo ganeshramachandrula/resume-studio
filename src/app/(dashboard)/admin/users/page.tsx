@@ -33,6 +33,20 @@ export default function AdminUsersPage() {
   )
 }
 
+function formatRelativeTime(dateStr: string): string {
+  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
+  if (seconds < 60) return 'just now'
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `${days}d ago`
+  const months = Math.floor(days / 30)
+  if (months < 12) return `${months}mo ago`
+  return `${Math.floor(months / 12)}y ago`
+}
+
 function AdminUsersContent() {
   const searchParams = useSearchParams()
   const [data, setData] = useState<UsersResponse | null>(null)
@@ -201,18 +215,19 @@ function AdminUsersContent() {
                   <th className="text-left p-3 font-medium text-gray-500 hidden xl:table-cell">Country</th>
                   <th className="text-left p-3 font-medium text-gray-500 hidden lg:table-cell">Status</th>
                   <th className="text-left p-3 font-medium text-gray-500 hidden xl:table-cell">Joined</th>
+                  <th className="text-left p-3 font-medium text-gray-500 hidden xl:table-cell">Last Login</th>
                 </tr>
               </thead>
               <tbody>
                 {loading && !data ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="border-b border-gray-50">
-                      <td colSpan={8} className="p-3"><div className="h-5 animate-pulse bg-gray-100 rounded" /></td>
+                      <td colSpan={9} className="p-3"><div className="h-5 animate-pulse bg-gray-100 rounded" /></td>
                     </tr>
                   ))
                 ) : data?.users.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-gray-400">No users found</td>
+                    <td colSpan={9} className="p-8 text-center text-gray-400">No users found</td>
                   </tr>
                 ) : (
                   data?.users.map((user) => (
@@ -247,6 +262,9 @@ function AdminUsersContent() {
                       </td>
                       <td className="p-3 hidden xl:table-cell text-gray-500">
                         {new Date(user.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="p-3 hidden xl:table-cell text-gray-500">
+                        {user.last_login_at ? formatRelativeTime(user.last_login_at) : 'Never'}
                       </td>
                     </tr>
                   ))
@@ -349,6 +367,10 @@ function AdminUsersContent() {
                   <div>
                     <p className="text-gray-500">Joined</p>
                     <p className="font-medium">{new Date(selected.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Last Login</p>
+                    <p className="font-medium">{selected.last_login_at ? formatRelativeTime(selected.last_login_at) : 'Never'}</p>
                   </div>
                   <div>
                     <p className="text-gray-500">Stripe ID</p>

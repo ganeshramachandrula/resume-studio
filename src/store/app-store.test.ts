@@ -43,6 +43,7 @@ describe('app-store', () => {
       job_search_daily_count: 0,
       job_search_reset_at: '2026-01-01',
       password_changed_at: '2026-01-01T00:00:00Z',
+      last_login_at: null,
       created_at: '2026-01-01T00:00:00Z',
       updated_at: '2026-01-01T00:00:00Z',
     }

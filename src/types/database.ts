@@ -52,6 +52,7 @@ export interface Profile {
   job_search_daily_count: number
   job_search_reset_at: string
   password_changed_at: string | null
+  last_login_at: string | null
   created_at: string
   updated_at: string
 }
