@@ -3,6 +3,9 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Terms of Service',
   description: 'Terms and conditions for using Resume Studio.',
+  alternates: {
+    canonical: '/terms',
+  },
 }
 
 export default function TermsOfServicePage() {
@@ -105,18 +108,14 @@ export default function TermsOfServicePage() {
                 include a watermark.
               </li>
               <li>
-                <strong className="text-gray-300">Pro Monthly ($9.99/month):</strong> Unlimited
-                generations, documents saved to your account, no watermarks, up to 10 active
-                applications, and all standard resume templates.
+                <strong className="text-gray-300">Basic ($5.99/month):</strong> 10 AI generations
+                per month, documents saved to your account, no watermarks, up to 10 active
+                applications, and all 13 resume templates.
               </li>
               <li>
-                <strong className="text-gray-300">Pro Annual ($79/year):</strong> All Pro Monthly
-                features plus premium resume templates, AI-powered career coaching, country-specific
-                resume generation, and multi-language support.
-              </li>
-              <li>
-                <strong className="text-gray-300">Team ($59/seat/year, minimum 5 seats):</strong>{' '}
-                All Pro Annual features with centralized billing and team management.
+                <strong className="text-gray-300">Pro ($10.99/month):</strong> 20 AI generations
+                per month, all Basic features plus premium fonts, AI-powered career coaching,
+                country-specific resume generation, and multi-language support.
               </li>
               <li>
                 <strong className="text-gray-300">Credit Pack ($2.99, one-time):</strong> 3

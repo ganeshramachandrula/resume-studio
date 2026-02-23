@@ -36,14 +36,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }))
 
-  // Translated landing pages
+  // Translated landing pages + locale sub-pages
   const locales = ['de', 'es', 'fr', 'pt', 'hi']
-  const translatedPages: MetadataRoute.Sitemap = locales.map((locale) => ({
-    url: `${baseUrl}/${locale}`,
-    lastModified: now,
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }))
+  const translatedPages: MetadataRoute.Sitemap = locales.flatMap((locale) => [
+    { url: `${baseUrl}/${locale}`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/${locale}/roast`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/${locale}/contact`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${baseUrl}/${locale}/blog`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.6 },
+    ...blogPosts.map((post) => ({
+      url: `${baseUrl}/${locale}/blog/${post.slug}`,
+      lastModified: new Date(post.publishedAt),
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    })),
+  ])
 
   return [...staticPages, ...blogPages, ...comparisonUrls, ...translatedPages]
 }

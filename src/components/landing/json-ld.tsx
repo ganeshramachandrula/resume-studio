@@ -10,6 +10,7 @@ export function JsonLd() {
         '@type': 'Organization',
         name: 'Resume Studio',
         url: baseUrl,
+        logo: `${baseUrl}/icon.svg`,
         description:
           'AI-powered career document generation. Create tailored resumes, cover letters, and more in seconds.',
       },
@@ -26,22 +27,28 @@ export function JsonLd() {
             name: 'Free',
             price: '0',
             priceCurrency: 'USD',
-            description: '2 document generations per month with preview',
+            description: '2 AI generations per month, 3 templates, ATS scoring, PDF downloads with watermark',
+          },
+          {
+            '@type': 'Offer',
+            name: 'Basic Monthly',
+            price: '5.99',
+            priceCurrency: 'USD',
+            description: '10 AI generations per month, all 13 templates, saved documents, no watermarks',
           },
           {
             '@type': 'Offer',
             name: 'Pro Monthly',
-            price: '9.99',
+            price: '10.99',
             priceCurrency: 'USD',
-            description: 'Unlimited generations, saved documents, no watermarks',
+            description: '20 AI generations per month, premium fonts, multi-language support, AI career coaching',
           },
           {
             '@type': 'Offer',
-            name: 'Pro Annual',
-            price: '79',
+            name: 'Credit Pack',
+            price: '2.99',
             priceCurrency: 'USD',
-            description:
-              'All Pro features plus premium templates, career coaching, and multi-language support',
+            description: '3 additional AI generations, one-time purchase, credits never expire',
           },
         ],
         featureList: [

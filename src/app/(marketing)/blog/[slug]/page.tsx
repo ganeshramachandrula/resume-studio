@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { blogPosts } from '@/lib/blog/posts'
 import { hreflangAlternates } from '@/lib/i18n/hreflang'
+import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
 import type { Metadata } from 'next'
 
 interface Props {
@@ -41,6 +42,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <article className="pt-32 pb-20 px-4">
+      <BlogPostJsonLd post={post} />
       <div className="max-w-3xl mx-auto">
         <Link href="/blog" className="inline-flex items-center gap-1 text-gray-400 hover:text-white text-sm mb-8 transition-colors">
           <ArrowLeft className="h-4 w-4" />

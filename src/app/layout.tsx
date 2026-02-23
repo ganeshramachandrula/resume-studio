@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { DM_Sans, Instrument_Serif } from "next/font/google"
 import { GoogleAnalytics } from "@/components/analytics"
+import { hreflangAlternates } from "@/lib/i18n/hreflang"
 import "./globals.css"
 
 const dmSans = DM_Sans({
@@ -26,13 +27,21 @@ export const metadata: Metadata = {
     "Generate tailored, ATS-optimized resumes, cover letters, LinkedIn summaries, cold emails, and interview prep. Start free.",
   keywords: [
     "resume builder",
-    "smart resume",
+    "ai resume builder",
+    "free resume builder",
     "ATS optimization",
+    "ats resume checker",
+    "ats score checker",
     "cover letter generator",
-    "LinkedIn summary",
-    "interview prep",
-    "job application",
+    "LinkedIn summary generator",
+    "interview prep ai",
+    "job application ai",
     "career documents",
+    "resume tailor",
+    "cold email generator",
+    "roast my resume",
+    "career coach ai",
+    "resume optimizer",
   ],
   authors: [{ name: "Resume Studio" }],
   icons: {
@@ -62,14 +71,8 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    languages: {
-      'en': '/',
-      'es': '/es',
-      'fr': '/fr',
-      'de': '/de',
-      'pt': '/pt',
-      'hi': '/hi',
-    },
+    canonical: '/',
+    languages: hreflangAlternates('/'),
   },
 }
 

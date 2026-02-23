@@ -20,6 +20,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: page.title,
     description: page.description,
+    alternates: {
+      canonical: `/compare/${slug}`,
+    },
     openGraph: {
       title: page.title,
       description: page.description,

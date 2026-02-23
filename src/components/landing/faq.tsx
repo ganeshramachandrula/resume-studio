@@ -23,12 +23,12 @@ const faqs = [
   {
     question: 'Can I use Resume Studio in my language?',
     answer:
-      'Pro Annual and Team plan users can generate documents in 11 languages including Spanish, French, German, Portuguese, Chinese, Japanese, Korean, Hindi, Arabic, and Italian — plus any custom language you specify.',
+      'Pro plan users can generate documents in 11 languages including Spanish, French, German, Portuguese, Chinese, Japanese, Korean, Hindi, Arabic, and Italian — plus any custom language you specify.',
   },
   {
     question: 'What happens after my 2 free documents?',
     answer:
-      'You can wait until next month for 2 more free documents, purchase a credit pack (3 generations for $2.99, never expire), or upgrade to Pro for unlimited documents starting at $6.58/month billed annually.',
+      'You can wait until next month for 2 more free documents, purchase a credit pack (3 generations for $2.99, never expire), or upgrade to Basic ($5.99/month for 10 generations) or Pro ($10.99/month for 20 generations plus premium features).',
   },
   {
     question: 'Can I cancel my subscription anytime?',
