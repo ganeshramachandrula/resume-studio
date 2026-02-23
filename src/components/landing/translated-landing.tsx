@@ -88,7 +88,7 @@ export function TranslatedLanding({ t }: { t: LandingTranslation }) {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 px-4">
+      <section id="how-it-works" className="py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-4xl md:text-5xl font-display text-white mb-4">
             {t.howItWorks.title}
@@ -181,7 +181,7 @@ export function TranslatedLanding({ t }: { t: LandingTranslation }) {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 px-4">
+      <section id="faq" className="py-20 px-4">
         <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-display text-white mb-4">{t.faq.title}</h2>

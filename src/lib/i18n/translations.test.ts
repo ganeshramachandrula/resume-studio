@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { translations } from '@/lib/i18n/translations'
+import { translations, englishNav } from '@/lib/i18n/translations'
 import type { LandingTranslation } from '@/lib/i18n/translations'
 
 const LOCALE_KEYS = ['es', 'fr', 'de', 'pt', 'hi'] as const
@@ -10,6 +10,7 @@ const REQUIRED_SECTIONS: (keyof LandingTranslation)[] = [
   'pricing',
   'faq',
   'cta',
+  'nav',
 ]
 
 describe('translations', () => {
@@ -72,6 +73,23 @@ describe('translations', () => {
   it('each locale code matches its locale field', () => {
     for (const locale of LOCALE_KEYS) {
       expect(translations[locale].locale).toBe(locale)
+    }
+  })
+
+  it('nav has all required keys matching englishNav', () => {
+    const navKeys = Object.keys(englishNav) as (keyof typeof englishNav)[]
+    for (const locale of LOCALE_KEYS) {
+      const nav = translations[locale].nav
+      for (const key of navKeys) {
+        expect(nav[key], `${locale}.nav.${key} is missing or empty`).toBeTruthy()
+      }
+    }
+  })
+
+  it('englishNav has all non-empty string values', () => {
+    for (const [key, value] of Object.entries(englishNav)) {
+      expect(typeof value, `englishNav.${key} should be a string`).toBe('string')
+      expect(value, `englishNav.${key} should not be empty`).toBeTruthy()
     }
   })
 })

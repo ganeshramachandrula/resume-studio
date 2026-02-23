@@ -39,6 +39,31 @@ export interface LandingTranslation {
     button: string
     note: string
   }
+  nav: {
+    features: string
+    howItWorks: string
+    pricing: string
+    blog: string
+    roastMyResume: string
+    roastFree: string
+    signIn: string
+    getStartedFree: string
+    product: string
+    resources: string
+    documents: string
+    support: string
+    faq: string
+    tagline: string
+    resumeBuilder: string
+    coverLetter: string
+    linkedInSummary: string
+    interviewPrep: string
+    contactUs: string
+    privacyPolicy: string
+    termsOfService: string
+    allRightsReserved: string
+    alsoAvailableIn: string
+  }
 }
 
 export const translations: Record<string, LandingTranslation> = {
@@ -201,6 +226,31 @@ export const translations: Record<string, LandingTranslation> = {
       button: 'Empieza gratis',
       note: 'Sin tarjeta de credito. 2 documentos gratis cada mes.',
     },
+    nav: {
+      features: 'Funcionalidades',
+      howItWorks: 'Como funciona',
+      pricing: 'Precios',
+      blog: 'Blog',
+      roastMyResume: 'Critica mi CV',
+      roastFree: 'GRATIS',
+      signIn: 'Iniciar sesion',
+      getStartedFree: 'Empieza gratis',
+      product: 'Producto',
+      resources: 'Recursos',
+      documents: 'Documentos',
+      support: 'Soporte',
+      faq: 'Preguntas frecuentes',
+      tagline: 'Documentos de carrera inteligentes. Consigue tu empleo ideal con un solo clic.',
+      resumeBuilder: 'Creador de curriculum',
+      coverLetter: 'Carta de presentacion',
+      linkedInSummary: 'Resumen de LinkedIn',
+      interviewPrep: 'Preparacion de entrevista',
+      contactUs: 'Contacto',
+      privacyPolicy: 'Politica de privacidad',
+      termsOfService: 'Terminos de servicio',
+      allRightsReserved: 'Todos los derechos reservados.',
+      alsoAvailableIn: 'Tambien disponible en:',
+    },
   },
 
   // ---------------------------------------------------------------------------
@@ -361,6 +411,31 @@ export const translations: Record<string, LandingTranslation> = {
         '6 documents sur mesure a partir d\'une seule offre d\'emploi. Optimises pour les ATS, prets pour l\'entretien, generes en moins de 60 secondes.',
       button: 'Commencer gratuitement',
       note: 'Aucune carte bancaire requise. 2 documents gratuits chaque mois.',
+    },
+    nav: {
+      features: 'Fonctionnalites',
+      howItWorks: 'Comment ca marche',
+      pricing: 'Tarifs',
+      blog: 'Blog',
+      roastMyResume: 'Critiquez mon CV',
+      roastFree: 'GRATUIT',
+      signIn: 'Connexion',
+      getStartedFree: 'Commencer gratuitement',
+      product: 'Produit',
+      resources: 'Ressources',
+      documents: 'Documents',
+      support: 'Support',
+      faq: 'FAQ',
+      tagline: 'Documents de carriere intelligents. Decrochez le poste de vos reves en un clic.',
+      resumeBuilder: 'Createur de CV',
+      coverLetter: 'Lettre de motivation',
+      linkedInSummary: 'Resume LinkedIn',
+      interviewPrep: 'Preparation entretien',
+      contactUs: 'Nous contacter',
+      privacyPolicy: 'Politique de confidentialite',
+      termsOfService: 'Conditions d\'utilisation',
+      allRightsReserved: 'Tous droits reserves.',
+      alsoAvailableIn: 'Egalement disponible en :',
     },
   },
 
@@ -523,6 +598,31 @@ export const translations: Record<string, LandingTranslation> = {
       button: 'Kostenlos starten',
       note: 'Keine Kreditkarte erforderlich. 2 kostenlose Dokumente jeden Monat.',
     },
+    nav: {
+      features: 'Funktionen',
+      howItWorks: 'So funktioniert es',
+      pricing: 'Preise',
+      blog: 'Blog',
+      roastMyResume: 'Lebenslauf-Roast',
+      roastFree: 'GRATIS',
+      signIn: 'Anmelden',
+      getStartedFree: 'Kostenlos starten',
+      product: 'Produkt',
+      resources: 'Ressourcen',
+      documents: 'Dokumente',
+      support: 'Support',
+      faq: 'FAQ',
+      tagline: 'Intelligente Bewerbungsdokumente. Landen Sie Ihren Traumjob mit einem Klick.',
+      resumeBuilder: 'Lebenslauf-Ersteller',
+      coverLetter: 'Anschreiben',
+      linkedInSummary: 'LinkedIn-Zusammenfassung',
+      interviewPrep: 'Interview-Vorbereitung',
+      contactUs: 'Kontakt',
+      privacyPolicy: 'Datenschutz',
+      termsOfService: 'Nutzungsbedingungen',
+      allRightsReserved: 'Alle Rechte vorbehalten.',
+      alsoAvailableIn: 'Auch verfuegbar auf:',
+    },
   },
 
   // ---------------------------------------------------------------------------
@@ -683,6 +783,31 @@ export const translations: Record<string, LandingTranslation> = {
         '6 documentos personalizados a partir de uma unica vaga de emprego. Otimizados para ATS, prontos para a entrevista e gerados em menos de 60 segundos.',
       button: 'Comece gratis',
       note: 'Sem cartao de credito. 2 documentos gratis todo mes.',
+    },
+    nav: {
+      features: 'Funcionalidades',
+      howItWorks: 'Como funciona',
+      pricing: 'Precos',
+      blog: 'Blog',
+      roastMyResume: 'Critique meu CV',
+      roastFree: 'GRATIS',
+      signIn: 'Entrar',
+      getStartedFree: 'Comece gratis',
+      product: 'Produto',
+      resources: 'Recursos',
+      documents: 'Documentos',
+      support: 'Suporte',
+      faq: 'FAQ',
+      tagline: 'Documentos de carreira inteligentes. Conquiste o emprego dos seus sonhos com um clique.',
+      resumeBuilder: 'Criador de curriculo',
+      coverLetter: 'Carta de apresentacao',
+      linkedInSummary: 'Resumo LinkedIn',
+      interviewPrep: 'Preparacao para entrevista',
+      contactUs: 'Contato',
+      privacyPolicy: 'Politica de privacidade',
+      termsOfService: 'Termos de servico',
+      allRightsReserved: 'Todos os direitos reservados.',
+      alsoAvailableIn: 'Tambem disponivel em:',
     },
   },
 
@@ -845,5 +970,57 @@ export const translations: Record<string, LandingTranslation> = {
       button: 'Muft shuru karein',
       note: 'Credit card nahi chahiye. Har mahine 2 muft documents.',
     },
+    nav: {
+      features: 'Features',
+      howItWorks: 'Kaise kaam karta hai',
+      pricing: 'Plans aur Prices',
+      blog: 'Blog',
+      roastMyResume: 'Resume ki Dhulai',
+      roastFree: 'MUFT',
+      signIn: 'Sign In',
+      getStartedFree: 'Muft shuru karein',
+      product: 'Product',
+      resources: 'Resources',
+      documents: 'Documents',
+      support: 'Support',
+      faq: 'FAQ',
+      tagline: 'Smart career documents. Apne sapnon ki naukri payen bas ek click mein.',
+      resumeBuilder: 'Resume Builder',
+      coverLetter: 'Cover Letter',
+      linkedInSummary: 'LinkedIn Summary',
+      interviewPrep: 'Interview ki Taiyaari',
+      contactUs: 'Sampark karein',
+      privacyPolicy: 'Privacy Policy',
+      termsOfService: 'Terms of Service',
+      allRightsReserved: 'Sarvaadhikaar surakshit.',
+      alsoAvailableIn: 'Yeh bhi uplabdh hai:',
+    },
   },
+}
+
+/** English defaults for nav (used when no locale is active) */
+export const englishNav: LandingTranslation['nav'] = {
+  features: 'Features',
+  howItWorks: 'How It Works',
+  pricing: 'Pricing',
+  blog: 'Blog',
+  roastMyResume: 'Roast My Resume',
+  roastFree: 'FREE',
+  signIn: 'Sign In',
+  getStartedFree: 'Get Started Free',
+  product: 'Product',
+  resources: 'Resources',
+  documents: 'Documents',
+  support: 'Support',
+  faq: 'FAQ',
+  tagline: 'Smart career document generation. Land your dream job with one click.',
+  resumeBuilder: 'Resume Builder',
+  coverLetter: 'Cover Letter',
+  linkedInSummary: 'LinkedIn Summary',
+  interviewPrep: 'Interview Prep',
+  contactUs: 'Contact Us',
+  privacyPolicy: 'Privacy Policy',
+  termsOfService: 'Terms of Service',
+  allRightsReserved: 'All rights reserved.',
+  alsoAvailableIn: 'Also available in:',
 }
