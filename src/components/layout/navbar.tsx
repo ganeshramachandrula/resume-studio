@@ -18,7 +18,7 @@ export function Navbar() {
     { href: localePath(locale, '/#features'), label: nav.features },
     { href: localePath(locale, '/#how-it-works'), label: nav.howItWorks },
     { href: localePath(locale, '/#pricing'), label: nav.pricing },
-    { href: '/blog', label: nav.blog },
+    { href: localePath(locale, '/blog'), label: nav.blog },
   ]
 
   const homeHref = localePath(locale, '/')
@@ -45,7 +45,7 @@ export function Navbar() {
               </a>
             ))}
             <Link
-              href="/roast"
+              href={localePath(locale, '/roast')}
               className="inline-flex items-center gap-1.5 transition-all hover:drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]"
             >
               <Flame className="h-4 w-4 text-orange-400" />
@@ -95,7 +95,7 @@ export function Navbar() {
               </a>
             ))}
             <Link
-              href="/roast"
+              href={localePath(locale, '/roast')}
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2 py-2"
             >

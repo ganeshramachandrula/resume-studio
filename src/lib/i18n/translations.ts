@@ -64,6 +64,66 @@ export interface LandingTranslation {
     allRightsReserved: string
     alsoAvailableIn: string
   }
+  roastPage: {
+    badge: string
+    title: string
+    subtitle: string
+    jdLabel: string
+    jdPlaceholder: string
+    resumeLabel: string
+    resumePlaceholder: string
+    submitButton: string
+    jdMinChars: string
+    resumeMinChars: string
+    loadingMessages: string[]
+    keywordMatch: string
+    impactScore: string
+    atsCompatibility: string
+    skillsGap: string
+    matched: string
+    missing: string
+    strongBullets: string
+    weakBullets: string
+    covered: string
+    noAtsIssues: string
+    formattingIssues: string
+    top3Fixes: string
+    theRoast: string
+    shareYourScore: string
+    shareOnLinkedIn: string
+    shareOnX: string
+    copyLink: string
+    copied: string
+    shareText: string
+    ctaTitle: string
+    ctaSubtitle: string
+    ctaButton: string
+    ctaPricing: string
+  }
+  contactPage: {
+    title: string
+    subtitle: string
+    nameLabel: string
+    namePlaceholder: string
+    emailLabel: string
+    emailPlaceholder: string
+    subjectLabel: string
+    subjectPlaceholder: string
+    categoryLabel: string
+    messageLabel: string
+    messagePlaceholder: string
+    sending: string
+    sendMessage: string
+    messageSentTitle: string
+    messageSentBody: string
+    caseNumberLabel: string
+  }
+  blogPage: {
+    title: string
+    subtitle: string
+    metaTitle: string
+    metaDescription: string
+  }
 }
 
 export const translations: Record<string, LandingTranslation> = {
@@ -251,6 +311,74 @@ export const translations: Record<string, LandingTranslation> = {
       allRightsReserved: 'Todos los derechos reservados.',
       alsoAvailableIn: 'Tambien disponible en:',
     },
+    roastPage: {
+      badge: 'Gratis — No necesitas registrarte',
+      title: 'Critica mi CV',
+      subtitle: 'Pega una oferta de empleo y tu curriculum. Nuestra IA lo puntuara, encontrara palabras clave faltantes y te dara una critica brutalmente honesta con soluciones.',
+      jdLabel: 'Descripcion del puesto',
+      jdPlaceholder: 'Pega la descripcion del puesto aqui...',
+      resumeLabel: 'Tu curriculum (texto plano)',
+      resumePlaceholder: 'Pega el texto de tu curriculum aqui...',
+      submitButton: 'Critica mi CV',
+      jdMinChars: 'La descripcion del puesto necesita al menos 50 caracteres',
+      resumeMinChars: 'El curriculum necesita al menos 50 caracteres',
+      loadingMessages: [
+        'Escaneando tu curriculum en busca de errores...',
+        'Comparando palabras clave con la oferta...',
+        'Calculando tus probabilidades de pasar el ATS...',
+        'Juzgando tus viñetas sin piedad...',
+        'Encontrando las habilidades que olvidaste mencionar...',
+        'Preparando tu critica...',
+        'Casi listo — dando los toques finales...',
+      ],
+      keywordMatch: 'Coincidencia de palabras clave',
+      impactScore: 'Puntuacion de impacto',
+      atsCompatibility: 'Compatibilidad ATS',
+      skillsGap: 'Brecha de habilidades',
+      matched: 'Coinciden',
+      missing: 'Faltan',
+      strongBullets: 'Viñetas fuertes',
+      weakBullets: 'Viñetas debiles',
+      covered: 'Cubiertas',
+      noAtsIssues: 'No se detectaron problemas de ATS.',
+      formattingIssues: 'Problemas de formato',
+      top3Fixes: 'Las 3 correcciones principales',
+      theRoast: 'La critica',
+      shareYourScore: 'Comparte tu puntuacion',
+      shareOnLinkedIn: 'Compartir en LinkedIn',
+      shareOnX: 'Compartir en X',
+      copyLink: 'Copiar enlace',
+      copied: '¡Copiado!',
+      shareText: 'La IA acaba de criticar mi curriculum y saque {score}/100. ¿Crees que puedes hacerlo mejor?',
+      ctaTitle: '¿Quieres arreglarlo todo?',
+      ctaSubtitle: 'Resume Studio genera curriculos optimizados para ATS, cartas de presentacion y mas — adaptados a cada empleo.',
+      ctaButton: 'Empieza gratis',
+      ctaPricing: 'Ver precios',
+    },
+    contactPage: {
+      title: 'Contacto',
+      subtitle: '¿Tienes una pregunta, encontraste un error o quieres solicitar una funcion? Nos encantaria saber de ti.',
+      nameLabel: 'Nombre',
+      namePlaceholder: 'Tu nombre',
+      emailLabel: 'Correo electronico',
+      emailPlaceholder: 'tu@ejemplo.com',
+      subjectLabel: 'Asunto',
+      subjectPlaceholder: 'Breve descripcion',
+      categoryLabel: 'Categoria',
+      messageLabel: 'Mensaje',
+      messagePlaceholder: 'Cuentanos lo que piensas...',
+      sending: 'Enviando...',
+      sendMessage: 'Enviar mensaje',
+      messageSentTitle: 'Mensaje enviado',
+      messageSentBody: 'Gracias por escribirnos. Revisaremos tu mensaje y te responderemos pronto.',
+      caseNumberLabel: 'Tu numero de caso es',
+    },
+    blogPage: {
+      title: 'Consejos de carrera y curriculum',
+      subtitle: 'Guias de expertos sobre redaccion de curriculum, optimizacion ATS y como conseguir mas entrevistas.',
+      metaTitle: 'Blog — Consejos de curriculum, guias ATS y consejos de carrera',
+      metaDescription: 'Consejos de expertos sobre redaccion de curriculum, optimizacion ATS, cartas de presentacion, perfiles de LinkedIn y preparacion para entrevistas.',
+    },
   },
 
   // ---------------------------------------------------------------------------
@@ -436,6 +564,74 @@ export const translations: Record<string, LandingTranslation> = {
       termsOfService: 'Conditions d\'utilisation',
       allRightsReserved: 'Tous droits reserves.',
       alsoAvailableIn: 'Egalement disponible en :',
+    },
+    roastPage: {
+      badge: 'Gratuit — Pas d\'inscription requise',
+      title: 'Critiquez mon CV',
+      subtitle: 'Collez une offre d\'emploi et votre CV. Notre IA le notera, trouvera les mots-cles manquants et vous livrera une critique brutalement honnete avec des corrections.',
+      jdLabel: 'Description du poste',
+      jdPlaceholder: 'Collez la description du poste ici...',
+      resumeLabel: 'Votre CV (texte brut)',
+      resumePlaceholder: 'Collez le texte de votre CV ici...',
+      submitButton: 'Critiquez mon CV',
+      jdMinChars: 'La description du poste doit contenir au moins 50 caracteres',
+      resumeMinChars: 'Le CV doit contenir au moins 50 caracteres',
+      loadingMessages: [
+        'Analyse de votre CV a la recherche d\'erreurs...',
+        'Comparaison des mots-cles avec l\'offre...',
+        'Calcul de vos chances de passer l\'ATS...',
+        'Jugement impitoyable de vos puces...',
+        'Recherche des competences que vous avez oubliees...',
+        'Preparation de votre critique...',
+        'Presque fini — derniers ajustements...',
+      ],
+      keywordMatch: 'Correspondance des mots-cles',
+      impactScore: 'Score d\'impact',
+      atsCompatibility: 'Compatibilite ATS',
+      skillsGap: 'Ecart de competences',
+      matched: 'Correspondants',
+      missing: 'Manquants',
+      strongBullets: 'Puces fortes',
+      weakBullets: 'Puces faibles',
+      covered: 'Couvertes',
+      noAtsIssues: 'Aucun probleme ATS detecte.',
+      formattingIssues: 'Problemes de mise en forme',
+      top3Fixes: 'Les 3 corrections principales',
+      theRoast: 'La critique',
+      shareYourScore: 'Partagez votre score',
+      shareOnLinkedIn: 'Partager sur LinkedIn',
+      shareOnX: 'Partager sur X',
+      copyLink: 'Copier le lien',
+      copied: 'Copie !',
+      shareText: 'L\'IA vient de critiquer mon CV et j\'ai obtenu {score}/100. Vous pensez faire mieux ?',
+      ctaTitle: 'Envie de tout corriger ?',
+      ctaSubtitle: 'Resume Studio genere des CV optimises ATS, lettres de motivation et plus — adaptes a chaque poste.',
+      ctaButton: 'Commencer gratuitement',
+      ctaPricing: 'Voir les tarifs',
+    },
+    contactPage: {
+      title: 'Nous contacter',
+      subtitle: 'Une question, un bug ou une demande de fonctionnalite ? Nous serions ravis de vous entendre.',
+      nameLabel: 'Nom',
+      namePlaceholder: 'Votre nom',
+      emailLabel: 'E-mail',
+      emailPlaceholder: 'vous@exemple.com',
+      subjectLabel: 'Objet',
+      subjectPlaceholder: 'Breve description',
+      categoryLabel: 'Categorie',
+      messageLabel: 'Message',
+      messagePlaceholder: 'Dites-nous ce que vous avez en tete...',
+      sending: 'Envoi en cours...',
+      sendMessage: 'Envoyer le message',
+      messageSentTitle: 'Message envoye',
+      messageSentBody: 'Merci de nous avoir contactes. Nous examinerons votre message et vous repondrons rapidement.',
+      caseNumberLabel: 'Votre numero de dossier est',
+    },
+    blogPage: {
+      title: 'Conseils carriere et CV',
+      subtitle: 'Guides d\'experts sur la redaction de CV, l\'optimisation ATS et comment decrocher plus d\'entretiens.',
+      metaTitle: 'Blog — Conseils CV, guides ATS et conseils carriere',
+      metaDescription: 'Conseils d\'experts sur la redaction de CV, l\'optimisation ATS, les lettres de motivation, les profils LinkedIn et la preparation aux entretiens.',
     },
   },
 
@@ -623,6 +819,74 @@ export const translations: Record<string, LandingTranslation> = {
       allRightsReserved: 'Alle Rechte vorbehalten.',
       alsoAvailableIn: 'Auch verfuegbar auf:',
     },
+    roastPage: {
+      badge: 'Gratis — Keine Anmeldung noetig',
+      title: 'Lebenslauf-Roast',
+      subtitle: 'Fuegen Sie eine Stellenanzeige und Ihren Lebenslauf ein. Unsere KI bewertet ihn, findet fehlende Schluesselwoerter und liefert eine brutal ehrliche Kritik mit Loesungen.',
+      jdLabel: 'Stellenbeschreibung',
+      jdPlaceholder: 'Stellenbeschreibung hier einfuegen...',
+      resumeLabel: 'Ihr Lebenslauf (Klartext)',
+      resumePlaceholder: 'Lebenslauftext hier einfuegen...',
+      submitButton: 'Lebenslauf roasten',
+      jdMinChars: 'Die Stellenbeschreibung muss mindestens 50 Zeichen lang sein',
+      resumeMinChars: 'Der Lebenslauf muss mindestens 50 Zeichen lang sein',
+      loadingMessages: [
+        'Lebenslauf wird auf Fehler gescannt...',
+        'Schluesselwoerter werden mit der Stelle verglichen...',
+        'ATS-Ueberlebenschancen werden berechnet...',
+        'Aufzaehlungspunkte werden gnadenlos bewertet...',
+        'Vergessene Faehigkeiten werden gesucht...',
+        'Ihr Roast wird vorbereitet...',
+        'Fast fertig — letzte Korrekturen...',
+      ],
+      keywordMatch: 'Schluesselwort-Uebereinstimmung',
+      impactScore: 'Wirkung-Score',
+      atsCompatibility: 'ATS-Kompatibilitaet',
+      skillsGap: 'Kompetenzluecke',
+      matched: 'Uebereinstimmend',
+      missing: 'Fehlend',
+      strongBullets: 'Starke Punkte',
+      weakBullets: 'Schwache Punkte',
+      covered: 'Abgedeckt',
+      noAtsIssues: 'Keine ATS-Probleme erkannt.',
+      formattingIssues: 'Formatierungsprobleme',
+      top3Fixes: 'Die 3 wichtigsten Korrekturen',
+      theRoast: 'Der Roast',
+      shareYourScore: 'Teilen Sie Ihren Score',
+      shareOnLinkedIn: 'Auf LinkedIn teilen',
+      shareOnX: 'Auf X teilen',
+      copyLink: 'Link kopieren',
+      copied: 'Kopiert!',
+      shareText: 'KI hat meinen Lebenslauf geroastet und ich habe {score}/100 bekommen. Schaffst du mehr?',
+      ctaTitle: 'Alles korrigieren?',
+      ctaSubtitle: 'Resume Studio erstellt ATS-optimierte Lebenslaeufe, Anschreiben und mehr — zugeschnitten auf jede Stelle.',
+      ctaButton: 'Kostenlos starten',
+      ctaPricing: 'Preise ansehen',
+    },
+    contactPage: {
+      title: 'Kontakt',
+      subtitle: 'Eine Frage, einen Fehler gefunden oder eine Funktion gewuenscht? Wir freuen uns auf Ihre Nachricht.',
+      nameLabel: 'Name',
+      namePlaceholder: 'Ihr Name',
+      emailLabel: 'E-Mail',
+      emailPlaceholder: 'sie@beispiel.de',
+      subjectLabel: 'Betreff',
+      subjectPlaceholder: 'Kurze Beschreibung',
+      categoryLabel: 'Kategorie',
+      messageLabel: 'Nachricht',
+      messagePlaceholder: 'Sagen Sie uns, was Sie bewegt...',
+      sending: 'Wird gesendet...',
+      sendMessage: 'Nachricht senden',
+      messageSentTitle: 'Nachricht gesendet',
+      messageSentBody: 'Vielen Dank fuer Ihre Nachricht. Wir werden sie pruefen und uns bald bei Ihnen melden.',
+      caseNumberLabel: 'Ihre Fallnummer ist',
+    },
+    blogPage: {
+      title: 'Karrieretipps und Lebenslauf-Ratgeber',
+      subtitle: 'Expertenratgeber zu Lebenslauf-Erstellung, ATS-Optimierung und wie Sie mehr Vorstellungsgespraeche bekommen.',
+      metaTitle: 'Blog — Lebenslauf-Tipps, ATS-Ratgeber und Karrieretipps',
+      metaDescription: 'Expertenratgeber zu Lebenslauf-Erstellung, ATS-Optimierung, Anschreiben, LinkedIn-Profilen und Vorbereitung auf Vorstellungsgespraeche.',
+    },
   },
 
   // ---------------------------------------------------------------------------
@@ -808,6 +1072,74 @@ export const translations: Record<string, LandingTranslation> = {
       termsOfService: 'Termos de servico',
       allRightsReserved: 'Todos os direitos reservados.',
       alsoAvailableIn: 'Tambem disponivel em:',
+    },
+    roastPage: {
+      badge: 'Gratis — Sem cadastro',
+      title: 'Critique meu CV',
+      subtitle: 'Cole uma vaga de emprego e seu curriculo. Nossa IA vai pontuar, encontrar palavras-chave faltando e fazer uma critica brutalmente honesta com correcoes.',
+      jdLabel: 'Descricao da vaga',
+      jdPlaceholder: 'Cole a descricao da vaga aqui...',
+      resumeLabel: 'Seu curriculo (texto simples)',
+      resumePlaceholder: 'Cole o texto do seu curriculo aqui...',
+      submitButton: 'Critique meu CV',
+      jdMinChars: 'A descricao da vaga precisa de pelo menos 50 caracteres',
+      resumeMinChars: 'O curriculo precisa de pelo menos 50 caracteres',
+      loadingMessages: [
+        'Analisando seu curriculo em busca de erros...',
+        'Comparando palavras-chave com a vaga...',
+        'Calculando suas chances no ATS...',
+        'Julgando seus topicos sem piedade...',
+        'Encontrando habilidades que voce esqueceu...',
+        'Preparando sua critica...',
+        'Quase pronto — ultimos ajustes...',
+      ],
+      keywordMatch: 'Correspondencia de palavras-chave',
+      impactScore: 'Pontuacao de impacto',
+      atsCompatibility: 'Compatibilidade ATS',
+      skillsGap: 'Lacuna de habilidades',
+      matched: 'Correspondentes',
+      missing: 'Faltando',
+      strongBullets: 'Topicos fortes',
+      weakBullets: 'Topicos fracos',
+      covered: 'Cobertas',
+      noAtsIssues: 'Nenhum problema de ATS detectado.',
+      formattingIssues: 'Problemas de formatacao',
+      top3Fixes: 'As 3 correcoes principais',
+      theRoast: 'A critica',
+      shareYourScore: 'Compartilhe sua pontuacao',
+      shareOnLinkedIn: 'Compartilhar no LinkedIn',
+      shareOnX: 'Compartilhar no X',
+      copyLink: 'Copiar link',
+      copied: 'Copiado!',
+      shareText: 'A IA criticou meu curriculo e eu tirei {score}/100. Acha que consegue mais?',
+      ctaTitle: 'Quer corrigir tudo?',
+      ctaSubtitle: 'Resume Studio gera curriculos otimizados para ATS, cartas de apresentacao e mais — adaptados para cada vaga.',
+      ctaButton: 'Comece gratis',
+      ctaPricing: 'Ver precos',
+    },
+    contactPage: {
+      title: 'Contato',
+      subtitle: 'Tem uma pergunta, encontrou um bug ou quer solicitar uma funcionalidade? Adorariamos ouvir de voce.',
+      nameLabel: 'Nome',
+      namePlaceholder: 'Seu nome',
+      emailLabel: 'E-mail',
+      emailPlaceholder: 'voce@exemplo.com',
+      subjectLabel: 'Assunto',
+      subjectPlaceholder: 'Breve descricao',
+      categoryLabel: 'Categoria',
+      messageLabel: 'Mensagem',
+      messagePlaceholder: 'Conte-nos o que esta pensando...',
+      sending: 'Enviando...',
+      sendMessage: 'Enviar mensagem',
+      messageSentTitle: 'Mensagem enviada',
+      messageSentBody: 'Obrigado por entrar em contato. Vamos analisar sua mensagem e responder em breve.',
+      caseNumberLabel: 'Seu numero de caso e',
+    },
+    blogPage: {
+      title: 'Dicas de carreira e curriculo',
+      subtitle: 'Guias de especialistas sobre redacao de curriculo, otimizacao ATS e como conseguir mais entrevistas.',
+      metaTitle: 'Blog — Dicas de curriculo, guias ATS e conselhos de carreira',
+      metaDescription: 'Conselhos de especialistas sobre redacao de curriculo, otimizacao ATS, cartas de apresentacao, perfis do LinkedIn e preparacao para entrevistas.',
     },
   },
 
@@ -995,7 +1327,149 @@ export const translations: Record<string, LandingTranslation> = {
       allRightsReserved: 'Sarvaadhikaar surakshit.',
       alsoAvailableIn: 'Yeh bhi uplabdh hai:',
     },
+    roastPage: {
+      badge: 'Muft — Signup ki zaroorat nahi',
+      title: 'Resume ki Dhulai',
+      subtitle: 'Job description aur apna resume paste karein. Hamari AI score degi, missing keywords dhundhegi aur brutally honest critica degi — solutions ke saath.',
+      jdLabel: 'Job Description',
+      jdPlaceholder: 'Job description yahaan paste karein...',
+      resumeLabel: 'Aapka Resume (plain text)',
+      resumePlaceholder: 'Resume ka text yahaan paste karein...',
+      submitButton: 'Resume ki Dhulai karein',
+      jdMinChars: 'Job description mein kam se kam 50 characters chahiye',
+      resumeMinChars: 'Resume mein kam se kam 50 characters chahiye',
+      loadingMessages: [
+        'Aapka resume scan ho raha hai...',
+        'Keywords ko JD se compare kar rahe hain...',
+        'ATS mein pass hone ke chances calculate ho rahe hain...',
+        'Aapke bullet points ka nirdayata se judgment ho raha hai...',
+        'Bhool gayi skills dhundh rahe hain...',
+        'Aapki critica taiyaar ho rahi hai...',
+        'Lagbhag ho gaya — finishing touches...',
+      ],
+      keywordMatch: 'Keyword Match',
+      impactScore: 'Impact Score',
+      atsCompatibility: 'ATS Compatibility',
+      skillsGap: 'Skills Gap',
+      matched: 'Match',
+      missing: 'Missing',
+      strongBullets: 'Strong Bullets',
+      weakBullets: 'Weak Bullets',
+      covered: 'Covered',
+      noAtsIssues: 'Koi ATS problem nahi mila.',
+      formattingIssues: 'Formatting Issues',
+      top3Fixes: 'Top 3 Fixes',
+      theRoast: 'Dhulai',
+      shareYourScore: 'Apna Score Share karein',
+      shareOnLinkedIn: 'LinkedIn par share karein',
+      shareOnX: 'X par share karein',
+      copyLink: 'Link copy karein',
+      copied: 'Copy ho gaya!',
+      shareText: 'AI ne mera resume roast kiya aur mujhe {score}/100 mila. Lagta hai tum better kar sakte ho?',
+      ctaTitle: 'Sab kuch theek karna hai?',
+      ctaSubtitle: 'Resume Studio ATS-optimized resumes, cover letters, aur bahut kuch generate karta hai — har job ke hisaab se.',
+      ctaButton: 'Muft shuru karein',
+      ctaPricing: 'Prices dekhein',
+    },
+    contactPage: {
+      title: 'Sampark karein',
+      subtitle: 'Koi sawaal hai, bug mila ya feature chahiye? Hum aapki baat sunna chahte hain.',
+      nameLabel: 'Naam',
+      namePlaceholder: 'Aapka naam',
+      emailLabel: 'Email',
+      emailPlaceholder: 'aap@example.com',
+      subjectLabel: 'Vishay',
+      subjectPlaceholder: 'Sankshipt vivaran',
+      categoryLabel: 'Category',
+      messageLabel: 'Sandesh',
+      messagePlaceholder: 'Humein bataiye kya chal raha hai...',
+      sending: 'Bhej rahe hain...',
+      sendMessage: 'Sandesh bhejein',
+      messageSentTitle: 'Sandesh bhej diya gaya',
+      messageSentBody: 'Sampark karne ke liye dhanyavaad. Hum aapka sandesh dekhenge aur jald javab denge.',
+      caseNumberLabel: 'Aapka case number hai',
+    },
+    blogPage: {
+      title: 'Career Tips aur Resume Salaah',
+      subtitle: 'Resume likhne, ATS optimization aur zyaada interviews paane ke liye expert guides.',
+      metaTitle: 'Blog — Resume Tips, ATS Guides aur Career Salaah',
+      metaDescription: 'Resume likhne, ATS optimization, cover letters, LinkedIn profiles aur interview ki taiyaari par expert salaah.',
+    },
   },
+}
+
+/** English defaults for roast page (used when no locale is active) */
+export const englishRoastPage: LandingTranslation['roastPage'] = {
+  badge: 'Free — No signup required',
+  title: 'Roast My Resume',
+  subtitle: 'Paste a job description and your resume. Our AI will score it, find keyword gaps, and deliver a brutally honest roast — with actionable fixes.',
+  jdLabel: 'Job Description',
+  jdPlaceholder: 'Paste the job description here...',
+  resumeLabel: 'Your Resume (plain text)',
+  resumePlaceholder: 'Paste your resume text here...',
+  submitButton: 'Roast My Resume',
+  jdMinChars: 'Job description needs at least 50 characters',
+  resumeMinChars: 'Resume needs at least 50 characters',
+  loadingMessages: [
+    'Scanning your resume for red flags...',
+    'Comparing keywords against the JD...',
+    'Calculating your ATS survival odds...',
+    'Judging your bullet points mercilessly...',
+    'Finding the skills you forgot to mention...',
+    'Preparing your roast...',
+    'Almost done — putting the finishing burns on...',
+  ],
+  keywordMatch: 'Keyword Match',
+  impactScore: 'Impact Score',
+  atsCompatibility: 'ATS Compatibility',
+  skillsGap: 'Skills Gap',
+  matched: 'Matched',
+  missing: 'Missing',
+  strongBullets: 'Strong Bullets',
+  weakBullets: 'Weak Bullets',
+  covered: 'Covered',
+  noAtsIssues: 'No ATS issues detected.',
+  formattingIssues: 'Formatting Issues',
+  top3Fixes: 'Top 3 Fixes',
+  theRoast: 'The Roast',
+  shareYourScore: 'Share Your Score',
+  shareOnLinkedIn: 'Share on LinkedIn',
+  shareOnX: 'Share on X',
+  copyLink: 'Copy Link',
+  copied: 'Copied!',
+  shareText: 'I just got my resume roasted by AI and scored {score}/100. Think you can do better?',
+  ctaTitle: 'Want to fix everything?',
+  ctaSubtitle: 'Resume Studio generates ATS-optimized resumes, cover letters, and more — tailored to every job.',
+  ctaButton: 'Get Started Free',
+  ctaPricing: 'See Pricing',
+}
+
+/** English defaults for contact page (used when no locale is active) */
+export const englishContactPage: LandingTranslation['contactPage'] = {
+  title: 'Contact Us',
+  subtitle: 'Have a question, found a bug, or want to request a feature? We\'d love to hear from you.',
+  nameLabel: 'Name',
+  namePlaceholder: 'Your name',
+  emailLabel: 'Email',
+  emailPlaceholder: 'you@example.com',
+  subjectLabel: 'Subject',
+  subjectPlaceholder: 'Brief description',
+  categoryLabel: 'Category',
+  messageLabel: 'Message',
+  messagePlaceholder: 'Tell us what\'s on your mind...',
+  sending: 'Sending...',
+  sendMessage: 'Send Message',
+  messageSentTitle: 'Message Sent',
+  messageSentBody: 'Thank you for reaching out. We\'ll review your message and get back to you soon.',
+  caseNumberLabel: 'Your case number is',
+}
+
+/** English defaults for blog page (used when no locale is active) */
+export const englishBlogPage: LandingTranslation['blogPage'] = {
+  title: 'Career Advice & Resume Tips',
+  subtitle: 'Expert guides on resume writing, ATS optimization, and landing more interviews.',
+  metaTitle: 'Blog — Resume Tips, ATS Guides & Career Advice',
+  metaDescription: 'Expert advice on resume writing, ATS optimization, cover letters, LinkedIn profiles, and interview preparation. Free guides updated for 2026.',
 }
 
 /** English defaults for nav (used when no locale is active) */

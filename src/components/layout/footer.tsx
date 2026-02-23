@@ -13,14 +13,19 @@ export function Footer() {
 
   const homeHref = localePath(locale, '/')
 
-  // Build language links: all locales except current, plus "English" when on non-English page
+  // Strip current locale prefix to get the base path (e.g. "/es/blog" → "/blog", "/es" → "/")
+  const basePath = locale
+    ? pathname.replace(new RegExp(`^/${locale}(?=/|$)`), '') || '/'
+    : pathname
+
+  // Build language links preserving current sub-path
   const languageLinks: Array<{ href: string; label: string }> = []
   if (locale) {
-    languageLinks.push({ href: '/', label: 'English' })
+    languageLinks.push({ href: basePath, label: 'English' })
   }
   for (const loc of SUPPORTED_LOCALES) {
     if (loc !== locale) {
-      languageLinks.push({ href: `/${loc}`, label: translations[loc].nativeName })
+      languageLinks.push({ href: localePath(loc, basePath), label: translations[loc].nativeName })
     }
   }
 
@@ -51,7 +56,7 @@ export function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-3 text-sm">{nav.resources}</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/blog" className="hover:text-white transition-colors">{nav.blog}</Link></li>
+              <li><Link href={localePath(locale, '/blog')} className="hover:text-white transition-colors">{nav.blog}</Link></li>
               <li><Link href="/compare/chatgpt" className="hover:text-white transition-colors">vs ChatGPT</Link></li>
               <li><Link href="/compare/indeed" className="hover:text-white transition-colors">vs Indeed</Link></li>
               <li><Link href="/compare/linkedin" className="hover:text-white transition-colors">vs LinkedIn</Link></li>
@@ -69,7 +74,7 @@ export function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-3 text-sm">{nav.support}</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/contact" className="hover:text-white transition-colors">{nav.contactUs}</Link></li>
+              <li><Link href={localePath(locale, '/contact')} className="hover:text-white transition-colors">{nav.contactUs}</Link></li>
               <li><Link href="/privacy" className="hover:text-white transition-colors">{nav.privacyPolicy}</Link></li>
               <li><Link href="/terms" className="hover:text-white transition-colors">{nav.termsOfService}</Link></li>
             </ul>

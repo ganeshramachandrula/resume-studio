@@ -25,6 +25,12 @@ describe('getLocaleFromPathname', () => {
     expect(getLocaleFromPathname('/es#features')).toBe('es')
   })
 
+  it('returns locale for locale-prefixed marketing paths', () => {
+    expect(getLocaleFromPathname('/es/blog')).toBe('es')
+    expect(getLocaleFromPathname('/fr/roast')).toBe('fr')
+    expect(getLocaleFromPathname('/de/contact')).toBe('de')
+  })
+
   it('returns null for root path', () => {
     expect(getLocaleFromPathname('/')).toBeNull()
   })
@@ -59,10 +65,20 @@ describe('localePath', () => {
     expect(localePath('pt', '/#faq')).toBe('/pt#faq')
   })
 
-  it('leaves absolute paths unchanged', () => {
-    expect(localePath('es', '/blog')).toBe('/blog')
+  it('prefixes localizable marketing paths with locale', () => {
+    expect(localePath('es', '/blog')).toBe('/es/blog')
+    expect(localePath('fr', '/roast')).toBe('/fr/roast')
+    expect(localePath('de', '/contact')).toBe('/de/contact')
+    expect(localePath('pt', '/pricing')).toBe('/pt/pricing')
+  })
+
+  it('prefixes sub-paths of localizable marketing paths', () => {
+    expect(localePath('es', '/blog/resume-tips')).toBe('/es/blog/resume-tips')
+  })
+
+  it('leaves auth/app paths unchanged', () => {
     expect(localePath('fr', '/login')).toBe('/login')
     expect(localePath('de', '/signup')).toBe('/signup')
-    expect(localePath('hi', '/roast')).toBe('/roast')
+    expect(localePath('hi', '/dashboard')).toBe('/dashboard')
   })
 })

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, Clock, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { blogPosts } from '@/lib/blog/posts'
+import { getTranslatedBlogPosts } from '@/lib/blog/blog-translations'
 import { hreflangAlternates } from '@/lib/i18n/hreflang'
 import type { Metadata } from 'next'
 
@@ -16,13 +17,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const post = blogPosts.find((p) => p.slug === slug)
+  const translated = getTranslatedBlogPosts('fr')
+  const post = translated.find((p) => p.slug === slug)
   if (!post) return {}
   return {
     title: post.title,
     description: post.description,
     alternates: {
-      canonical: `/blog/${slug}`,
+      canonical: `/fr/blog/${slug}`,
       languages: hreflangAlternates(`/blog/${slug}`),
     },
     openGraph: {
@@ -34,29 +36,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function BlogPostPage({ params }: Props) {
+export default async function FrenchBlogPostPage({ params }: Props) {
   const { slug } = await params
   const post = blogPosts.find((p) => p.slug === slug)
-  if (!post) notFound()
+  const translated = getTranslatedBlogPosts('fr')
+  const meta = translated.find((p) => p.slug === slug)
+  if (!post || !meta) notFound()
 
   return (
     <article className="pt-32 pb-20 px-4">
       <div className="max-w-3xl mx-auto">
-        <Link href="/blog" className="inline-flex items-center gap-1 text-gray-400 hover:text-white text-sm mb-8 transition-colors">
+        <Link href="/fr/blog" className="inline-flex items-center gap-1 text-gray-400 hover:text-white text-sm mb-8 transition-colors">
           <ArrowLeft className="h-4 w-4" />
-          Back to Blog
+          Blog
         </Link>
 
         <header className="mb-10">
           <h1 className="text-3xl md:text-4xl font-display text-white mb-4 leading-tight">
-            {post.title}
+            {meta.title}
           </h1>
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              {post.readTime}
+              {meta.readTime}
             </span>
-            <span>{new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+            <span>{new Date(meta.publishedAt).toLocaleDateString('fr', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
           </div>
         </header>
 
@@ -73,11 +77,10 @@ export default async function BlogPostPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
-        {/* CTA */}
         <div className="mt-12 p-6 rounded-2xl bg-gradient-to-r from-brand/10 to-accent/10 border border-accent/20 text-center">
-          <h3 className="text-xl font-display text-white mb-2">Try Resume Studio Free</h3>
+          <h3 className="text-xl font-display text-white mb-2">Resume Studio</h3>
           <p className="text-gray-400 text-sm mb-4">
-            Generate ATS-optimized resumes, cover letters, and more in seconds.
+            {meta.description}
           </p>
           <Link href="/signup">
             <Button variant="accent" size="lg">
