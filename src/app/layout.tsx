@@ -66,6 +66,9 @@ export const metadata: Metadata = {
       "Smart career document generation. Land your dream job with one click.",
     images: ["/og-image.png"],
   },
+  verification: {
+    google: "DlhGeazR4A-yC7q6DGtvtMkoTPsiPhvU68faDIkGnEE",
+  },
   robots: {
     index: true,
     follow: true,
