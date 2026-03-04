@@ -8,6 +8,8 @@ import {
   Palette,
   Briefcase,
   MessageSquare,
+  Ghost,
+  Chrome,
 } from 'lucide-react'
 
 const features = [
@@ -41,6 +43,18 @@ const features = [
     title: 'Interview Prep',
     description: 'Role-specific questions with model answers, tips, and salary negotiation guidance.',
   },
+  {
+    icon: Ghost,
+    title: 'GhostBoard',
+    description: 'Rate companies on ghosting, response time, and interview quality. Help others dodge bad employers.',
+    isNew: true,
+  },
+  {
+    icon: Chrome,
+    title: 'Browser Extension',
+    description: 'Capture job descriptions from Indeed, LinkedIn, Glassdoor, and more — generate resumes in one click.',
+    isNew: true,
+  },
 ]
 
 export function Features() {
@@ -61,7 +75,7 @@ export function Features() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -69,9 +83,22 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-accent/30 hover:bg-white/[0.07] transition-all duration-300"
+              className={`group relative p-6 rounded-2xl border transition-all duration-300 ${
+                feature.isNew
+                  ? 'bg-gradient-to-br from-accent/10 to-accent/5 border-accent/30 hover:border-accent/50 hover:bg-accent/[0.12] ring-1 ring-accent/20'
+                  : 'bg-white/5 border-white/10 hover:border-accent/30 hover:bg-white/[0.07]'
+              }`}
             >
-              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
+              {feature.isNew && (
+                <span className="absolute top-3 right-3 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-accent text-white rounded-full">
+                  New
+                </span>
+              )}
+              <div className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${
+                feature.isNew
+                  ? 'bg-accent/20 group-hover:bg-accent/30'
+                  : 'bg-accent/10 group-hover:bg-accent/20'
+              }`}>
                 <feature.icon className="h-6 w-6 text-accent" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2 font-[family-name:var(--font-body)]">

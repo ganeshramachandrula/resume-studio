@@ -202,6 +202,18 @@ export const roastResumeSchema = z.object({
     .max(15_000, 'Resume text must be under 15,000 characters'),
 })
 
+export const extensionSaveJobSchema = z.object({
+  company: z
+    .string()
+    .min(1, 'Company name is required')
+    .max(200, 'Company name must be under 200 characters'),
+  role: z
+    .string()
+    .min(1, 'Role is required')
+    .max(200, 'Role must be under 200 characters'),
+  url: z.string().url('Invalid URL').max(2000, 'URL too long').optional(),
+})
+
 export const extensionSubmitSchema = z.object({
   source_url: z.string().url('Invalid URL').max(2000, 'URL too long').optional(),
   source_site: z.string().max(100, 'Site name too long').optional(),

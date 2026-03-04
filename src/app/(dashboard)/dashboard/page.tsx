@@ -11,7 +11,8 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import {
   Sparkles, FileText, Briefcase, ArrowRight, Award, Code,
-  FolderOpen, UserCheck, Zap, Search, MapPin, Globe, TrendingUp
+  FolderOpen, UserCheck, Zap, Search, MapPin, Globe, TrendingUp,
+  Ghost, Chrome, Star, ExternalLink,
 } from 'lucide-react'
 import { MAX_APPLICATIONS_PRO } from '@/lib/constants'
 import { OnboardingModal } from '@/components/onboarding-modal'
@@ -214,6 +215,65 @@ export default function DashboardPage() {
             <p className="text-xs text-gray-500 mt-0.5">View saved docs</p>
           </div>
         </Link>
+      </div>
+
+      {/* What's New — Highlighted Features */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-accent/5 via-emerald-50 to-teal-50 border-2 border-accent/20 p-6">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-accent/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Star className="h-4 w-4 text-accent fill-accent" />
+            <span className="text-sm font-bold uppercase tracking-wider text-accent">What&apos;s New</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* GhostBoard */}
+            <Link href="/ghostboard">
+              <div className="group flex gap-4 p-4 rounded-xl bg-white border border-accent/20 hover:border-accent/40 hover:shadow-md transition-all cursor-pointer">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center flex-shrink-0">
+                  <Ghost className="h-6 w-6 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-semibold text-gray-900">GhostBoard</p>
+                    <Badge className="bg-accent/10 text-accent border-accent/20 text-[10px] px-1.5 py-0">NEW</Badge>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-snug">
+                    Rate companies on ghosting, response time &amp; interview quality. See ratings before you apply.
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-accent flex-shrink-0 mt-1 transition-colors" />
+              </div>
+            </Link>
+
+            {/* Browser Extension */}
+            <div className="group flex gap-4 p-4 rounded-xl bg-white border border-accent/20 hover:border-accent/40 hover:shadow-md transition-all">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center flex-shrink-0">
+                <Chrome className="h-6 w-6 text-white" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="font-semibold text-gray-900">Browser Extension</p>
+                  <Badge className="bg-accent/10 text-accent border-accent/20 text-[10px] px-1.5 py-0">NEW</Badge>
+                </div>
+                <p className="text-sm text-gray-600 leading-snug">
+                  Capture job descriptions from Indeed, LinkedIn, Glassdoor &amp; more. Save jobs &amp; rate companies right from the page.
+                </p>
+                <div className="flex gap-2 mt-2">
+                  <span className="inline-flex items-center gap-1 text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">
+                    Chrome
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">
+                    Edge
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">
+                    Firefox
+                  </span>
+                </div>
+              </div>
+              <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Two-column layout */}

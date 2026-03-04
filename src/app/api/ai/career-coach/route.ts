@@ -182,7 +182,10 @@ export async function POST(request: Request) {
     }
 
     // Real streaming mode
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' })
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return safeErrorResponse('AI service not configured', 'career-coach', 503)
+    }
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
     const systemPrompt = CAREER_COACH_SYSTEM + contextBlock
 
     const stream = anthropic.messages.stream({

@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Resume Studio - Job Description Capture",
+  "version": "2.0.0",
+  "description": "Capture job descriptions, save to job tracker, and rate companies — all from your favorite job boards.",
+  "permissions": ["storage", "activeTab"],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png"
+    }
+  },
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.indeed.com/viewjob*",
+        "*://*.indeed.com/jobs*",
+        "*://*.indeed.com/rc/*",
+        "*://*.linkedin.com/jobs/view/*",
+        "*://*.monster.com/job-openings/*",
+        "*://*.glassdoor.com/job-listing/*",
+        "*://*.dice.com/job-detail/*",
+        "*://*.ziprecruiter.com/jobs/*"
+      ],
+      "js": ["content/content.js"],
+      "css": ["content/styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "host_permissions": [
+    "https://resume-studio.io/*",
+    "https://*.resumestudio.com/*"
+  ]
+}

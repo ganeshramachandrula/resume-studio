@@ -81,6 +81,9 @@ export function isValidRedirect(path: string): boolean {
   // Reject anything with a protocol or double slashes (open redirect)
   if (path.includes('://') || path.startsWith('//')) return false
 
+  // Reject path traversal
+  if (path.includes('..')) return false
+
   // Must start with /
   if (!path.startsWith('/')) return false
 

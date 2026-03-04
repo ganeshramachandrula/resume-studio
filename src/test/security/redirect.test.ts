@@ -26,9 +26,8 @@ describe('Open Redirect Prevention - isValidRedirect', () => {
     expect(isValidRedirect('/admin/users')).toBe(true)
   })
 
-  it('accepts /dashboard/../settings because it starts with /dashboard/', () => {
-    // The path starts with /dashboard/ which is an allowed prefix
-    expect(isValidRedirect('/dashboard/../settings')).toBe(true)
+  it('rejects /dashboard/../settings due to path traversal', () => {
+    expect(isValidRedirect('/dashboard/../settings')).toBe(false)
   })
 
   it('accepts /career-coach as a valid redirect', () => {
