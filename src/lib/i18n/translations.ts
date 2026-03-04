@@ -124,6 +124,10 @@ export interface LandingTranslation {
     metaTitle: string
     metaDescription: string
   }
+  ghostboardPage: {
+    metaTitle: string
+    metaDescription: string
+  }
 }
 
 export const translations: Record<string, LandingTranslation> = {
@@ -379,6 +383,10 @@ export const translations: Record<string, LandingTranslation> = {
       metaTitle: 'Blog — Consejos de curriculum, guias ATS y consejos de carrera',
       metaDescription: 'Consejos de expertos sobre redaccion de curriculum, optimizacion ATS, cartas de presentacion, perfiles de LinkedIn y preparacion para entrevistas.',
     },
+    ghostboardPage: {
+      metaTitle: 'GhostBoard — Califica la experiencia de contratacion de empresas',
+      metaDescription: 'Descubre que empresas ignoran a los candidatos. Califica tiempos de respuesta, calidad de entrevista y transparencia.',
+    },
   },
 
   // ---------------------------------------------------------------------------
@@ -632,6 +640,10 @@ export const translations: Record<string, LandingTranslation> = {
       subtitle: 'Guides d\'experts sur la redaction de CV, l\'optimisation ATS et comment decrocher plus d\'entretiens.',
       metaTitle: 'Blog — Conseils CV, guides ATS et conseils carriere',
       metaDescription: 'Conseils d\'experts sur la redaction de CV, l\'optimisation ATS, les lettres de motivation, les profils LinkedIn et la preparation aux entretiens.',
+    },
+    ghostboardPage: {
+      metaTitle: 'GhostBoard — Evaluez l\'experience de recrutement des entreprises',
+      metaDescription: 'Decouvrez quelles entreprises ignorent les candidats. Evaluez les temps de reponse, la qualite des entretiens et la transparence.',
     },
   },
 
@@ -887,6 +899,10 @@ export const translations: Record<string, LandingTranslation> = {
       metaTitle: 'Blog — Lebenslauf-Tipps, ATS-Ratgeber und Karrieretipps',
       metaDescription: 'Expertenratgeber zu Lebenslauf-Erstellung, ATS-Optimierung, Anschreiben, LinkedIn-Profilen und Vorbereitung auf Vorstellungsgespraeche.',
     },
+    ghostboardPage: {
+      metaTitle: 'GhostBoard — Bewerten Sie die Einstellungserfahrung von Unternehmen',
+      metaDescription: 'Erfahren Sie, welche Unternehmen Bewerber ignorieren. Bewerten Sie Antwortzeiten, Interviewqualitaet und Transparenz.',
+    },
   },
 
   // ---------------------------------------------------------------------------
@@ -1141,6 +1157,10 @@ export const translations: Record<string, LandingTranslation> = {
       metaTitle: 'Blog — Dicas de curriculo, guias ATS e conselhos de carreira',
       metaDescription: 'Conselhos de especialistas sobre redacao de curriculo, otimizacao ATS, cartas de apresentacao, perfis do LinkedIn e preparacao para entrevistas.',
     },
+    ghostboardPage: {
+      metaTitle: 'GhostBoard — Avalie a experiencia de contratacao das empresas',
+      metaDescription: 'Descubra quais empresas ignoram candidatos. Avalie tempos de resposta, qualidade de entrevista e transparencia.',
+    },
   },
 
   // ---------------------------------------------------------------------------
@@ -1394,6 +1414,10 @@ export const translations: Record<string, LandingTranslation> = {
       subtitle: 'Resume likhne, ATS optimization aur zyaada interviews paane ke liye expert guides.',
       metaTitle: 'Blog — Resume Tips, ATS Guides aur Career Salaah',
       metaDescription: 'Resume likhne, ATS optimization, cover letters, LinkedIn profiles aur interview ki taiyaari par expert salaah.',
+    },
+    ghostboardPage: {
+      metaTitle: 'GhostBoard — Companies ki hiring experience ko rate karein',
+      metaDescription: 'Jaanein kaunsi companies candidates ko ignore karti hain. Response time, interview quality aur transparency rate karein.',
     },
   },
 }

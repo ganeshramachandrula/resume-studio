@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/signup`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/roast`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/ghostboard`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
     { url: `${baseUrl}/privacy`, lastModified: now, changeFrequency: 'monthly', priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: now, changeFrequency: 'monthly', priority: 0.3 },
   ]
@@ -41,6 +42,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const translatedPages: MetadataRoute.Sitemap = locales.flatMap((locale) => [
     { url: `${baseUrl}/${locale}`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${baseUrl}/${locale}/roast`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/${locale}/ghostboard`, lastModified: now, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${baseUrl}/${locale}/contact`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${baseUrl}/${locale}/blog`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.6 },
     ...blogPosts.map((post) => ({

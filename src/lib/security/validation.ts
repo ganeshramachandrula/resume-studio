@@ -211,6 +211,23 @@ export const extensionSubmitSchema = z.object({
     .max(15_000, 'Job description must be under 15,000 characters'),
 })
 
+export const ghostboardRatingSchema = z.object({
+  company_name: z
+    .string()
+    .min(1, 'Company name is required')
+    .max(200, 'Company name must be under 200 characters'),
+  role: z.string().max(200, 'Role must be under 200 characters').optional(),
+  job_application_id: z.string().uuid('Invalid job application ID').optional(),
+  response_time: z.number().int().min(1).max(5).optional(),
+  ghosting_rate: z.number().int().min(1).max(5).optional(),
+  interview_quality: z.number().int().min(1).max(5).optional(),
+  offer_fairness: z.number().int().min(1).max(5).optional(),
+  transparency: z.number().int().min(1).max(5).optional(),
+  recruiter_professionalism: z.number().int().min(1).max(5).optional(),
+  overall_recommendation: z.number().int().min(1).max(5, 'Overall recommendation is required (1-5)'),
+  review_text: z.string().max(2000, 'Review must be under 2,000 characters').optional(),
+})
+
 // ── Helper ─────────────────────────────────────────────────
 
 /**

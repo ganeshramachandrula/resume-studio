@@ -20,6 +20,7 @@ import {
   BarChart3,
   TrendingUp,
   Target,
+  Ghost,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -61,6 +62,7 @@ const sections: NavSection[] = [
       { name: 'Job Tracker', href: '/job-tracker', icon: Briefcase, iconColor: 'text-orange-500', iconBg: 'bg-orange-100' },
       { name: 'Job Sites', href: '/job-sites', icon: Globe, iconColor: 'text-teal-600', iconBg: 'bg-teal-100' },
       { name: 'Market Insights', href: '/market-insights', icon: TrendingUp, iconColor: 'text-indigo-600', iconBg: 'bg-indigo-100' },
+      { name: 'GhostBoard', href: '/ghostboard', icon: Ghost, iconColor: 'text-gray-600', iconBg: 'bg-gray-100' },
     ],
   },
   {

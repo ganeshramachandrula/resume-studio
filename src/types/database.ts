@@ -158,6 +158,42 @@ export interface VaultWorkSample {
   updated_at: string
 }
 
+// GhostBoard types
+export interface CompanyRating {
+  id: string
+  user_id: string
+  company_name: string
+  company_slug: string
+  role: string | null
+  job_application_id: string | null
+  response_time: number | null
+  ghosting_rate: number | null
+  interview_quality: number | null
+  offer_fairness: number | null
+  transparency: number | null
+  recruiter_professionalism: number | null
+  overall_recommendation: number
+  review_text: string | null
+  is_flagged: boolean
+  is_approved: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface CompanyProfile {
+  company_slug: string
+  company_name: string
+  total_ratings: number
+  avg_response_time: number | null
+  avg_ghosting_rate: number | null
+  avg_interview_quality: number | null
+  avg_offer_fairness: number | null
+  avg_transparency: number | null
+  avg_recruiter_professionalism: number | null
+  avg_overall_recommendation: number | null
+  updated_at: string
+}
+
 export interface VaultReference {
   id: string
   user_id: string

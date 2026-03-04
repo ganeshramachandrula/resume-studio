@@ -160,6 +160,12 @@ export const EXTENSION_RATE_LIMIT: RateLimitConfig = { maxRequests: 5, windowSec
 /** Roast My Resume (public): 5 requests per 10 minutes per IP */
 export const ROAST_RATE_LIMIT: RateLimitConfig = { maxRequests: 5, windowSeconds: 600 }
 
+/** GhostBoard read (public): 30 requests per minute per IP */
+export const GHOSTBOARD_READ_RATE_LIMIT: RateLimitConfig = { maxRequests: 30, windowSeconds: 60 }
+
+/** GhostBoard submit: 5 requests per 10 minutes per user */
+export const GHOSTBOARD_SUBMIT_RATE_LIMIT: RateLimitConfig = { maxRequests: 5, windowSeconds: 600 }
+
 /** Clear the rate limit store. For testing only. */
 export function __clearRateLimitStore(): void {
   store.clear()

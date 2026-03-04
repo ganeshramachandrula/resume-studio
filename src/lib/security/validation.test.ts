@@ -12,6 +12,7 @@ import {
   jobSearchSchema,
   jobPreferencesSchema,
   extensionSubmitSchema,
+  ghostboardRatingSchema,
   validateBody,
   isValidationError,
 } from '@/lib/security/validation'
@@ -775,5 +776,61 @@ describe('isValidationError', () => {
 
   it('returns false for string', () => {
     expect(isValidationError('hello')).toBe(false)
+  })
+})
+
+// ── ghostboardRatingSchema ────────────────────────────────────
+
+describe('ghostboardRatingSchema', () => {
+  const valid = {
+    company_name: 'Google',
+    overall_recommendation: 4,
+  }
+
+  it('accepts valid minimal rating', () => {
+    const result = ghostboardRatingSchema.safeParse(valid)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts full rating with all dimensions', () => {
+    const result = ghostboardRatingSchema.safeParse({
+      ...valid,
+      role: 'Software Engineer',
+      response_time: 3,
+      ghosting_rate: 2,
+      interview_quality: 5,
+      offer_fairness: 4,
+      transparency: 3,
+      recruiter_professionalism: 4,
+      review_text: 'Great experience overall.',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects missing company_name', () => {
+    const result = ghostboardRatingSchema.safeParse({ overall_recommendation: 4 })
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects missing overall_recommendation', () => {
+    const result = ghostboardRatingSchema.safeParse({ company_name: 'Google' })
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects rating outside 1-5 range', () => {
+    expect(ghostboardRatingSchema.safeParse({ ...valid, overall_recommendation: 0 }).success).toBe(false)
+    expect(ghostboardRatingSchema.safeParse({ ...valid, overall_recommendation: 6 }).success).toBe(false)
+    expect(ghostboardRatingSchema.safeParse({ ...valid, response_time: 0 }).success).toBe(false)
+    expect(ghostboardRatingSchema.safeParse({ ...valid, response_time: 6 }).success).toBe(false)
+  })
+
+  it('rejects review_text over 2000 characters', () => {
+    const result = ghostboardRatingSchema.safeParse({ ...valid, review_text: 'A'.repeat(2001) })
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects company_name over 200 characters', () => {
+    const result = ghostboardRatingSchema.safeParse({ ...valid, company_name: 'A'.repeat(201) })
+    expect(result.success).toBe(false)
   })
 })

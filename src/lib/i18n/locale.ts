@@ -2,7 +2,7 @@ export const SUPPORTED_LOCALES = ['es', 'fr', 'de', 'pt', 'hi'] as const
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
 
 /** Marketing paths that have locale-specific versions */
-const LOCALIZABLE_PATHS = ['/blog', '/roast', '/contact', '/pricing']
+const LOCALIZABLE_PATHS = ['/blog', '/roast', '/contact', '/pricing', '/ghostboard']
 
 /**
  * Extract locale from a pathname, or return null for English (default).
